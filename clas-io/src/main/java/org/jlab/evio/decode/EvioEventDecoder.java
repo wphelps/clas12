@@ -23,6 +23,7 @@ import org.jlab.coda.jevio.CompositeData;
 import org.jlab.coda.jevio.DataType;
 import org.jlab.coda.jevio.EvioException;
 import org.jlab.coda.jevio.EvioNode;
+import org.jlab.evio.clas12.EvioDataBank;
 import org.jlab.evio.clas12.EvioDataEvent;
 import org.jlab.evio.clas12.EvioSource;
 import org.jlab.io.decode.EvioRawEventDecoder;
@@ -60,6 +61,7 @@ public class EvioEventDecoder {
                             data.getDescriptor().getSlot(), 
                             data.getDescriptor().getChannel());
                     data.getDescriptor().setSectorLayerComponent(sector,layer,component);
+                    data.getDescriptor().setType(tr.getValue().getDetectorType());
                 }
             }
         }
@@ -138,7 +140,63 @@ public class EvioEventDecoder {
         return bank;
     }
     
+    public List<DetectorRawData>  getDetectorData(List<DetectorRawData> data, DetectorType type){
+        ArrayList<DetectorRawData> selection = new ArrayList<DetectorRawData>();
+        for(DetectorRawData item : data){
+            if(item.getDescriptor().getType()==type){
+                selection.add(item);
+            }
+        }
+        return selection;
+    }
     
+    public List<DetectorRawData>  getDetectorDataForLayer(List<DetectorRawData> data, 
+            DetectorType type, int layer){
+        
+        ArrayList<DetectorRawData> selection = new ArrayList<DetectorRawData>();
+        for(DetectorRawData item : data){
+            if(item.getDescriptor().getType()==type&&item.getDescriptor().getLayer()==layer){
+                selection.add(item);
+            }
+        }
+        return selection;
+    }
+
+    public DetectorRawData  getDataEntry(List<DetectorRawData> data, int sector,
+           int layer, int component ){
+        for(DetectorRawData item : data){
+            if(item.getDescriptor().getSector()==sector&&
+                    item.getDescriptor().getLayer()==layer&&
+                    item.getDescriptor().getComponent()==component){
+                return item;
+            }
+        }
+        return null;
+    }
+    
+    public void writeBank(DetectorType type, List<DetectorRawData> data, EvioDataEvent event){
+        
+        if(type==DetectorType.CTOF){
+            List<DetectorRawData>  ctofR = this.getDetectorDataForLayer(data, DetectorType.CTOF, 0);
+            List<DetectorRawData>  ctofL = this.getDetectorDataForLayer(data, DetectorType.CTOF, 1);
+            
+            int layerR = 0;
+            int layerL = 1;
+            List<DetectorRawData> ctof = ctofR; 
+            int rows  = ctofR.size();
+            if(ctofL.size()>rows){
+                rows = ctofL.size();
+                ctof = ctofL;
+            }
+            
+            EvioDataBank bank = (EvioDataBank) event.getDictionary().createBank("CTOF::dgtz", rows);
+
+            for(int loop = 0; loop < ctof.size(); loop++){
+                bank.setInt("paddle", loop, ctof.get(loop).getDescriptor().getComponent());
+                //bank.setInt("ADCL", loop, );
+            }
+        }
+    }
     
     public void addTranslationTable(IDetectorTranslationTable table){
         this.translationTables.put(table.getName(), table);
@@ -564,7 +622,7 @@ public class EvioEventDecoder {
             return branches;
         }
         
-        System.out.println(" ************** BRANCHES ARRAY SIZE = " + eventNodes.size());
+        //System.out.println(" ************** BRANCHES ARRAY SIZE = " + eventNodes.size());
         for(EvioNode node : eventNodes){
             
             EvioTreeBranch eBranch = new EvioTreeBranch(node.getTag(),node.getNum());

@@ -91,12 +91,27 @@ public class DetectorRawData {
         return this.detectorData.get(index);
     }
     
+    public double getSignal(int pedmin, int pedmax, int sigmin, int sigmax){
+        double result = 0.0;
+        if(this.dataMODE==1){
+            double pedistal = this.getIntegral(pedmin, pedmax)/(pedmax-pedmin);
+            short[] array = (short[]) this.detectorData.get(0);
+            for(int loop = sigmin; loop < sigmax; loop++){
+                if(loop>=0&&loop<array.length){
+                    double value = (double) array[loop] - pedistal;
+                    result += value;
+                }
+            }
+        }
+        return result;
+    }
+    
     public int getIntegral(int min, int max){
         int integral = 0;
         if(this.dataMODE==1){
-            Short[] array = (Short[]) this.detectorData.get(0);
+            short[] array = (short[]) this.detectorData.get(0);
             for(int loop = min; loop < max; loop++){
-                if(loop>=0&&loop<this.detectorData.size()){
+                if(loop>=0&&loop<array.length){
                     integral += array[loop];
                 }
             }
@@ -135,7 +150,7 @@ public class DetectorRawData {
         
         if(this.dataMODE==1){
             str.append(String.format(" PULSE PED/ALL [%8d %8d ]", 
-                    this.getIntegral(0, 10),
+                    this.getIntegral(0, 30),
                     this.getIntegral(0, 200)
                     ));
         }

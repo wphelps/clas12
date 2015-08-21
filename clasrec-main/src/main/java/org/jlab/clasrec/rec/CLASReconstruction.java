@@ -7,12 +7,14 @@
 package org.jlab.clasrec.rec;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jlab.clas.tools.benchmark.Benchmark;
 import org.jlab.clas.tools.utils.CommandLineTools;
+import org.jlab.clas.tools.utils.JarFileScanner;
 
 import org.jlab.clasrec.loader.ClasPluginLoader;
 import org.jlab.clasrec.main.DetectorReconstruction;
@@ -32,6 +34,8 @@ public class CLASReconstruction {
             new ArrayList<DetectorReconstruction>();
     private final ArrayList<String>  detectorFactoryNames = new 
             ArrayList<String>();
+    private TreeMap<String,DetectorReconstruction>  detectorFactoryStore
+             = new TreeMap<String,DetectorReconstruction>();
     
     private final ClasPluginLoader pluginLoader = new ClasPluginLoader();
     
@@ -117,11 +121,11 @@ public class CLASReconstruction {
                 detectorRec.setDebugLevel(this.debugLevel);
                 detectorRec.configure(serviceConfig);
                 detectorRec.init();
-                System.err.println("[INIT-DETECTORS] ----> detector initialization "
-                        + detectorRec.getName() + " ......... ok");
+                System.err.println("---> detector initialization "
+                        + detectorRec.getName() + " ......... success");
             } catch (Exception e) {
-                System.err.println("[INIT-DETECTORS] ----> ERROR initializing detector "
-                + detectorRec.getName());
+                System.err.println("---> (error) initializing detector "
+                + detectorRec.getName() + " ......... unsuccesful");
             }
         }
     }
@@ -141,34 +145,59 @@ public class CLASReconstruction {
         }
     }
     
-    public void initDetectors(){
-        this.detectorFactory.clear();
-        TreeMap<String,ICService> detectorClasses = pluginLoader.getPluginLoader().getClassMap();
+    public void initDetectors() {
         
-        for(String detector : this.detectorFactoryNames){
-            if(detectorClasses.containsKey(detector)==true){
-                System.err.println("[INIT-DETECTORS] ---> found detector ["+detector+"]");
-                detectorFactory.add((DetectorReconstruction) detectorClasses.get(detector));
-            } else {
-                System.err.println("[INIT-DETECTORS] ---> ERROR : detector ["
-                        +detector+"] not found");
-            }
-        }
-        //for(Map.Entry<String,ICService> service : detectorClasses.entrySet()){            
-        //}
+        JarFileScanner  scanner = new JarFileScanner();
+        List<String>    classes = scanner.scanDir("lib/plugins", "org.jlab.clasrec.main.DetectorReconstruction");
         
-        for(DetectorReconstruction detectorRec : this.detectorFactory ){
+        for(String classname : classes){
             try {
-                detectorRec.setDebugLevel(this.debugLevel);
-                detectorRec.configure(serviceConfig);
-                detectorRec.init();
-                System.err.println("[INIT-DETECTORS] ----> detector initialization "
-                        + detectorRec.getName() + " ......... ok");
-            } catch (Exception e) {
-                System.err.println("[INIT-DETECTORS] ----> ERROR initializing detector "
-                + detectorRec.getName());
+                Class c = Class.forName(classname);
+                DetectorReconstruction rec = (DetectorReconstruction) c.newInstance();
+                detectorFactoryStore.put(rec.getName(), rec);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(CLASReconstruction.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InstantiationException ex) {
+                Logger.getLogger(CLASReconstruction.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IllegalAccessException ex) {
+                Logger.getLogger(CLASReconstruction.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        
+        this.detectorFactory.clear();
+        
+        for(String reported : this.detectorFactoryNames){
+            if(this.detectorFactoryStore.containsKey(reported)==true){
+                this.detectorFactory.add(this.detectorFactoryStore.get(reported));
+            }
+        }
+            /*
+            this.detectorFactory.clear();
+            TreeMap<String,ICService> detectorClasses = pluginLoader.getPluginLoader().getClassMap();
+            for(String detector : this.detectorFactoryNames){
+            if(detectorClasses.containsKey(detector)==true){
+            System.err.println("[INIT-DETECTORS] ---> found detector ["+detector+"]");
+            detectorFactory.add((DetectorReconstruction) detectorClasses.get(detector));
+            } else {
+            System.err.println("[INIT-DETECTORS] ---> ERROR : detector ["
+            +detector+"] not found");
+            }
+            }
+            //for(Map.Entry<String,ICService> service : detectorClasses.entrySet()){
+            //}
+            for(DetectorReconstruction detectorRec : this.detectorFactory ){
+            try {
+            detectorRec.setDebugLevel(this.debugLevel);
+            detectorRec.configure(serviceConfig);
+            detectorRec.init();
+            System.err.println("[INIT-DETECTORS] ----> detector initialization "
+            + detectorRec.getName() + " ......... ok");
+            } catch (Exception e) {
+            System.err.println("[INIT-DETECTORS] ----> ERROR initializing detector "
+            + detectorRec.getName());
+            }
+            }*/         
+        
     }
     
     
@@ -297,7 +326,9 @@ public class CLASReconstruction {
         clasRec.initServiceConfiguration(cmdParser.getConfigItems());
         clasRec.setMaxEvents(nEventsToRun);
         clasRec.setDetectors(serviceList);
-        clasRec.initPlugins();
+        clasRec.initDetectors();
+        clasRec.init();
+        //clasRec.initPlugins();
         
         if(cmdParser.hasOption("-l")==true){
             Integer skip = cmdParser.asInteger("-l");            

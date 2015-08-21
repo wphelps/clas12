@@ -37,6 +37,7 @@ public class TGCanvas extends JFrame {
     public void setAxisRange(double xmin, double xmax, double ymin, double ymax){
         this.getCanvas().setAxisRange(xmin, xmax, ymin, ymax);
     }
+    
     public void cd(int pad){
         this.embCanvas.cd(pad);
     }

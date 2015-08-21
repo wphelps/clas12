@@ -5,6 +5,8 @@
  */
 package org.jlab.io.decode;
 
+import org.jlab.clas.detector.DetectorType;
+
 /**
  *
  * @author gavalian
@@ -15,4 +17,6 @@ public interface IDetectorTranslationTable {
     Integer  getSector(int crate, int slot, int channel);
     Integer  getLayer(int crate, int slot, int channel);
     Integer  getComponent(int crate, int slot, int channel);
+    void     setDetectorType(DetectorType t);
+    DetectorType getDetectorType();
 }

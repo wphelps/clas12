@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jlab.clas.detector.DetectorType;
 
 
 /**
@@ -25,6 +26,7 @@ public class AbsDetectorTranslationTable implements IDetectorTranslationTable {
             TreeMap<Integer,TranslationTableEntry>();
     private Boolean  supressErrors     = true;
     private Integer  bankTagNumber     = 100;
+    private DetectorType   type = DetectorType.UNDEFINED;
     
     public AbsDetectorTranslationTable(){
         
@@ -65,6 +67,10 @@ public class AbsDetectorTranslationTable implements IDetectorTranslationTable {
        return -1;
     }
     
+    public DetectorType  getDetectorType(){ return this.type; }
+    public void setDetectorType(DetectorType t){
+        this.type = t;
+    }
     
     public  Boolean hasEntry(int crate, int slot, int channel){
         Integer key = TranslationTableEntry.getHashCreate(crate, slot, channel);
