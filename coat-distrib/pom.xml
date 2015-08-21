@@ -34,12 +34,12 @@
   <dependency>
     <groupId>org.jlab.coda</groupId>
     <artifactId>clara</artifactId>
-    <version>2.1</version>
+    <version>2.2</version>
   </dependency>
   <dependency>
     <groupId>org.jlab.coda</groupId>
     <artifactId>jtools</artifactId>
-    <version>2.1</version>
+    <version>2.2</version>
   </dependency>
 
 <!--
