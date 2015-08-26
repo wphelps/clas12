@@ -20,7 +20,14 @@ public enum DetectorType {
     FTCAL     ( 9, "FTCAL"),
     FTOF      (10, "FTOF"),
     DC        (13, "DC"),
-    EC        (15, "EC");
+    EC        (15, "EC"),
+    ECIN      (110, "ECIN"),
+    ECOUT     (111, "ECOUT"),
+    ECTOT     (112, "ECTOT"),
+    LAC       (113, "LAC"),
+    SC        (114, "SC"),
+    CC        (115, "CC");
+    
     private final int detectorId;
     private final String detectorName;
     

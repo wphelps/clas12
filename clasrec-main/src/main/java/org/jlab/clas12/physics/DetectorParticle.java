@@ -42,6 +42,12 @@ public class DetectorParticle {
         this.responseStore.clear();
     }
     
+    public void addResponse(DetectorResponse res, boolean match){
+        if(match==false){
+            this.responseStore.add(res);
+        }
+    }
+    
     public void addResponse(DetectorResponse res){
         double distance = Math.sqrt(
                 (this.particleCrossPosition.x()-res.getPosition().x())*
@@ -74,6 +80,14 @@ public class DetectorParticle {
         this.responseStore.add(res);
     }
     
+    public DetectorResponse  getResponse(DetectorType type, int layer){
+        for(DetectorResponse res : this.responseStore){
+            if(res.getDescriptor().getType()==type&&res.getDescriptor().getLayer()==layer){
+                return res;
+            }
+        }
+        return null;
+    }
     
     public boolean hasHit(DetectorType type){
         int hits = 0;

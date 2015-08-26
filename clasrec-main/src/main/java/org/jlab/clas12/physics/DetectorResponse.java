@@ -47,11 +47,12 @@ public class DetectorResponse {
                 this.descriptor.getLayer(),
                 this.descriptor.getComponent()
                 ));
-        str.append(String.format(" T/E %8.4f %8.4f", this.detectorTime,
+        str.append(String.format(" T/P/E %8.4f %8.4f %8.4f", this.detectorTime,
+                this.particlePath,
                 this.detectorEnergy));
         str.append(String.format(" POS [ %8.4f %8.4f %8.4f ]", 
                 this.hitPosition.x(),this.hitPosition.y(),this.hitPosition.z()));
-        str.append(String.format(" ERROR [ %8.4f %8.4f %8.4f ] ",
+        str.append(String.format(" ACCURACY [ %8.4f %8.4f %8.4f ] ",
                 this.hitPosition.x()-this.hitPositionMatched.x(),
                 this.hitPosition.y()-this.hitPositionMatched.y(),
                 this.hitPosition.z()-this.hitPositionMatched.z()

@@ -5,6 +5,11 @@
  */
 package org.jlab.clas12.physics;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.jlab.clas.detector.DetectorType;
 import org.jlab.clas.pdg.PDGDatabase;
 import org.jlab.clas.physics.EventFilter;
 import org.jlab.clas.physics.Particle;
@@ -23,20 +28,25 @@ public class GenericKinematicFitter {
     private Double  beamEnergy  = 11.0;
     private Boolean forceFilter = false;
     private Boolean generatedEventMatching = true;
+    private IDetectorEventProcessor   detectorEventProcessor = null;
+    private List<IDetectorEventProcessor> detectorProcessors = new ArrayList<IDetectorEventProcessor>();
     
     public GenericKinematicFitter(double beam){
         this.beamEnergy = beam;
         this.filter.setFilter("X+:X-:Xn");
+        this.detectorEventProcessor = new CLAS6DetectorEventProcess();
     }
     
     public GenericKinematicFitter(){
         this.beamEnergy = 11.0;
         this.filter.setFilter("X+:X-:Xn");
+        this.detectorEventProcessor = new CLAS6DetectorEventProcess();
     }
     
     public GenericKinematicFitter(double beam, String filterString){
         this.beamEnergy = beam;
         this.filter.setFilter(filterString);
+        this.detectorEventProcessor = new CLAS6DetectorEventProcess();
     }
     
     /**
@@ -72,6 +82,68 @@ public class GenericKinematicFitter {
         }
         return new PhysicsEvent(this.beamEnergy);
     }    
+    
+    public void addEventProcessor(IDetectorEventProcessor proc){
+        System.out.println("\n----> adding detector processing unit : " +
+                proc.getClass().getCanonicalName());
+        this.detectorProcessors.add(proc);
+    }
+    
+    public void addEventProcessor(String name){
+        try {
+            Class c = Class.forName(name);
+            if(IDetectorEventProcessor.class.isAssignableFrom(c)==true){
+                this.addEventProcessor( (IDetectorEventProcessor) c.newInstance());
+            }
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(GenericKinematicFitter.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            Logger.getLogger(GenericKinematicFitter.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(GenericKinematicFitter.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void setDetectorEventProcessor(String name){
+        try {
+            Class c = Class.forName(name);
+            if(IDetectorEventProcessor.class.isAssignableFrom(c)==true){
+                this.detectorEventProcessor = (IDetectorEventProcessor) c.newInstance();
+            }
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(GenericKinematicFitter.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            Logger.getLogger(GenericKinematicFitter.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(GenericKinematicFitter.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    /**
+     * Returns a PhysicsEvent after processing the detector event through
+     * modules added to the fitter.
+     * @param event
+     * @return 
+     */
+    public PhysicsEvent getPhysicsEventProcessed(EvioDataEvent event){
+        if(event.hasBank("EVENT::particle")==true){
+            DetectorEvent detevent = this.getDetectorEvent(event);
+            for(IDetectorEventProcessor proc : this.detectorProcessors){
+                proc.processDetectorEvent(detevent);                
+            }
+            return GenericKinematicFitter.detectorEventToPhysicsEvent(detevent);
+            //return this.detectorEventProcessor.getPhysicsEvent(detevent);
+        } else {
+            //System.out.println();
+        }
+        return new PhysicsEvent();
+    }
+    /**
+     * 
+     * @param proc 
+     */
+    public void setDetectorEventProcessor(IDetectorEventProcessor proc){
+        this.detectorEventProcessor = proc;
+    }
     
     public void setMatching(Boolean matching_flag){
         this.generatedEventMatching = matching_flag;
@@ -194,6 +266,147 @@ public class GenericKinematicFitter {
                             evntBank.getFloat("vz", loop)
                     );
                     physEvent.addParticle(part);
+                }
+            }
+        }
+        return physEvent;
+    }
+    
+    
+    public DetectorEvent  getDetectorEvent(EvioDataEvent event){
+        DetectorEvent detEvent = new DetectorEvent();
+        if(event.hasBank("EVENT::particle")==true){
+            EvioDataBank  bank = (EvioDataBank)  event.getBank("EVENT::particle");
+            
+            EvioDataBank  bankSC = (EvioDataBank) event.getBank("DETECTOR::scpb");
+            EvioDataBank  bankEC = (EvioDataBank) event.getBank("DETECTOR::ecpb");
+            EvioDataBank  bankCC = (EvioDataBank) event.getBank("DETECTOR::ccpb");
+            
+            int nrows = bank.rows();
+            for(int loop = 0; loop < nrows; loop++){
+            
+                DetectorParticle particle = new DetectorParticle();
+                int indexSC = bank.getByte("scstat", loop)-1;
+                int indexEC = bank.getByte("ecstat", loop)-1;
+                int indexCC = bank.getByte("ccstat", loop)-1;
+                int pstatus = bank.getByte("status", loop);
+                
+                particle.setStatus(pstatus);
+                particle.vector().setXYZ(
+                        bank.getFloat("px", loop),
+                        bank.getFloat("py", loop),
+                        bank.getFloat("pz", loop)
+                        );
+                particle.vertex().setXYZ(
+                        bank.getFloat("vx", loop),
+                        bank.getFloat("vy", loop),
+                        bank.getFloat("vz", loop)
+                        );
+                particle.setPid(bank.getInt("pid", loop));
+                particle.setCharge((int) bank.getByte("charge", loop));
+                particle.setMass(bank.getFloat("mass", loop));
+                
+                if(bankSC!=null&&indexSC>=0){
+                    DetectorResponse  response = new DetectorResponse();
+                    response.getDescriptor().setType(DetectorType.SC);
+                    response.getDescriptor().setSectorLayerComponent(
+                            bankSC.getByte("sector", indexSC),
+                            0,
+                            bankSC.getByte("paddle", indexSC)
+                    );
+                    response.setPath(bankSC.getFloat("path", indexSC));
+                    response.setTime(bankSC.getFloat("time", indexSC));
+                    response.setEnergy(bankSC.getFloat("edep", indexSC));
+                    particle.addResponse(response,false);
+                }
+                
+                 if(bankEC!=null&&indexEC>=0){
+                     DetectorResponse  resECIN  = new DetectorResponse();
+                     DetectorResponse  resECOUT = new DetectorResponse();
+                     DetectorResponse  resECTOT = new DetectorResponse();
+                     resECIN.getDescriptor().setType(DetectorType.EC);
+                     resECOUT.getDescriptor().setType(DetectorType.EC);
+                     resECTOT.getDescriptor().setType(DetectorType.EC);
+                     int sector = bankEC.getByte("sector", indexEC);
+                     resECIN.getDescriptor().setSectorLayerComponent( sector, 0, -1);
+                     resECOUT.getDescriptor().setSectorLayerComponent(sector, 1, -1);
+                     resECTOT.getDescriptor().setSectorLayerComponent(sector, 2, -1);
+                     
+                     resECIN.setEnergy(bankEC.getFloat("ein", indexEC));
+                     resECOUT.setEnergy(bankEC.getFloat("eout", indexEC));
+                     resECTOT.setEnergy(bankEC.getFloat("etot", indexEC));
+                     double time = bankEC.getFloat("time", indexEC);
+                     double path = bankEC.getFloat("path", indexEC);
+                     
+                     resECIN.setTime(time);
+                     resECOUT.setTime(time);
+                     resECTOT.setTime(time);
+                     
+                     resECIN.setPath(path);
+                     resECOUT.setPath(path);
+                     resECTOT.setPath(path);
+                     
+                     double x = bankEC.getFloat("x", indexEC);
+                     double y = bankEC.getFloat("y", indexEC);
+                     double z = bankEC.getFloat("z", indexEC);
+                     
+                     resECIN.getPosition().setXYZ(x, y, z);
+                     resECOUT.getPosition().setXYZ(x, y, z);
+                     resECTOT.getPosition().setXYZ(x, y, z);
+                     
+                     particle.addResponse(resECIN,false);
+                     particle.addResponse(resECOUT,false);
+                     particle.addResponse(resECTOT,false);
+                 }             
+                 
+                 if(bankCC!=null){
+                     DetectorResponse resCC = this.getDetectorResponse_CLAS6_CC(bankCC, indexCC);
+                     if(resCC!=null) particle.addResponse(resCC,false);
+                 }
+                detEvent.addParticle(particle);
+            }
+        }
+        return detEvent;
+    }
+    
+    private DetectorResponse getDetectorResponse_CLAS6_CC(EvioDataBank bank, int index){
+        if(bank.getDescriptor().getName().compareTo("DETECTOR::ccpb")==0){
+            if(index>=bank.rows()||index<0) return null;
+            //System.out.println("  CC bank fill : " + bank.rows() + "   index = " + index);
+            DetectorResponse response = new DetectorResponse();
+            response.getDescriptor().setType(DetectorType.CC);
+            response.getDescriptor().setSectorLayerComponent(
+                    bank.getByte("sector", index), 0, 0);
+            response.getPosition().setXYZ(0.0, 0.0, 0.0);
+            response.getMatchedPosition().setXYZ(0.0, 0.0, 0.0);
+            response.setEnergy(bank.getFloat("nphe", index));
+            response.setTime(bank.getFloat("time", index));
+            response.setPath(bank.getFloat("path", index));
+            return response;
+        }
+        return null;
+    }
+    
+    
+    public static PhysicsEvent detectorEventToPhysicsEvent(DetectorEvent event){
+        PhysicsEvent   physEvent = new PhysicsEvent();
+        for(int loop = 0; loop < event.getParticles().size(); loop++){
+            DetectorParticle part = event.getParticles().get(loop);
+            if(part.getStatus()>=0){
+                int pid = part.getPid();
+                if(PDGDatabase.isValidPid(pid)==true){
+                    Particle particle = new Particle(part.getPid(),
+                            part.vector().x(),part.vector().y(),part.vector().z(),
+                            part.vertex().x(),part.vertex().y(),part.vertex().z()
+                    );
+                    physEvent.addParticle(particle);
+                } else {
+                    Particle particle = new Particle();
+                    particle.setParticleWithMass(part.getMass(), (byte) part.getCharge(),
+                            part.vector().x(),part.vector().y(),part.vector().z(),
+                            part.vertex().x(),part.vertex().y(),part.vertex().z()
+                    );
+                    physEvent.addParticle(particle);
                 }
             }
         }
