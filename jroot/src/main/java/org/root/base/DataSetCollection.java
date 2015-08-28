@@ -74,4 +74,7 @@ public class DataSetCollection {
     public int  getCount(){ return this.dsCollection.size();}
     public IDataSet  getDataSet(int index){ return this.dsCollection.get(index);}
     
+    public void setAxisLog(boolean flag, String axis){
+        //if(axis.compareTo("X")==0) 
+    }
 }

@@ -69,7 +69,8 @@ public class PDGDatabase {
         particleMap.put(  -11, new PDGParticle("e+",    -11, 2, 0.0005, 1));
         particleMap.put(   13, new PDGParticle("mu-",    13, 6, 0.1056583715,-1));
         particleMap.put(  -13, new PDGParticle("mu+",   -13, 5, 0.1056583715,1));        
-        particleMap.put(   22, new PDGParticle("gamma",  22, 1, 0.000,0));
+        particleMap.put(   22, new PDGParticle("gamma",  22, 1, 0.000,  0));
+        particleMap.put(   45, new PDGParticle("d",      45, 0, 1.87705,1));
         particleMap.put(  111, new PDGParticle("pi0",   111, 7, 0.1349766,0));
         particleMap.put(  113, new PDGParticle("rho0",  113,0.7754,0));
         particleMap.put(  221, new PDGParticle("eta",   221,0.547853,0));

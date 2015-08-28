@@ -22,6 +22,8 @@ public class AxisRegion {
     private Attributes        axisAttributes  = new Attributes();
     private AxisNiceScale     axisX           = new AxisNiceScale(0.0,1.0);
     private AxisNiceScale     axisY           = new AxisNiceScale(0.0,2.0);
+    private AxisNiceScale     axisZ           = new AxisNiceScale(0.0,2.0);
+    
     public  Integer           axisLabelSize   = 18;
     /*
     private LatexText         axisTitleX      = new LatexText("#pi^2 [GeV]",0.5,0.0);
@@ -88,6 +90,7 @@ public class AxisRegion {
     
     public AxisNiceScale  getAxisX(){ return axisX;}
     public AxisNiceScale  getAxisY(){ return axisY;}
+    public AxisNiceScale  getAxisZ(){ return axisZ;}
     
     public double   getFramePointY(double relY){
         //double length = 
