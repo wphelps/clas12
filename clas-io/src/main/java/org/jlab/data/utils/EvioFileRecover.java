@@ -5,6 +5,7 @@
  */
 package org.jlab.data.utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -51,6 +52,11 @@ public class EvioFileRecover {
     
     
     public static void recoverFile(String inputfile, String outputfile)  {
+        
+        File outFile = new File(outputfile);
+        if(outFile.exists()==true){
+            System.out.println();
+        }
         System.out.println("----> opening file : " + inputfile);
         if(inputfile.compareTo(outputfile)==0){
             System.out.println("----> error");
@@ -88,12 +94,12 @@ public class EvioFileRecover {
        
     }
     public static void main(String[] args){
-        
+        /*
         String inputfile  = "/Users/gavalian/Work/Software/Release-8.0/COATJAVA/coatjava/../svt257er_000015.evio.0";
         String outputfile = "/Users/gavalian/Work/Software/Release-8.0/COATJAVA/coatjava/../svt257er_000015_recovered.evio";
-        /*
+        */
         String inputfile  = args[0];
-        String outputfile = args[1];*/
+        String outputfile = args[1];
         EvioFileRecover.recoverFile(inputfile, outputfile);
         /*
         try {

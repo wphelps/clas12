@@ -206,6 +206,7 @@
             <exclude>cnuphys:cnuphys</exclude>
             <exclude>cnuphys:magfield</exclude>
             <exclude>cnuphys:swimmer</exclude>
+<!--            <exclude>org.jlab.coda:jevio</exclude> -->
         </excludes>
    </artifactSet>
 
