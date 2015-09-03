@@ -45,4 +45,12 @@ public class TGCanvas extends JFrame {
     public void draw(IDataSet ds){
         this.embCanvas.draw(ds);
     }
+    
+    public void draw(IDataSet ds, String option){
+        this.embCanvas.draw(ds,option);
+    }
+    
+    public void setLogZ(){
+        this.embCanvas.setLogZ();
+    }
 }

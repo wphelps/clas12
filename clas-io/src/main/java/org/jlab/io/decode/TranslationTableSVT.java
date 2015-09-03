@@ -25,7 +25,8 @@ public class TranslationTableSVT extends TranslationTable {
             TranslationTableEntry conversion = this.getEntry(entry.getCrate(),
                     entry.getSlot(),entry.getSVTHalf());
             if(conversion!=null){
-                record.init(conversion.sector, conversion.layer, entry.getSVTHalf(), 
+                record.init(conversion.descriptor().getSector(), 
+                        conversion.descriptor().getLayer(), entry.getSVTHalf(), 
                         entry.getSVTChipID(), entry.getSVTChannel());
                 entry.setSectorLayerComponent(record.SECTOR, record.LAYER,
                         record.STRIP);

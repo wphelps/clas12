@@ -20,6 +20,7 @@ public class DataSetXY implements EvioWritableTree,IDataSet {
     
     private final DataVector dataX = new DataVector();
     private final DataVector dataY = new DataVector();
+    
     private String dataSetName = "dataSetXY";
     private String dataTitle  = "";
     private String dataXtitle = "";

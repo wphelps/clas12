@@ -49,9 +49,26 @@ public class EmbeddedCanvas extends JPanel {
          this.currentPad = pad;
      }
      
+     public void clear(){
+         this.canvasPads.get(this.currentPad).getPad().clear();
+     }
+     
      public void draw(IDataSet dataset){
+         //this.canvasPads.get(this.currentPad).getPad().add(dataset);
+         //this.canvasPads.get(this.currentPad).repaint();
+         this.draw(dataset,"");
+     }
+     
+     public void draw(IDataSet dataset, String option){
+         if(option.contains("same")==false){
+             this.clear();
+         }
          this.canvasPads.get(this.currentPad).getPad().add(dataset);
          this.canvasPads.get(this.currentPad).repaint();
+     }
+     
+     public void setLogZ(){
+         this.canvasPads.get(this.currentPad).getPad().setLogZ(true);
      }
      
      public void setDivisionsX(int div){

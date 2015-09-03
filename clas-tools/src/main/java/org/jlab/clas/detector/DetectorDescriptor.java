@@ -17,9 +17,13 @@ public class DetectorDescriptor {
     private Integer hw_CRATE     = 0;
     private Integer hw_SLOT      = 0;
     private Integer hw_CHANNEL   = 0;
+    
     private Integer dt_SECTOR    = 0;
     private Integer dt_LAYER     = 0;
     private Integer dt_COMPONENT = 0;
+    
+    private Integer dt_ORDER     = 0; // This is the order in the bank
+    // defines ADCL,ADCR,TDCL,TDCR (1,2,3,4)
     
     public DetectorDescriptor(){
         
@@ -46,6 +50,16 @@ public class DetectorDescriptor {
     public int getLayer(){ return this.dt_LAYER;}
     public int getSlot(){ return this.hw_SLOT;}
     public int getSector(){return this.dt_SECTOR;}
+    public int getOrder(){ return this.dt_ORDER;}
+ 
+    public void setOrder(int order){        
+        this.dt_ORDER = order;
+        if(this.dt_ORDER<0||this.dt_ORDER>3){
+            System.err.println("----> error : detector descriptor order must be [1..4]");
+            this.dt_ORDER = 0;
+        }
+    }
+    
     public DetectorType getType(){ return this.detectorType;}
     
     public final void setType(DetectorType type){
@@ -105,9 +119,9 @@ public class DetectorDescriptor {
     
     @Override
     public String toString(){
-        return String.format("D [%6s ] C/S/C [%4d %4d %4d ]  S/L/C [%4d %4d %4d ]", 
+        return String.format("D [%6s ] C/S/C [%4d %4d %4d ]  S/L/C [%4d %4d %4d ]  ORDER = %4d", 
                 this.detectorType.getName(),
                 this.hw_CRATE,this.hw_SLOT,this.hw_CHANNEL,
-                this.dt_SECTOR,this.dt_LAYER,this.dt_COMPONENT);
+                this.dt_SECTOR,this.dt_LAYER,this.dt_COMPONENT, this.dt_ORDER);
     }
 }

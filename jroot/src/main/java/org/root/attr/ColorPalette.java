@@ -87,6 +87,29 @@ public class ColorPalette {
         }
     }
     
+    public Color getColor3D(double value, double max, boolean islog){        
+        double fraction = 0.0;
+        
+        if(max!=0){
+            if(islog==true){
+                fraction = Math.log(value)/Math.log(max);
+            } else {
+                fraction = value/max;
+            }
+        }
+        
+        if(fraction>1.0) fraction = 1.0;
+        if(fraction<0.0){
+            return new Color(40,40,40);
+        }
+        
+        
+        double binC = fraction*palette.size();
+        int bin = (int) binC;
+        if(bin>=palette.size()) bin = palette.size()-1;
+        return palette.get(bin);
+    }
+    
     public Color getRange(double fraction){
         if(fraction>1.0) fraction = 1;
         if(fraction<0.0){

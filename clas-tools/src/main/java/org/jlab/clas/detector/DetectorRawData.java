@@ -12,7 +12,7 @@ import org.jlab.clas.tools.utils.DataUtils;
  *
  * @author gavalian
  */
-public class DetectorRawData {
+public class DetectorRawData implements Comparable {
     
     private final DetectorDescriptor  descriptor = new DetectorDescriptor();
     private final ArrayList<Object>   detectorData = new ArrayList<Object>();
@@ -155,5 +155,23 @@ public class DetectorRawData {
                     ));
         }
         return str.toString();
+    }
+    
+    public int compareTo(Object ob) {
+        
+        DetectorRawData o = (DetectorRawData) ob;
+        
+        if(o.getDescriptor().getSector()>this.getDescriptor().getSector()) return -1;
+        if(o.getDescriptor().getSector()<this.getDescriptor().getSector()) return  1;
+        
+        if(o.getDescriptor().getLayer()>this.getDescriptor().getLayer()) return -1;
+        if(o.getDescriptor().getLayer()<this.getDescriptor().getLayer()) return  1;
+        
+        if(o.getDescriptor().getComponent()>this.getDescriptor().getComponent()) return -1;
+        if(o.getDescriptor().getComponent()<this.getDescriptor().getComponent()) return  1;
+        
+        if(o.getDescriptor().getOrder()==this.getDescriptor().getOrder()) return 0;
+        if(o.getDescriptor().getOrder()>this.getDescriptor().getOrder()) return -1;
+            return 1;        
     }
 }

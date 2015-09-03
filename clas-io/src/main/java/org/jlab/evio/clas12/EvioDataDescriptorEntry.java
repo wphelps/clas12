@@ -25,6 +25,13 @@ public class EvioDataDescriptorEntry {
         name = _n;
         tag  = _t;
         num  = _nn;
-        type = DataEntryType.getType(_type);
+        String convertedType = this.getType(_type);
+        type = DataEntryType.getType(convertedType);
+    }
+    
+    private String  getType(String type){
+        if(type.compareTo("CHAR8")==0) return "int8";
+        if(type.compareTo("INT32")==0) return "int32";
+        return type;
     }
 }

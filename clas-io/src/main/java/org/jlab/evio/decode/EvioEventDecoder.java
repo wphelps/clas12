@@ -7,6 +7,7 @@ package org.jlab.evio.decode;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -60,11 +61,20 @@ public class EvioEventDecoder {
                             data.getDescriptor().getCrate(), 
                             data.getDescriptor().getSlot(), 
                             data.getDescriptor().getChannel());
+                    
+                    int order = tr.getValue().getOrder( 
+                            data.getDescriptor().getCrate(), 
+                            data.getDescriptor().getSlot(), 
+                            data.getDescriptor().getChannel()
+                    );
                     data.getDescriptor().setSectorLayerComponent(sector,layer,component);
                     data.getDescriptor().setType(tr.getValue().getDetectorType());
+                    data.getDescriptor().setOrder(order);
+                    //data.getDescriptor().setType(tr.);
                 }
             }
         }
+        Collections.sort(dataEntries);
     }    
     /*
     public DetectorDataBank  getDetectorBank(String name, List<RawDataEntry> raw){
@@ -231,8 +241,12 @@ public class EvioEventDecoder {
                 if(node.getTag()==57607){
                     int[] intData = ByteDataTransformer.toIntArray(node.getStructureBuffer(false));
                     for(int loop = 0; loop < intData.length; loop++){
-                        DetectorRawData  tdc = new DetectorRawData(crate,0,0);
-                        tdc.set(DataUtils.getShortFromInt(intData[loop]));
+                        int  dataEntry = intData[loop];
+                        int  slot      = DataUtils.getInteger(dataEntry, 27, 31 );
+                        int  chan      = DataUtils.getInteger(dataEntry, 19, 25);
+                        int  value     = DataUtils.getInteger(dataEntry,  0, 18);
+                        DetectorRawData  tdc = new DetectorRawData(crate,slot,chan);
+                        tdc.set(DataUtils.getShortFromInt(value));
                         rawTDCs.add(tdc);
                     }
                 }
@@ -262,6 +276,9 @@ public class EvioEventDecoder {
                 rawEntries.addAll(list);
             }
         }
+        
+        List<DetectorRawData>  tdcEntries = this.getTDCEntries(event);
+        rawEntries.addAll(tdcEntries);
         return rawEntries;
     }
     
@@ -615,26 +632,33 @@ public class EvioEventDecoder {
      */
     public ArrayList<EvioTreeBranch>  getEventBranches(EvioDataEvent event){
         ArrayList<EvioTreeBranch>  branches = new ArrayList<EvioTreeBranch>();
-        EvioNode mainNODE = event.getStructureHandler().getScannedStructure();
-        List<EvioNode>  eventNodes = mainNODE.getChildNodes();
-        //List<EvioNode>  eventNodes = mainNODE.getAllNodes();
-        if(eventNodes==null){
-            return branches;
-        }
-        
-        //System.out.println(" ************** BRANCHES ARRAY SIZE = " + eventNodes.size());
-        for(EvioNode node : eventNodes){
-            
-            EvioTreeBranch eBranch = new EvioTreeBranch(node.getTag(),node.getNum());
-            //branches.add(eBranch);
-            //System.out.println("  FOR DROP : " + node.getTag() + "  " + node.getNum());
-            List<EvioNode>  childNodes = node.getChildNodes();
-            if(childNodes!=null){
-                for(EvioNode child : childNodes){
-                        eBranch.addNode(child);
-                }
-                branches.add(eBranch);
+        try {
+
+            //EvioNode mainNODE = event.getStructureHandler().getScannedStructure();
+            //List<EvioNode>  eventNodes = mainNODE.getChildNodes();
+            //List<EvioNode>  eventNodes = mainNODE.getAllNodes();
+            List<EvioNode>  eventNodes = event.getStructureHandler().getNodes();
+            if(eventNodes==null){
+                return branches;
             }
+            
+            //System.out.println(" ************** BRANCHES ARRAY SIZE = " + eventNodes.size());
+            for(EvioNode node : eventNodes){
+                
+                EvioTreeBranch eBranch = new EvioTreeBranch(node.getTag(),node.getNum());
+                //branches.add(eBranch);
+                //System.out.println("  FOR DROP : " + node.getTag() + "  " + node.getNum());
+                List<EvioNode>  childNodes = node.getChildNodes();
+                if(childNodes!=null){
+                    for(EvioNode child : childNodes){
+                        eBranch.addNode(child);
+                    }
+                    branches.add(eBranch);
+                }
+            }
+            
+        } catch (EvioException ex) {
+            Logger.getLogger(EvioEventDecoder.class.getName()).log(Level.SEVERE, null, ex);
         }
         return branches;
     }

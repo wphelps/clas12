@@ -6,33 +6,49 @@
 package org.jlab.clas12.calib;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JPanel;
 import org.jlab.geom.prim.Point3D;
 
 /**
  *
  * @author gavalian
  */
-public class DetectorShapeView2D {
+public class DetectorShapeView2D extends JPanel implements MouseListener , MouseMotionListener{
     
     public  Rectangle  drawRegion = new Rectangle();
     private String     canvasName = "undefined";
     private List<DetectorShape2D>   shapes = new ArrayList<DetectorShape2D>();
-            
+    public boolean MOUSEOVER_CALLBACK = true;
+    
     public DetectorShapeView2D(String name){
         canvasName = name;
     }
+    
     
     public String getName(){ return this.canvasName;}
     
     public void addShape(DetectorShape2D shape){
         this.shapes.add(shape);
         this.updateDrawRegion();
+    }
+    
+    @Override
+    public void paintComponent(Graphics g){
+        super.paintComponent(g);
+        int xsize = this.getSize().width;
+        int ysize = this.getSize().height;
+        Graphics2D g2d = (Graphics2D) g;
+        this.draw2D(g2d, 0, 0, xsize, ysize);
     }
     
     public void updateDrawRegion(){
@@ -58,6 +74,32 @@ public class DetectorShapeView2D {
                 }
             }
         }
+        /*
+        System.out.println(" BEFORE : DRAWING REGION " + drawRegion.x + " " +
+                drawRegion.y + "  " + drawRegion.width + " x " + drawRegion.height);
+         
+        int rw  = (int) ( (double) drawRegion.width  * 0.1);
+        int rh  = (int) ((double) drawRegion.height  * 0.1);
+        
+        System.out.println("  H / H2 " + drawRegion.height + "  " + rw + " " + rh);
+        drawRegion.x -= rw;
+        drawRegion.y -= rh;
+        */
+        //drawRegion.height = drawRegion.height + (int) rh;
+        /*
+        drawRegion.width  += width;
+        drawRegion.height += height;
+        */
+        /*
+        drawRegion.x = -300;
+        drawRegion.y = -300;
+        drawRegion.width = 600;
+        drawRegion.width = 600;
+        */
+        /*
+        System.out.println(" AFTER  : DRAWING REGION " + drawRegion.x + " " +
+                drawRegion.y + "  " + drawRegion.width + " x " + drawRegion.height);
+        */
     }
     
     public int getX(float x, int w){        
@@ -71,9 +113,12 @@ public class DetectorShapeView2D {
     }
     
     public void draw2D(Graphics2D g2d, int xoff, int yoff, int width, int height){
+        
         RenderingHints rh = new RenderingHints(
                 RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        
+        this.updateDrawRegion();
         g2d.setRenderingHints(rh);
         
         g2d.setColor(new Color(165,155,155));
@@ -98,6 +143,41 @@ public class DetectorShapeView2D {
             g2d.fill(path);
             g2d.setColor(Color.BLACK);
             g2d.draw(path);
+        }
+    }
+    
+    
+    
+
+    public void mouseClicked(MouseEvent e) {    }
+
+    public void mousePressed(MouseEvent e) {    }
+
+    public void mouseReleased(MouseEvent e) {    }
+
+    public void mouseEntered(MouseEvent e) {    }
+
+    public void mouseExited(MouseEvent e) {    }
+
+    public void mouseDragged(MouseEvent e) {    }
+
+    public void mouseMoved(MouseEvent e) {
+        System.out.println("MOUSE MOVED");
+        if(this.MOUSEOVER_CALLBACK==true){
+            /*
+            DetectorComponentUI cui = this.layerUI.getClickedComponent(e.getX(),e.getY(),
+            this.getSize().width, this.getSize().height);
+            this.repaint();
+            if(cui!=null){
+            //System.out.println("FOUND A HIT " + cui.COMPONENT);
+            if(this.selectionListener!=null){
+            this.selectionListener.detectorSelected(cui.SECTOR,cui.LAYER,cui.COMPONENT);
+            }
+            }*/
+            for(DetectorShape2D shape : shapes){
+                //if(shape.isContained(
+            }
+            System.out.println("Mouse moved " + e.getX() + " x " + e.getY());
         }
     }
 }

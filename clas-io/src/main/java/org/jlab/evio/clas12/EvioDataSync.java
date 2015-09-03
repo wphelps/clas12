@@ -22,6 +22,7 @@ import org.jlab.coda.jevio.EvioEvent;
 import org.jlab.coda.jevio.EvioException;
 import org.jlab.data.io.DataEvent;
 import org.jlab.data.io.DataSync;
+import org.jlab.evio.decode.EvioDictionaryGenerator;
 
 /**
  *
@@ -40,6 +41,10 @@ public class EvioDataSync implements DataSync {
     private Boolean   splitFiles          = true;
     private ByteOrder writerByteOrder = ByteOrder.LITTLE_ENDIAN;
     private EvioCompactEventWriter evioWriter    = null;
+    private String[]   CLASDetectors = new String[] {
+        "EC","PCAL","FTOF1A","FTOF1B", "FTOF2","BST","CND",
+        "HTCC","FTCAL","CTOF"
+    };
     
      public EvioDataSync(){
          
@@ -89,6 +94,10 @@ public class EvioDataSync implements DataSync {
         str.append(this.evioCurrentFileNumber);
         str.append(".evio");
         String filename = str.toString();
+        String dictionary = "<xmlDict>\n" + 
+                EvioDictionaryGenerator.createDAQDictionary(CLASDetectors)
+                + "</xmlDict>\n";
+        System.out.println(dictionary);
         this.currentBytesWritten = (long) 0;
         this.currentRecordsWritten = (long) 0;
         File file = new File(filename);
@@ -98,7 +107,8 @@ public class EvioDataSync implements DataSync {
                     15*300, 
                     2000, 
                     8*1024*1024, 
-                    writerByteOrder, null, true);
+                    writerByteOrder, dictionary, true);
+                    //writerByteOrder, dictionary, true);
 //new EventWriter(file, 1000000, 2,
             //ByteOrder.BIG_ENDIAN, null, null);
         } catch (EvioException ex) {
@@ -212,7 +222,8 @@ public class EvioDataSync implements DataSync {
             event.write(bb);
             bb.flip();
          
-            return new EvioDataEvent(bb);
+            //return new EvioDataEvent(bb);
+            return new EvioDataEvent(bb,EvioFactory.getDictionary());
         } catch (EvioException ex) {
             Logger.getLogger(EvioDataSync.class.getName()).log(Level.SEVERE, null, ex);
         }

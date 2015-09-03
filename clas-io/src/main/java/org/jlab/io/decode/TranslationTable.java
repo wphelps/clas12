@@ -45,7 +45,7 @@ public class TranslationTable {
     public Set<Integer>  getCreateList(){
         Set<Integer> createKeys = new HashSet<Integer>();
         for(Map.Entry<Integer,TranslationTableEntry> entry : entryStore.entrySet()){
-            createKeys.add(entry.getValue().create);
+            createKeys.add(entry.getValue().descriptor().getCrate());
         }
         return createKeys;
     }

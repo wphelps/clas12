@@ -38,12 +38,12 @@ public class DetectorShape2D {
         return new Color(this.colorRed,this.colorGreen,this.colorBlue);
     }
     
-    public void createBarXY(int width, int height){
+    public void createBarXY(double width, double height){
         this.shapePath.clear();
         this.shapePath.addPoint(-width/2.0, -height/2.0,0.0);
         this.shapePath.addPoint(-width/2.0,  height/2.0,0.0);
         this.shapePath.addPoint( width/2.0,  height/2.0,0.0);
-        this.shapePath.addPoint( width/2.0, -height/2.0,0.0);
+        this.shapePath.addPoint( width/2.0, -height/2.0,0.0);        
     }
     
     

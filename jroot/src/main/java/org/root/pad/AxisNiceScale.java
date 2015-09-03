@@ -4,6 +4,7 @@
  */
 package org.root.pad;
 
+import java.awt.FontMetrics;
 import java.util.ArrayList;
 
 /**
@@ -102,6 +103,29 @@ public class AxisNiceScale {
             this.calculateLog();
         } else {
             this.calculate();
+        }
+    }
+    
+    public void updateWithFont(FontMetrics fm, int len, boolean vertical){
+        double MAX_RATIO = 0.7;
+        this.setMaxTicks(10);
+        int currentDivision  = this.maxTicks;
+        double currentRatio  = 1.0;
+
+        while(currentRatio>MAX_RATIO){
+            double labelLength = 0.0;
+            for(String label : this.niceCoordinateLabels){
+                if(vertical==true){
+                    labelLength += fm.getHeight();
+                } else {
+                    labelLength += fm.stringWidth(label);
+                }
+            }
+            currentRatio = labelLength/len;
+            if(currentRatio>MAX_RATIO){
+                currentDivision--;
+                this.setMaxTicks(currentDivision);
+            }
         }
     }
     

@@ -12,7 +12,9 @@ import java.awt.font.TextAttribute;
 import java.text.AttributedString;
 import java.util.ArrayList;
 import org.root.data.DataSetXY;
+import org.root.func.F1D;
 import org.root.histogram.H1D;
+import org.root.histogram.H2D;
 
 /**
  *
@@ -46,11 +48,22 @@ public class DataSetPad {
                         collection.getDataSet(loop), 0 , 0, w, h);
             }
             
+            if(ds instanceof F1D){
+                AbsDataSetDraw.drawDataSetAsFunction(padAxisFrame, g2d, 
+                        collection.getDataSet(loop), 0 , 0, w, h);
+            }
+            
             if(ds instanceof H1D){
                 AbsDataSetDraw.drawDataSetAsHistogram1D(padAxisFrame, g2d, 
                         ds, 0 , 0, w, h);
             }
+            
+            if(ds instanceof H2D){
+                AbsDataSetDraw.drawDataSetAsHistogram2D(padAxisFrame, g2d, 
+                        ds, 0 , 0, w, h);
+            }
         }
+        
         AbsDataSetDraw.drawAxisFrame(padAxisFrame, g2d,0,0,w,h);
         
         for(LatexText txt : this.textCollection){
@@ -71,12 +84,20 @@ public class DataSetPad {
         */
     }
     
+    public void clear(){
+        this.collection.clear();
+    }
+    
     public void add(IDataSet ds){
         this.collection.addDataSet(ds);
         if(this.collection.getCount()==1){
-            this.padAxisFrame.setTitle(ds.getAttributes().getProperties().getProperty("title"));
-            this.padAxisFrame.setXTitle(ds.getAttributes().getProperties().getProperty("xtitle"));
-            this.padAxisFrame.setYTitle(ds.getAttributes().getProperties().getProperty("ytitle"));           
+            try {
+                this.padAxisFrame.setTitle(ds.getAttributes().getProperties().getProperty("title"));
+                this.padAxisFrame.setXTitle(ds.getAttributes().getProperties().getProperty("xtitle"));
+                this.padAxisFrame.setYTitle(ds.getAttributes().getProperties().getProperty("ytitle"));           
+            } catch (Exception e){
+                
+            }
         }
     }
     
@@ -95,7 +116,20 @@ public class DataSetPad {
     public void setDivisionsX(int div){
         this.padAxisFrame.setDivisionsX(div);
     }
-     public void setDivisionsY(int div){
+    
+    public void setDivisionsY(int div){
         this.padAxisFrame.setDivisionsY(div);
+    }
+    
+    public void setLogZ(boolean islog){
+        this.padAxisFrame.getAxisZ().setAxisLog(islog);
+    }
+    
+    public void setLogX(boolean islog){
+        this.padAxisFrame.getAxisX().setAxisLog(islog);
+    }
+    
+    public void setLogY(boolean islog){
+        this.padAxisFrame.getAxisY().setAxisLog(islog);
     }
 }

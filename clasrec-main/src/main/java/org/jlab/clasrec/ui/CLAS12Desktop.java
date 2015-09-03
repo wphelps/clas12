@@ -7,12 +7,16 @@ package org.jlab.clasrec.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JComponent;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import org.jlab.clas12.calib.DetectorCalibrationFrame;
+import org.jlab.clasrec.main.DetectorCalibration;
 
 /**
  *
@@ -51,6 +55,27 @@ public class CLAS12Desktop extends JFrame implements ActionListener {
         this.setJMenuBar(bar);
     }
     
+    public void addCalibrationModule(DetectorCalibration calib) {
+        DetectorCalibrationFrame frame = new DetectorCalibrationFrame(calib);
+        this.desktop.add(frame);
+    }
+    
+    public void addCalibrationModule(String calibname) {
+        try {
+            Class c = Class.forName(calibname);
+            if(c.isAssignableFrom(DetectorCalibration.class)){
+                DetectorCalibration calib = (DetectorCalibration) c.newInstance();
+                this.addCalibrationModule(calib);
+            }
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(CLAS12Desktop.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            Logger.getLogger(CLAS12Desktop.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(CLAS12Desktop.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     public static void main(String[] args){
         CLAS12Desktop desktop = new CLAS12Desktop();
         //desktop.setVisible(true);
@@ -58,8 +83,11 @@ public class CLAS12Desktop extends JFrame implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         if(e.getActionCommand().compareTo("Load")==0){
-            desktop.add(new CLAS12MonitoringPlugin());
-            System.out.println("Adding new plugin window");
+            //DetectorCalibrationFrame frame = new DetectorCalibrationFrame();
+            //desktop.add(frame);
+            System.out.println("Added new plugin window");
+            //desktop.add(new CLAS12MonitoringPlugin());
+            //System.out.println("Adding new plugin window");
             
         }
     }

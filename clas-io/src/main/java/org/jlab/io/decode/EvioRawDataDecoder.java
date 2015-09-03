@@ -65,7 +65,9 @@ public class EvioRawDataDecoder {
                 System.err.println("[Decoder:ERROR]----> can not find entry for "
                 + " CRATE = " + crate + "  SLOT = " + slot + "  CHANNEL = " + half);
             } else {
-                record.init(entry.sector, entry.layer, half, chipID, trueChannel);
+                record.init(entry.descriptor().getSector(), 
+                        entry.descriptor().getLayer(), half, chipID, trueChannel);
+                
                 record.setData(BCO, ADC);
                 if(record.SECTOR>0){
                     records.add(record);
@@ -105,7 +107,8 @@ public class EvioRawDataDecoder {
                 //System.err.println("[Decoder:ERROR]----> can not find entry for "
                 //+ " CRATE = " + crate + "  SLOT = " + slot + "  CHANNEL = " + half);
             } else {
-                record.init(entry.sector, entry.layer, half, chipID, trueChannel);
+                record.init(entry.descriptor().getSector(), 
+                        entry.descriptor().getLayer(), half, chipID, trueChannel);
                 //System.out.println(record);
                 //System.out.println("---------------------\n");
                 //System.err.println("[Decoder: OK ]----> found "

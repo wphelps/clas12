@@ -21,6 +21,7 @@ import org.jlab.clas.detector.DetectorType;
  * @author gavalian
  */
 public class AbsDetectorTranslationTable implements IDetectorTranslationTable {
+    
     private String tableName = "UNKNOWN";
     private TreeMap<Integer,TranslationTableEntry>  tableEntries = new 
             TreeMap<Integer,TranslationTableEntry>();
@@ -60,7 +61,7 @@ public class AbsDetectorTranslationTable implements IDetectorTranslationTable {
     public Integer getSector(int crate, int slot, int channel) {
         Integer key = TranslationTableEntry.getHashCreate(crate, slot, channel);
         if(this.tableEntries.containsKey(key)==true){
-            return this.tableEntries.get(key).sector;
+            return this.tableEntries.get(key).descriptor().getSector();
         }
         
        this.printNotFoundError(crate, slot, channel);
@@ -92,7 +93,7 @@ public class AbsDetectorTranslationTable implements IDetectorTranslationTable {
     public Integer getLayer(int crate, int slot, int channel) {
         Integer key = TranslationTableEntry.getHashCreate(crate, slot, channel);
         if(this.tableEntries.containsKey(key)==true){
-            return this.tableEntries.get(key).layer;
+            return this.tableEntries.get(key).descriptor().getLayer();
         }
         this.printNotFoundError(crate, slot, channel);
         return -1;
@@ -101,10 +102,19 @@ public class AbsDetectorTranslationTable implements IDetectorTranslationTable {
     public Integer getComponent(int crate, int slot, int channel) {
         Integer key = TranslationTableEntry.getHashCreate(crate, slot, channel);
         if(this.tableEntries.containsKey(key)==true){
-            return this.tableEntries.get(key).component;
+            return this.tableEntries.get(key).descriptor().getComponent();
         }
         return -1;
     }
+    
+    public Integer getOrder(int crate, int slot, int channel) {
+        Integer key = TranslationTableEntry.getHashCreate(crate, slot, channel);
+        if(this.tableEntries.containsKey(key)==true){
+            return this.tableEntries.get(key).descriptor().getOrder();
+        }
+        return -1;
+    }
+    
     
     public void addEntry(int crate, int slot, int channel, int sector,int layer, int component){
         TranslationTableEntry entry = new TranslationTableEntry(this.tableName);
@@ -120,6 +130,22 @@ public class AbsDetectorTranslationTable implements IDetectorTranslationTable {
     public void addEntry(String entryLine){
         TranslationTableEntry entry = new TranslationTableEntry("empty");
         entry.parse(entryLine);
+        if(entry.descriptor().getType()==DetectorType.UNDEFINED){
+            System.err.println("----> error : detector type unknown");
+            return;
+        }
+        
+        if(this.tableEntries.size()==0){
+            this.type = entry.descriptor().getType();            
+        } else {
+            if(entry.descriptor().getType()!=this.type){
+                System.err.println("----> error : entry # " +
+                this.tableEntries.size() + " has wrong detector type");
+                return;
+            }
+        }
+        
+        
         if(this.tableEntries.containsKey(entry.getHashCreate())==true){
             System.err.println("[Translation Map] (ERROR) ==> "
             + " Duplicate entry detected. Not added.\n" + "\t" + entryLine);
@@ -158,9 +184,18 @@ public class AbsDetectorTranslationTable implements IDetectorTranslationTable {
     @Override
     public String toString(){
         StringBuilder str = new StringBuilder();
+        str.append(String.format("TRANSLATION TABLE  %s  ENTRIES =  %d",
+                this.getName(),
+                this.tableEntries.size()));
+        int counter = 0;
         for(Map.Entry<Integer,TranslationTableEntry> entry : this.tableEntries.entrySet()){
+            str.append(String.format("%8s : ", counter));
             str.append(String.format("%-12d : %s\n", entry.getKey(),entry.getValue().toString()));
+            counter++;
         }
+        str.append(String.format("END TRANSLATION TABLE  %s  ENTRIES =  %d",
+                this.getName(),
+                this.tableEntries.size()));
         return str.toString();
     }
 }

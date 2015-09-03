@@ -17,6 +17,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import org.root.attr.ColorPalette;
 import org.root.attr.MarkerPainter;
+import org.root.histogram.H2D;
 
 /**
  *
@@ -67,6 +68,10 @@ public class AbsDataSetDraw {
         Font  axisFont = new Font("Helvetica",Font.PLAIN,axis.axisLabelSize);
         //Font  axisFont = new Font(Font.SANS_SERIF,Font.PLAIN,axis.axisLabelSize);
         FontMetrics  fm = g2d.getFontMetrics(axisFont);
+        
+        axis.getAxisX().updateWithFont(fm, axis.getFrame().width, false);
+        axis.getAxisY().updateWithFont(fm, axis.getFrame().height, true);
+        
         g2d.setFont(axisFont);
         
         for(int loop = 0; loop < ticksX.size(); loop++){
@@ -154,6 +159,39 @@ public class AbsDataSetDraw {
         }
     }
     
+    public static void drawDataSetAsFunction(AxisRegion axis, Graphics2D g2d, IDataSet ds,
+            int startX, int startY, int gWidth, int gHeight){
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        MarkerPainter  mPainter = new MarkerPainter();
+        //int markerStyle = ds.getAttributes().getAsInt("marker-style");
+        //int markerColor = ds.getAttributes().getAsInt("marker-color");
+        //int markerSize  = ds.getAttributes().getAsInt("marker-size");
+        int npoints = ds.getDataSize();
+        //System.out.println("Graph points = " + npoints);
+        GeneralPath  path = new GeneralPath();
+        for(int loop = 0; loop < npoints; loop++){
+            if(axis.getDataRegion().contains(ds.getDataX(loop),ds.getDataY(loop)) == true){
+                double xr = axis.getDataRegion().fractionX(ds.getDataX(loop));
+                double yr = axis.getDataRegion().fractionY(ds.getDataY(loop));
+                double xf = axis.getFramePointX(xr);
+                double yf = axis.getFramePointY(yr);
+                //System.out.println(" POINT = " + loop + "  " + xr + "  " + yr
+                //+ " " + xf + " " + yf);
+                if(loop == 0){
+                    path.moveTo( (int) xf, (int) yf);
+                } else {
+                    //System.out.println("adding point " + xf + " " + yf);
+                    path.lineTo((int) xf, (int) yf);
+                }
+                /*
+                mPainter.drawMarker(g2d, (int) xf, (int) yf, markerStyle, 
+                        markerSize, markerColor, 1,1);
+                */
+            }           
+        }
+        g2d.draw(path);
+    }
+    
     public static void drawDataSetAsHistogram1D(AxisRegion axis, Graphics2D g2d, IDataSet ds,
             int startX, int startY, int gWidth, int gHeight){
         int lineColor   = ds.getAttributes().getAsInt("line-color");
@@ -200,6 +238,43 @@ public class AbsDataSetDraw {
      public static void drawDataSetAsHistogram2D(AxisRegion axis, Graphics2D g2d, IDataSet ds,
             int startX, int startY, int gWidth, int gHeight){
          
+         
+         int dataSizeX = ds.getDataSize(0);
+         int dataSizeY = ds.getDataSize(1);
+         DataRegion  region = ds.getDataRegion();
+         double fractionX   = ( (double) axis.getFrame().width )/ dataSizeX;
+         double fractionY   = ((double) axis.getFrame().height)/( (double) dataSizeY);
+         double xr = 0.0;
+         double yr = 0.0;
+         double wr = fractionX;         
+         double hr = fractionY;
+         double maxValue = region.MAXIMUM_Z;
+         boolean isLogZ = axis.getAxisZ().getAxisLog();
+         
+         H2D  h2d = (H2D) ds;
+         //System.out.println("HISTOGRAM MAXIMUM = " + h2d.getMaximum()
+         //+ " FRACTION X = " + fractionX + "  Y = " + fractionY);
+         ColorPalette map = new ColorPalette();
+         
+         for(int Lx = 0; Lx < dataSizeX; Lx++){
+             for(int Ly = 0; Ly < dataSizeY; Ly++){
+                 double xc = axis.getFrame().x + xr;
+                 double yc = axis.getFrame().y + yr;
+                 double value = ds.getData(Lx, Ly);
+                 //Paint  color = TStyle.getColorMap(value, maxValue, true);
+                 //gc.setFill(color);
+                 //System.out.println(" COLOR " + color);
+                 Color  color = map.getColor3D(value, maxValue, isLogZ);
+                 g2d.setColor(color);
+                 g2d.fillRect( (int) xc, (int) yc, (int) wr+1, (int) hr+1);
+                 //System.out.println(" DRAWING " + Lx + " " + Ly + "  "
+                 //+ xr + " " + yr + "  " + wr + "  " + hr + "  " + color);
+                 //xr = xr + wr;
+                 yr = yr + hr;
+             }
+             yr = 0.0;
+             xr = xr + wr;
+         }
      }
     
 }

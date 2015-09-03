@@ -17,6 +17,7 @@ public interface IDetectorTranslationTable {
     Integer  getSector(int crate, int slot, int channel);
     Integer  getLayer(int crate, int slot, int channel);
     Integer  getComponent(int crate, int slot, int channel);
+    Integer  getOrder(int crate, int slot, int channel);
     void     setDetectorType(DetectorType t);
     DetectorType getDetectorType();
 }
