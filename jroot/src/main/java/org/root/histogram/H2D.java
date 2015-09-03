@@ -411,7 +411,17 @@ public class H2D implements EvioWritableTree,IDataSet {
 		}
 		return regHist;
 	}
-
+        
+        public H2D histClone(String name){
+            H2D hclone = new H2D(name,
+                    this.xAxis.getNBins(),this.xAxis.min(),this.xAxis.max(),
+                    this.yAxis.getNBins(),this.yAxis.min(),this.yAxis.max()
+            );
+            for(int loop = 0; loop < this.hBuffer.length; loop++){                
+                hclone.hBuffer[loop] = this.hBuffer[loop];
+            }
+            return hclone;
+        }
 	/**
 	 * Creates a projection of the 2D histogram onto the X Axis, adding up all
 	 * the y bins for each x bin
