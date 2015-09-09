@@ -108,7 +108,7 @@ public class EvioDataSync implements DataSync {
                     2000, 
                     8*1024*1024, 
                     writerByteOrder, dictionary, true);
-                    //writerByteOrder, dictionary, true);
+                    //writerByteOrder, null, true);
 //new EventWriter(file, 1000000, 2,
             //ByteOrder.BIG_ENDIAN, null, null);
         } catch (EvioException ex) {

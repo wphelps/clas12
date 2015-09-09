@@ -22,6 +22,10 @@ public class GraphErrors extends DataSetXY {
     public AttributesLine    graphLineAttributes   = new AttributesLine();
     public AttributesMarker  graphMarkerAttributes = new AttributesMarker();
     
+    public GraphErrors(){
+        setName("GraphErrors");        
+    } 
+    
     public GraphErrors(double[] x, double[] y){
         super(x,y);
         setName("GraphErrors");        

@@ -133,6 +133,7 @@ public class ColorPalette {
     
     public static TreeMap<Integer,Color> initColorMap(){
         TreeMap<Integer,Color> colors = new TreeMap<Integer,Color>();
+        
         colors.put(0, Color.white);
         colors.put(1, Color.BLACK);
         colors.put(2,new Color(210,79,68));

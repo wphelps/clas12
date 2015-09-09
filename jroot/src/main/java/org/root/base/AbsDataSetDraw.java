@@ -15,8 +15,10 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.List;
 import org.root.attr.ColorPalette;
 import org.root.attr.MarkerPainter;
+import org.root.attr.TStyle;
 import org.root.histogram.H2D;
 
 /**
@@ -43,6 +45,52 @@ public class AbsDataSetDraw {
         double x = axis.getFramePointX(text.getX());
         double y = axis.getFramePointY(text.getY());
         g2d.drawString(text.getText().getIterator(),(int) x,(int) y);
+    }
+    
+    public static void drawPaveText(AxisRegion axis, PaveText text, Graphics2D g2d,
+            int startX, int startY, int gWidth, int gHeight){
+
+        
+        
+        Font  axisFont = new Font(TStyle.getStatBoxFontName(),Font.PLAIN,TStyle.getStatBoxFontSize());
+        FontMetrics  fm = g2d.getFontMetrics(axisFont);
+        
+        text.setFont(TStyle.getStatBoxFontName(),TStyle.getStatBoxFontSize());
+        
+        Rectangle2D  bounds = text.getBounds(fm, g2d);
+        /*
+        System.out.println(" PAVETEXT BOUNDS = " 
+                + bounds.getX() + "  " 
+                + bounds.getY() + "  " 
+                + bounds.getCenterX() + "  " 
+                + bounds.getCenterY() + "  " 
+                + bounds.getMaxX() + "  "
+                + bounds.getMaxY() + "  "
+                
+                + bounds.getWidth() + "  " 
+                + bounds.getHeight()
+        );
+        */
+        
+        double w = bounds.getWidth();
+        double h = bounds.getHeight();
+        double originX = axis.getFrame().width + axis.getFrame().x - w;
+        double originY = axis.getFrame().y;
+        g2d.setColor(Color.BLACK);
+        
+        g2d.drawRect(
+                (int) originX, (int) originY,
+                (int) w, (int) h);
+
+        g2d.setFont(axisFont);
+        List<LatexText> texts = text.getTexts();
+        
+        int counter = 0;
+        for(LatexText t : texts){
+            counter++;
+            g2d.drawString(t.getText().getIterator(), (int) originX, (int) originY + counter*18);
+        }
+        //for(int loop = 0; loop )
     }
     
     public static void drawAxisFrame(AxisRegion axis, Graphics2D g2d, 
@@ -74,23 +122,58 @@ public class AbsDataSetDraw {
         
         g2d.setFont(axisFont);
         
+        
+        /*
+        * Drawing minor ticks for X-axis
+        */
+        List<Double>  minorTicksX = axis.getAxisX().getMinorTicks();
+        List<Double>  minorTicksY = axis.getAxisY().getMinorTicks();
+        
+        for(int loop = 0; loop < minorTicksX.size(); loop++){
+            double xr = axis.getDataRegion().fractionX(minorTicksX.get(loop),
+                    axis.getAxisX().getAxisLog());
+            double xv = axis.getFramePointX(xr);
+            double yv = axis.getFrame().height + axis.getFrame().y;            
+            g2d.drawLine((int) xv, (int) yv, (int) xv, (int) yv-5);            
+        }
+        
+        for(int loop = 0; loop < minorTicksY.size(); loop++){
+            double yr = axis.getDataRegion().fractionY(minorTicksY.get(loop),
+                    axis.getAxisY().getAxisLog());
+            //System.out.println(" Y axis LOOP =  " + loop + "  ticks = " + minorTicksY.get(loop)
+            //+ "  " + yr);
+            int offset = 5;
+            
+            double yv = axis.getFramePointY(yr);
+            double xv = axis.getFrame().x;            
+            g2d.drawLine((int) xv, (int) yv, (int) xv+5, (int) yv);
+        }
+        
+        /*
+         * Drawing Major ticks for X-axis. 
+         */
         for(int loop = 0; loop < ticksX.size(); loop++){
             double xr = axis.getDataRegion().fractionX(ticksX.get(loop));
             double xv = axis.getFramePointX(xr);
             double yv = axis.getFrame().height + axis.getFrame().y;
-            
+                        
             g2d.drawLine((int) xv, (int) yv, (int) xv, (int) yv-10);
             String label = stringX.get(loop);
+            
             int xoff = (int) fm.stringWidth(label)/2;
             int yoff = fm.getHeight();
             g2d.drawString(stringX.get(loop), (int) xv-xoff, (int) yv+yoff);
         }
         //System.out.println(" SIZE OF Y = " + ticksY.size());
+        /*
+        *  Drawing Major ticks for Y axis.
+        */
         for(int loop = 0; loop < ticksY.size(); loop++){
-            double yr = axis.getDataRegion().fractionY(ticksY.get(loop));
+            double yr = axis.getDataRegion().fractionY(ticksY.get(loop),axis.getAxisY().getAxisLog());
             double yv = axis.getFramePointY(yr);
             double xv = axis.getFrame().x;            
             g2d.drawLine((int) xv, (int) yv, (int) xv+10, (int) yv);
+            //System.out.println("  AXIS TICKS = " + loop + "  " + ticksY.get(loop) + "  " + yr);
             String label = stringY.get(loop);
             int xoff = (int) fm.stringWidth(label) + 10;
             int yoff = (int) (fm.getHeight()/2.0 - fm.getHeight()*0.2);
@@ -133,6 +216,7 @@ public class AbsDataSetDraw {
         g2d.drawString(axis.getYTitle().getText().getIterator(), (int) (xt ),
                 (int) yt);
         g2d.setTransform(orig);
+        
     }
     
     public static void drawDataSetAsGraph(AxisRegion axis, Graphics2D g2d, IDataSet ds,
@@ -146,8 +230,8 @@ public class AbsDataSetDraw {
         //System.out.println("Graph points = " + npoints);
         for(int loop = 0; loop < npoints; loop++){
             if(axis.getDataRegion().contains(ds.getDataX(loop),ds.getDataY(loop)) == true){
-                double xr = axis.getDataRegion().fractionX(ds.getDataX(loop));
-                double yr = axis.getDataRegion().fractionY(ds.getDataY(loop));
+                double xr = axis.getDataRegion().fractionX(ds.getDataX(loop),axis.getAxisX().getAxisLog());
+                double yr = axis.getDataRegion().fractionY(ds.getDataY(loop),axis.getAxisY().getAxisLog());
                 double xf = axis.getFramePointX(xr);
                 double yf = axis.getFramePointY(yr);
                 //System.out.println(" POINT = " + loop + "  " + xr + "  " + yr
@@ -202,21 +286,22 @@ public class AbsDataSetDraw {
         
         int npoints = ds.getDataSize();
         GeneralPath path = new GeneralPath();
-        double xf = axis.getDataRegion().fractionX(ds.getDataX(0)-ds.getErrorX(0)/2.0);
-        double yf = axis.getDataRegion().fractionY(0.0);
+        double xf = axis.getDataRegion().fractionX(ds.getDataX(0)-ds.getErrorX(0)/2.0,axis.getAxisX().getAxisLog());
+        double yf = axis.getDataRegion().fractionY(0.0,axis.getAxisY().getAxisLog());
         double xv = axis.getFramePointX(xf);
         double yv = axis.getFramePointY(yf);
         path.moveTo(xv, yv);
         for(int loop = 0; loop < npoints; loop++){
-            xf = axis.getDataRegion().fractionX(ds.getDataX(loop)-ds.getErrorX(loop)/2.0);
-            yf = axis.getDataRegion().fractionY(ds.getDataY(loop));
+            xf = axis.getDataRegion().fractionX(ds.getDataX(loop)-ds.getErrorX(loop)/2.0,axis.getAxisX().getAxisLog());
+            yf = axis.getDataRegion().fractionY(ds.getDataY(loop),axis.getAxisY().getAxisLog());
             xv = axis.getFramePointX(xf);
             yv = axis.getFramePointY(yf);
             //System.out.println(" POINT " + loop + "  " + ds.getDataX(loop) 
-            //        + "  " + ds.getDataY(loop));
+            //        + "  " + ds.getDataY(loop) + "  FRACTIONS = " + xf + "  " + yf);
             path.lineTo(xv, yv);
-            xf = axis.getDataRegion().fractionX(ds.getDataX(loop)+ds.getErrorX(loop)/2.0);
+            xf = axis.getDataRegion().fractionX(ds.getDataX(loop)+ds.getErrorX(loop)/2.0,axis.getAxisX().getAxisLog());
             xv = axis.getFramePointX(xf);
+            
             path.lineTo(xv, yv);
         }
         xf = axis.getDataRegion().fractionX(ds.getDataX(npoints-1)+ds.getErrorX(npoints-1)/2.0);

@@ -7,11 +7,80 @@
 package org.root.utils;
 
 import org.root.data.DataSetXY;
+import org.root.func.F1D;
+import org.root.func.RandomFunc;
+import org.root.histogram.GraphErrors;
+import org.root.histogram.H1D;
+import org.root.histogram.H2D;
 
 /**
  *
  * @author gavalian
  */
 public class DataFactory {
+    
+   public static void createSampleH1D(H1D h1, int count){
+       double min = h1.getXaxis().min();
+       double max = h1.getXaxis().max();
+       F1D f1 = new F1D("gaus+p2",min,max);
+       
+       f1.setParameter(0,120.0);
+       f1.setParameter(1,  min + (max-min)/2.0);
+       f1.setParameter(2,  (max-min)*0.1);
+       f1.setParameter(3, 24.0);
+       f1.setParameter(4,  7.0);
+       RandomFunc rndm = new RandomFunc(f1);
+
+       for(int i = 0; i < count; i++){
+           h1.fill(rndm.random());
+       }
+   }
+   
+   public static void createSampleH2D(H2D h2, int count){
+       
+       double minX = h2.getXAxis().min();
+       double maxX = h2.getXAxis().max();
+       
+       F1D f1x = new F1D("gaus+p2",minX,maxX);
+       
+       f1x.setParameter(0,  120.0);
+       f1x.setParameter(1,  minX + (maxX-minX)/2.0);
+       f1x.setParameter(2,  (maxX-minX)*0.1);
+       f1x.setParameter(3,  24.0);
+       f1x.setParameter(4,  7.0);
+       RandomFunc rndmX = new RandomFunc(f1x);
+       
+       double minY = h2.getYAxis().min();
+       double maxY = h2.getYAxis().max();
+       
+       F1D f1y = new F1D("gaus+p2",minY,maxY);
+       
+       f1y.setParameter(0,  120.0);
+       f1y.setParameter(1,  minY + (maxY-minY)/2.0);
+       f1y.setParameter(2,  (maxY-minY)*0.1);
+       f1y.setParameter(3,  24.0);
+       f1y.setParameter(4,  7.0);
+       RandomFunc rndmY = new RandomFunc(f1y);
+       
+       for(int loop = 0; loop < count; loop++){
+           h2.fill(rndmX.random(), rndmY.random());
+       }
+   }
+   
+   public static void createGraphSin(GraphErrors gr, int npoints, double min, double max){
+       for(int loop = 0; loop < npoints; loop++){
+           double x = min + loop*(max-min)/npoints;
+           double y = Math.sin(x);
+           gr.add(x, y);
+       }
+   }
+   
+   public static void createGraphCos(GraphErrors gr, int npoints, double min, double max){
+       for(int loop = 0; loop < npoints; loop++){
+           double x = min + loop*(max-min)/npoints;
+           double y = Math.cos(x);
+           gr.add(x, y);
+       }
+   }
    
 }

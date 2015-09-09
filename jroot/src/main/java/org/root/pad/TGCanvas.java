@@ -53,4 +53,17 @@ public class TGCanvas extends JFrame {
     public void setLogZ(){
         this.embCanvas.setLogZ();
     }
+    
+    public void setLogX(boolean logFlag){
+        this.embCanvas.setLogX(logFlag);
+    }
+    
+    public void setLogY(boolean logFlag){
+        this.embCanvas.setLogY(logFlag);
+    }
+    
+    public void setLogZ(boolean logFlag){
+        this.embCanvas.setLogZ(logFlag);
+    }
+    
 }

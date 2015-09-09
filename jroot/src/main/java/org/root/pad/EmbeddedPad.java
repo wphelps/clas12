@@ -12,8 +12,12 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.RenderingHints;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import org.root.attr.TStyle;
 import org.root.base.AbsDataSetDraw;
 import org.root.base.AxisRegion;
 import org.root.base.DataRegion;
@@ -22,15 +26,18 @@ import org.root.base.DataSetPad;
 import org.root.base.IDataSet;
 import org.root.base.LatexText;
 import org.root.data.DataSetXY;
+import org.root.histogram.GraphErrors;
 import org.root.histogram.H1D;
 
 /**
  *
  * @author gavalian
  */
-public class EmbeddedPad extends JPanel {
+public class EmbeddedPad extends JPanel implements MouseMotionListener, MouseListener {
     
     private  DataSetPad   dPad = new DataSetPad();
+    private  int dragMove_startX   = 0;
+    private  int dragMove_startY   = 0;
     
     public EmbeddedPad(){
         super();
@@ -88,6 +95,21 @@ public class EmbeddedPad extends JPanel {
         }*/
     }
     
+    public void setLog(String axis, boolean flag){
+        if(axis.compareTo("X")==0){
+            this.dPad.setLogX(flag);
+            return;
+        }
+        
+        if(axis.compareTo("Y")==0){
+            this.dPad.setLogY(flag);
+            return;
+        }
+       
+        if(axis.compareTo("Z")==0){
+            this.dPad.setLogZ(flag);
+        }
+    }
     
     public static void main(String[] args){
         JFrame frame = new JFrame();
@@ -116,20 +138,25 @@ public class EmbeddedPad extends JPanel {
             h2.fill(Math.random()*2.0);
         }
         
-        h1.setLineColor(1);
-        h1.setFillColor(3);
-        h1.setLineWidth(1);
+        h1.setLineColor(2);
+        h1.setLineWidth(3);
+        h2.setLineColor(4);
+        h2.setLineWidth(3);
+        //h1.setFillColor(3);
+
+        //h2.setFillColor(9);
         
-        h2.setFillColor(9);
+        GraphErrors sinGraph = new GraphErrors();
         
         EmbeddedPad pad  = new EmbeddedPad(); 
         pad.add(h1);
         pad.add(h2);
+        //pad.setLog("Y", true);
         LatexText tex = new LatexText("M^x(ep#rarrow e^'p #pi^+ #pi^- (#gamma) (e^#uarrow^#darrow) )",0.05,0.1);
-        tex.setColor(0);
+        tex.setColor(1);
         tex.setFontSize(24);
         pad.addText(tex);
-        
+        TStyle.setStatBoxFont("Helvetica", 24);
         //pad.add(dsXY);
         //pad.add(dsXY2);
         pad.setAutoScale(Boolean.TRUE);
@@ -139,4 +166,41 @@ public class EmbeddedPad extends JPanel {
         frame.pack();
         frame.setVisible(true);
     }
+
+    public void mouseDragged(MouseEvent e) {
+        int  dx = e.getX();
+        int  dy = e.getY();
+        System.out.println("MOUSE Drugged from " + this.dragMove_startX
+        + " " + this.dragMove_startY + " " + dx + " " + dy);
+    }
+
+    public void mouseMoved(MouseEvent e) {
+        
+    }
+
+    public void mouseClicked(MouseEvent e) {
+        this.dragMove_startX = e.getX();
+        this.dragMove_startY = e.getY();
+        System.out.println(" MOUSE CLICKED " + this.dragMove_startX + "  " + this.dragMove_startY);
+    }
+
+    public void mousePressed(MouseEvent e) {
+         this.dragMove_startX = e.getX();
+        this.dragMove_startY = e.getY();
+        System.out.println(" MOUSE PRESSED " + this.dragMove_startX + "  " + this.dragMove_startY);
+    }
+
+    public void mouseReleased(MouseEvent e) {
+        System.out.println(" MOUSE RELEASED ");
+    }
+
+    public void mouseEntered(MouseEvent e) {
+        
+    }
+
+    public void mouseExited(MouseEvent e) {
+        
+    }
+
+    
 }

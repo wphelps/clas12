@@ -50,6 +50,40 @@ public class DataRegion {
         if(region.MAXIMUM_Y>this.MAXIMUM_Y) this.MAXIMUM_Y = region.MAXIMUM_Y;
     }
     
+    public double fractionX(double x, boolean logFlag){
+        if(logFlag==false) return this.fractionX(x);
+        double L_max = 0.0;
+        double L_min = 0.0;
+        if(this.MINIMUM_X>0.0){
+            L_min = Math.log(this.MINIMUM_X);
+        }
+        if(this.MAXIMUM_X>0.0){
+            L_max = Math.log(this.MAXIMUM_X);
+        }
+        
+        double L_x   = Math.log(x);
+        //System.out.println(" LOGS ( " + this.MINIMUM_Y + " )  " + L_min + " " + L_max + " " + L_y);
+        return (L_x-L_min)/(L_max-L_min); 
+        
+    }
+    
+    public double fractionY(double y, boolean logFlag){
+        if(logFlag==false) return this.fractionY(y);
+        double L_max = 0.0;
+        double L_min = 0.0;
+        if(this.MINIMUM_Y>0.0){
+            L_min = Math.log(this.MINIMUM_Y);
+        }
+        if(this.MAXIMUM_Y>0.0){
+            L_max = Math.log(this.MAXIMUM_Y);
+        }
+        
+        double L_y   = Math.log(y);
+        //System.out.println(" LOGS ( " + this.MINIMUM_Y + " )  " + L_min + " " + L_max + " " + L_y);
+        return (L_y-L_min)/(L_max-L_min); 
+        //double length = Math.log(this.MAXIMUM_Y) - Math.log(this.MINIMUM_Y);
+        //return (Math.log(y) - Math.log(this.MINIMUM_Y) ) / length;
+    }
     public double  fractionX(double x){
         double length = this.MAXIMUM_X - this.MINIMUM_X;
         if(length==0) return 0.0;

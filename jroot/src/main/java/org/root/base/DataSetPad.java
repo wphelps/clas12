@@ -25,10 +25,16 @@ public class DataSetPad {
     private  DataSetCollection   collection = new DataSetCollection();
     private  AxisRegion        padAxisFrame = new AxisRegion();    
     private  ArrayList<LatexText>  textCollection = new ArrayList<LatexText>();
+    private  PaveText              statBox        = new PaveText();
     
     public DataSetPad(){
         this.padAxisFrame.getAxisX().setMaxTicks(6);
         this.padAxisFrame.getAxisY().setMaxTicks(8);
+        statBox.addText("H : h1 " );
+        statBox.addText("Entries : 0.5674" );
+        statBox.addText("Mean : 0.5674" );
+        statBox.addText("RMS  : 0.012" );
+        statBox.addText("#pi : 3.545646 +/- 56.784564" );
     }
     
     public void drawOnCanvas(Graphics2D g2d, int xoffset, int yoffset, int w, int h){
@@ -36,10 +42,15 @@ public class DataSetPad {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         this.padAxisFrame.getFrame().setBounds(120, 50, w-150, h-130);
         
+        
         DataRegion  region = this.collection.getDataRegion();
         this.padAxisFrame.setDataRegion(region);
         //System.out.println(region);
         AbsDataSetDraw.drawAxisBackGround(padAxisFrame, g2d,0,0,w,h);
+        g2d.setClip(this.padAxisFrame.getFrame().x, 
+                this.padAxisFrame.getFrame().y,
+                this.padAxisFrame.getFrame().width,
+                this.padAxisFrame.getFrame().height);
         for(int loop = 0; loop < this.collection.getCount(); loop++){
             //System.out.println(" DRAWING COLLECTION ITEM # " + loop);
             IDataSet  ds = collection.getDataSet(loop);
@@ -63,7 +74,7 @@ public class DataSetPad {
                         ds, 0 , 0, w, h);
             }
         }
-        
+        g2d.setClip(null);
         AbsDataSetDraw.drawAxisFrame(padAxisFrame, g2d,0,0,w,h);
         
         for(LatexText txt : this.textCollection){
@@ -82,6 +93,8 @@ public class DataSetPad {
         //g2d.drawString(latex, 200,30);
         g2d.drawString(latexString.getIterator(), 250,30);
         */
+        
+        AbsDataSetDraw.drawPaveText(padAxisFrame, statBox, g2d, 0,0,w,h);
     }
     
     public void clear(){
@@ -98,6 +111,17 @@ public class DataSetPad {
             } catch (Exception e){
                 
             }
+            
+            if(ds instanceof H1D){
+                this.statBox.clear();
+                H1D h1 = (H1D) ds;
+                String  paveLabel = null;
+                this.statBox.addText( String.format("%s", h1.getName()));
+                this.statBox.addText(String.format("Entries %-8d", h1.getEntries()));
+                this.statBox.addText(String.format("Mean    %-8.4f", h1.getMean()));
+                this.statBox.addText(String.format("RMS     %-8.4f", h1.getRMS()));
+                
+            } 
         }
     }
     

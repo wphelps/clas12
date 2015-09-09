@@ -5,7 +5,10 @@
  */
 package org.root.base;
 
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
 import java.awt.font.TextAttribute;
+import java.awt.geom.Rectangle2D;
 import java.text.AttributedString;
 
 /**
@@ -27,6 +30,13 @@ public class LatexText {
         this.setFontSize(24);
     }
     
+     public LatexText(String text){
+        this.setText(text);
+        this.setLocation(0.0,0.0);
+        this.setFont(textFamily);
+        this.setFontSize(24);
+    }
+     
     public final void setText(String text){
         String ltx  = LatexTextTools.convertUnicode(text);
         latexString = LatexTextTools.converSuperScript(ltx);
@@ -56,5 +66,11 @@ public class LatexText {
         if(this.latexString.getIterator().getEndIndex()>0){
             latexString.addAttribute(TextAttribute.SIZE, (float)size);
         }
+    }
+    
+    public  Rectangle2D getBounds(FontMetrics  fm, Graphics2D g2d){
+        Rectangle2D rect = fm.getStringBounds(this.latexString.getIterator(), 0,
+                this.latexString.getIterator().getEndIndex(),g2d);
+        return rect;
     }
 }

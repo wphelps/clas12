@@ -6,12 +6,15 @@ package org.root.pad;
 
 import java.awt.FontMetrics;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author gavalian
  */
 public class AxisNiceScale {
+    
+    
     
     private double minPoint;
     private double maxPoint;
@@ -21,7 +24,11 @@ public class AxisNiceScale {
     private double niceMin;
     private double niceMax;
     private Boolean isAxisLogarithmic = false;
+    
+    
     private ArrayList<Double> niceCoordinates = new ArrayList<Double>();
+    private ArrayList<Double> minorTicks      = new ArrayList<Double>();
+    
     private ArrayList<String> niceCoordinateLabels = new ArrayList<String>();
     /**
      * Instantiates a new instance of the NiceScale class.
@@ -41,10 +48,8 @@ public class AxisNiceScale {
         calculateLog();
     }
     
-    private void calculateLog(){
-        
-        //System.out.println("CALCULATING AXIS IN LOG SCALE");
-        
+    private void calculateLog(){ 
+        //System.out.println("CALCULATING AXIS IN LOG SCALE");        
         this.range = Math.floor(Math.log10(this.maxPoint)) - Math.floor(Math.log10(this.minPoint));
         this.tickSpacing = this.range/(this.maxTicks-1);
         int minlog =  (int) Math.floor(Math.log10(this.minPoint));
@@ -53,10 +58,27 @@ public class AxisNiceScale {
         this.niceCoordinateLabels.clear();
         this.range = maxlog;// - minlog;
         for(int loop = 0; loop < this.maxTicks;loop++){
-            this.niceCoordinates.add(Math.pow(10, loop));            
-            this.niceCoordinateLabels.add(String.format("%.0f",
+            double value = Math.pow(10, loop);
+            if(value<this.niceMax){
+                this.niceCoordinates.add(value);
+                this.niceCoordinateLabels.add(String.format("%.0f",
                         this.niceCoordinates.get(loop)));
+            }
             //System.out.println(" TICK " + loop + " = " + this.niceCoordinateLabels.get(loop));
+        }
+        
+        this.minorTicks.clear();
+        for(int loop = 0; loop < this.maxTicks;loop++){
+            
+            //double rangeMin = this.niceCoordinates.get(loop-1);
+            //double rangeMax = this.niceCoordinates.get(loop);
+            //double step     = 0.1*(rangeMax-rangeMin);
+            double  tickLog = Math.pow(10, loop);
+            for(int x = 2; x <= 9; x++){
+                double tick =  x*tickLog;
+                if(tick<this.niceMax)
+                    this.minorTicks.add(tick);
+            }
         }
     }
     /**
@@ -91,6 +113,13 @@ public class AxisNiceScale {
 
         }
         //System.out.println(" SIG FIG = " + this.getSigFig());
+    }
+    
+    public double  getAxisCoordinate(double value, double length){
+        double axisLength = this.maxPoint-this.minPoint;
+        if(axisLength==0) return 0;
+        double relative = value/axisLength;
+        return relative;
     }
     
     public boolean getAxisLog(){
@@ -137,8 +166,17 @@ public class AxisNiceScale {
         str.append('f');
         return str.toString();
     }
+    
     public ArrayList<String>  getCoordinatesLabels(){
         return this.niceCoordinateLabels;
+    }
+    /**
+     * Returns the minor ticks. Calculated differently for linear axis,
+     * and logarithmic axis.
+     * @return 
+     */    
+    public List<Double>       getMinorTicks(){
+        return this.minorTicks;
     }
     
     public ArrayList<Double>  getCoordinates(){
@@ -202,7 +240,11 @@ public class AxisNiceScale {
      */
     public void setMaxTicks(int maxTicks) {
         this.maxTicks = maxTicks;
-        calculate();
+        if(this.isAxisLogarithmic==true){
+            this.calculateLog();
+        } else {
+            this.calculate();
+        }
     }
     
     public int getMaxTicks(){

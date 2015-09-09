@@ -71,6 +71,20 @@ public class EmbeddedCanvas extends JPanel {
          this.canvasPads.get(this.currentPad).getPad().setLogZ(true);
      }
      
+     
+     public void setLogX(boolean logFlag){
+         this.canvasPads.get(this.currentPad).setLog("X", logFlag);
+     }
+     
+     public void setLogY(boolean logFlag){
+         this.canvasPads.get(this.currentPad).setLog("Y", logFlag);
+     }
+     
+     public void setLogZ(boolean logFlag){
+         this.canvasPads.get(this.currentPad).setLog("Z", logFlag);
+     }
+     
+     
      public void setDivisionsX(int div){
          this.getPad().setDivisionsX(div);
      }
