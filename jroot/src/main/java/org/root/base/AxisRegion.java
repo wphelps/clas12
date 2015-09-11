@@ -34,6 +34,7 @@ public class AxisRegion {
     private LatexText         axisTitleY      = new LatexText(" ",0.0,0.5);
     private LatexText         frameTitle      = new LatexText(" ",0.5,1.0);
     
+    
     public  AxisRegion(){
         
         this.axisFrame.setBounds(10, 10, 40, 40);

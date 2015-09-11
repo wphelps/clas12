@@ -46,7 +46,16 @@ public class AbsDataSetDraw {
         double y = axis.getFramePointY(text.getY());
         g2d.drawString(text.getText().getIterator(),(int) x,(int) y);
     }
-    
+    /**
+     * Plotting PaveText Object on the canvas
+     * @param axis
+     * @param text
+     * @param g2d
+     * @param startX
+     * @param startY
+     * @param gWidth
+     * @param gHeight 
+     */
     public static void drawPaveText(AxisRegion axis, PaveText text, Graphics2D g2d,
             int startX, int startY, int gWidth, int gHeight){
 
@@ -72,27 +81,42 @@ public class AbsDataSetDraw {
         );
         */
         
-        double w = bounds.getWidth();
-        double h = bounds.getHeight();
-        double originX = axis.getFrame().width + axis.getFrame().x - w;
-        double originY = axis.getFrame().y;
-        g2d.setColor(Color.BLACK);
+        double w = bounds.getWidth()*1.2;
+        double h = bounds.getHeight()*1.0;
+        double xoffset = bounds.getWidth()*0.1;
+        double yoffset = bounds.getHeight()*0.1;
         
+        double originXbox = axis.getFrame().width + axis.getFrame().x - w;
+        double originYbox = axis.getFrame().y ;
+        double originX = originXbox + xoffset;
+        double originY = originYbox + + TStyle.getStatBoxTextGap()*TStyle.getStatBoxFontSize();
+        
+        g2d.setColor(Color.BLACK);
+        g2d.setStroke(new BasicStroke(1));
         g2d.drawRect(
-                (int) originX, (int) originY,
+                (int) originXbox, (int) originYbox,
                 (int) w, (int) h);
 
-        g2d.setFont(axisFont);
+        //g2d.setFont(axisFont);
         List<LatexText> texts = text.getTexts();
         
         int counter = 0;
         for(LatexText t : texts){
+            int ypos = (int) (originY + counter*TStyle.getStatBoxTextGap()*TStyle.getStatBoxFontSize());
             counter++;
-            g2d.drawString(t.getText().getIterator(), (int) originX, (int) originY + counter*18);
+            g2d.drawString(t.getText().getIterator(), (int) originX, ypos);
         }
         //for(int loop = 0; loop )
     }
-    
+    /**
+     * Drawing axis frame on the pad.
+     * @param axis
+     * @param g2d
+     * @param startX
+     * @param startY
+     * @param gWidth
+     * @param gHeight 
+     */
     public static void drawAxisFrame(AxisRegion axis, Graphics2D g2d, 
             int startX, int startY, int gWidth, int gHeight){
         

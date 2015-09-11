@@ -19,16 +19,23 @@ import org.root.histogram.H2D;
  */
 public class DataFactory {
     
-   public static void createSampleH1D(H1D h1, int count){
+   public static void createSampleH1D(H1D h1, int count, double peak){
        double min = h1.getXaxis().min();
        double max = h1.getXaxis().max();
        F1D f1 = new F1D("gaus+p2",min,max);
+       double mean  = min + (max-min)/2.0;
+       mean = peak;
+       double sigma = (max-min)*0.05;
+       h1.setXTitle("M^x (K^+) [MeV]");
+       h1.setYTitle("Counts");
+       h1.setTitle("H(e #rarrow epK^+)");
+       //System.out.println("MEAN/SIGMA = " + mean + " " + sigma);
+       f1.setParameter(0,  220.0);
+       f1.setParameter(1,  mean);
+       f1.setParameter(2,  sigma);
+       f1.setParameter(3,    5.0);
+       f1.setParameter(4,    0.2);
        
-       f1.setParameter(0,120.0);
-       f1.setParameter(1,  min + (max-min)/2.0);
-       f1.setParameter(2,  (max-min)*0.1);
-       f1.setParameter(3, 24.0);
-       f1.setParameter(4,  7.0);
        RandomFunc rndm = new RandomFunc(f1);
 
        for(int i = 0; i < count; i++){
@@ -42,10 +49,13 @@ public class DataFactory {
        double maxX = h2.getXAxis().max();
        
        F1D f1x = new F1D("gaus+p2",minX,maxX);
+       double mean  = minX + (maxX-minX)/2.0;
+       double sigma = (maxX-minX)*0.1;
        
+       System.out.println("MEAN/SIGMA = " + mean + " " + sigma);
        f1x.setParameter(0,  120.0);
-       f1x.setParameter(1,  minX + (maxX-minX)/2.0);
-       f1x.setParameter(2,  (maxX-minX)*0.1);
+       f1x.setParameter(1,  mean);
+       f1x.setParameter(2,  sigma);
        f1x.setParameter(3,  24.0);
        f1x.setParameter(4,  7.0);
        RandomFunc rndmX = new RandomFunc(f1x);
@@ -70,7 +80,7 @@ public class DataFactory {
    public static void createGraphSin(GraphErrors gr, int npoints, double min, double max){
        for(int loop = 0; loop < npoints; loop++){
            double x = min + loop*(max-min)/npoints;
-           double y = Math.sin(x);
+           double y = 25.0*Math.sin(x);
            gr.add(x, y);
        }
    }

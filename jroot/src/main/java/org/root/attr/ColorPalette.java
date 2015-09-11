@@ -144,9 +144,22 @@ public class ColorPalette {
         colors.put(7,new Color(230,130,58));
         colors.put(8,new Color(90,207,161));
         colors.put(9,new Color(106,120,203));
-    
+        
+        for(int loop = 0; loop < 10; loop++){
+            colors.put(20+loop, getTranslucent(colors.get(loop),200));
+            colors.put(30+loop, getTranslucent(colors.get(loop),160));
+            colors.put(40+loop, getTranslucent(colors.get(loop),120));
+            colors.put(50+loop, getTranslucent(colors.get(loop), 50));
+        }
+        
+        
+        
         
         return colors;
     }
     
+    
+    private static Color getTranslucent(Color col, int alpha){
+        return new Color(col.getRed(),col.getGreen(),col.getBlue(),alpha);
+    }
 }

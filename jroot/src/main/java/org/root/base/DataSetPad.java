@@ -11,6 +11,7 @@ import java.awt.RenderingHints;
 import java.awt.font.TextAttribute;
 import java.text.AttributedString;
 import java.util.ArrayList;
+import org.root.attr.TStyle;
 import org.root.data.DataSetXY;
 import org.root.func.F1D;
 import org.root.histogram.H1D;
@@ -93,8 +94,9 @@ public class DataSetPad {
         //g2d.drawString(latex, 200,30);
         g2d.drawString(latexString.getIterator(), 250,30);
         */
-        
-        AbsDataSetDraw.drawPaveText(padAxisFrame, statBox, g2d, 0,0,w,h);
+        if(this.statBox.getTexts().size()>0){
+            AbsDataSetDraw.drawPaveText(padAxisFrame, statBox, g2d, 0,0,w,h);
+        }
     }
     
     public void clear(){
@@ -112,16 +114,33 @@ public class DataSetPad {
                 
             }
             
+        }
+        this.updateStatBox();
+    }
+    
+    public void updateStatBox(){
+        this.statBox.clear();
+        if(this.collection.getCount()>0){
+            IDataSet ds = this.collection.getDataSet(0);
             if(ds instanceof H1D){
-                this.statBox.clear();
                 H1D h1 = (H1D) ds;
-                String  paveLabel = null;
+                this.statBox.setFont(TStyle.getStatBoxFontName(), TStyle.getStatBoxFontSize());
                 this.statBox.addText( String.format("%s", h1.getName()));
-                this.statBox.addText(String.format("Entries %-8d", h1.getEntries()));
-                this.statBox.addText(String.format("Mean    %-8.4f", h1.getMean()));
-                this.statBox.addText(String.format("RMS     %-8.4f", h1.getRMS()));
-                
-            } 
+                this.statBox.addText(String.format("Entries %12d", h1.getEntries()));
+                this.statBox.addText(String.format("Mean    %12.4f", h1.getMean()));
+                this.statBox.addText(String.format("RMS     %12.4f", h1.getRMS()));
+            }
+        }
+        
+        for(int loop = 0; loop < this.collection.getCount(); loop++){
+            IDataSet ds = this.collection.getDataSet(loop);
+            if(ds instanceof F1D){
+                F1D func = (F1D) ds;
+                for(int c = 0; c < func.getNParams(); c++){
+                    this.statBox.addText(String.format("%-7s %12.4f", func.parameter(c).name(),
+                            func.getParameter(c)));
+                }
+            }
         }
     }
     

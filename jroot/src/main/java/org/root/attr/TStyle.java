@@ -14,10 +14,12 @@ public class TStyle {
     private static Integer axisFrameLineWidth    = 1;
     private static String  axisFontStringName    = "Helvetica";
     private static Integer axisFontSize          = 18;
-    private static String  statBoxFontStringName = "Helvetica";
+    
+    
+    private static String  statBoxFontStringName = "Courier New";
     private static Integer statBoxFontSize       = 18;
     private static Boolean statBoxOptions        = true;
-    private static Double  statBoxTextGap        = 1.4;
+    private static Double  statBoxTextGap        = 1.2;
             
     public  static void setAxisFont(String name, int size){
         TStyle.axisFontStringName = name;

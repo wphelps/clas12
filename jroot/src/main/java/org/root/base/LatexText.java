@@ -27,14 +27,14 @@ public class LatexText {
         this.setText(text);
         this.setLocation(xc, yc);
         this.setFont(textFamily);
-        this.setFontSize(24);
+        this.setFontSize(14);
     }
     
      public LatexText(String text){
         this.setText(text);
         this.setLocation(0.0,0.0);
         this.setFont(textFamily);
-        this.setFontSize(24);
+        this.setFontSize(14);
     }
      
     public final void setText(String text){

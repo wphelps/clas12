@@ -112,6 +112,19 @@ public class AxisNiceScale {
             }
 
         }
+        
+        this.minorTicks.clear();
+        for(int loop = 1; loop < this.niceCoordinates.size();loop++){
+            
+            //double rangeMin = this.niceCoordinates.get(loop-1);
+            //double rangeMax = this.niceCoordinates.get(loop);
+            //double step     = 0.1*(rangeMax-rangeMin);
+            double step = (this.niceCoordinates.get(loop) - this.niceCoordinates.get(loop-1))/4.0;
+            for(int x = 1; x <= 3; x++){
+                double tick =  this.niceCoordinates.get(loop-1) + step*x;
+                this.minorTicks.add(tick);
+            }
+        }
         //System.out.println(" SIG FIG = " + this.getSigFig());
     }
     

@@ -31,6 +31,12 @@
     <version>4.4.6</version>
   </dependency>
 
+ <dependency>
+    <groupId>org.jlab.coda</groupId>
+    <artifactId>et</artifactId>
+    <version>15.1</version>
+  </dependency>
+
   <dependency>
     <groupId>org.jlab.coda</groupId>
     <artifactId>clara</artifactId>
@@ -201,25 +207,34 @@
       <configuration>
 	<outputFile>target/coat-libs-${project.version}.jar</outputFile>
 
-  <artifactSet>
-         <excludes>
+	<artifactSet>
+          <excludes>
             <exclude>cnuphys:cnuphys</exclude>
             <exclude>cnuphys:magfield</exclude>
             <exclude>cnuphys:swimmer</exclude>
             <exclude>org.jlab.coda:clara</exclude>
             <exclude>org.jlab.coda:jtools</exclude>
-<!--            <exclude>org.jlab.coda:jevio</exclude> -->
-        </excludes>
-   </artifactSet>
-
-	<!--
-	<artifactSet>
-          <excludes>
-            <exclude>org.jlab.coda:clara</exclude>
-            <exclude>org.jlab.coda:jtools</exclude>
+	    <!--            <exclude>org.jlab.coda:jevio</exclude> -->
           </excludes>
-        </artifactSet>
-	-->
+	</artifactSet>
+	<filters>
+          <filter>
+            <artifact>*:*</artifact>
+            <excludes>
+              <exclude>META-INF/*.SF</exclude>
+              <exclude>META-INF/*.DSA</exclude>
+              <exclude>META-INF/*.RSA</exclude>
+            </excludes>
+          </filter>
+	</filters>
+	<!--
+	    <artifactSet>
+              <excludes>
+		<exclude>org.jlab.coda:clara</exclude>
+		<exclude>org.jlab.coda:jtools</exclude>
+              </excludes>
+            </artifactSet>
+	    -->
       </configuration>
       <executions>
         <execution>

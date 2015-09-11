@@ -332,7 +332,7 @@ public class BasicDataBank implements DataBank {
                 + "  >>>> SIZE = " + size);
         
         for(Map.Entry<String,byte[]> item : byteContainer.entrySet()){
-            System.out.print(String.format("%14s : ",item.getKey()));
+            System.out.print(String.format("%14s (byte)  : ",item.getKey()));
             byte[] itemdata = item.getValue();
             if(itemdata!=null){
                 for(int loop = 0; loop < itemdata.length;loop++) 
@@ -342,7 +342,7 @@ public class BasicDataBank implements DataBank {
         }
         
         for(Map.Entry<String,short[]> item : shortContainer.entrySet()){
-            System.out.print(String.format("%14s : ",item.getKey()));
+            System.out.print(String.format("%14s (short) : ",item.getKey()));
             short[] itemdata = item.getValue();
             for(int loop = 0; loop < itemdata.length;loop++) 
                 System.out.print(String.format(" %12d  ", itemdata[loop]));
@@ -350,21 +350,21 @@ public class BasicDataBank implements DataBank {
         }
        
         for(Map.Entry<String,int[]> item : intContainer.entrySet()){
-            System.out.print(String.format("%14s : ",item.getKey()));
+            System.out.print(String.format("%14s  (int)  : ",item.getKey()));
             int[] itemdata = item.getValue();
             for(int loop = 0; loop < itemdata.length;loop++) 
                 System.out.print(String.format(" %12d  ", itemdata[loop]));
             System.out.println();
         }
         for(Map.Entry<String,float[]> item : floatContainer.entrySet()){
-            System.out.print(String.format("%14s : ",item.getKey()));
+            System.out.print(String.format("%14s  (float) : ",item.getKey()));
             float[] itemdata = item.getValue();
             for(int loop = 0; loop < itemdata.length;loop++) 
                 System.out.print(String.format(" %12.5f  ", itemdata[loop]));
             System.out.println();
         }
         for(Map.Entry<String,double[]> item : doubleContainer.entrySet()){
-            System.out.print(String.format("%14s : ",item.getKey()));
+            System.out.print(String.format("%14s (double) : ",item.getKey()));
             double[] itemdata = item.getValue();
             for(int loop = 0; loop < itemdata.length;loop++) 
                 System.out.print(String.format(" %12.5f  ", itemdata[loop]));

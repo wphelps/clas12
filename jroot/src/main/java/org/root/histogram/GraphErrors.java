@@ -47,4 +47,15 @@ public class GraphErrors extends DataSetXY {
         this.graphMarkerAttributes.MARKER_SIZE = size; 
     }
      
+    @Override
+    public String toString(){
+        StringBuilder str = new StringBuilder();
+        for(int loop = 0; loop < this.getDataSize(); loop++){
+            str.append(String.format("%-7d %12.5f %12.5f\n", loop,
+                    this.getDataX().getValue(loop),
+                    this.getDataY().getValue(loop)
+                    ));
+        }
+        return str.toString();
+    }
 }

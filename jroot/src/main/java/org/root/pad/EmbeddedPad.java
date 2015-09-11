@@ -26,8 +26,10 @@ import org.root.base.DataSetPad;
 import org.root.base.IDataSet;
 import org.root.base.LatexText;
 import org.root.data.DataSetXY;
+import org.root.func.F1D;
 import org.root.histogram.GraphErrors;
 import org.root.histogram.H1D;
+import org.root.utils.DataFactory;
 
 /**
  *
@@ -129,7 +131,18 @@ public class EmbeddedPad extends JPanel implements MouseMotionListener, MouseLis
         dsXY2.setMarkerSize(10);
         
         H1D  h1 = new H1D("h1",50,0.0,2.0);
-        H1D  h2 = new H1D("h1",50,0.0,2.0);
+        H1D  h2 = new H1D("h2",50,0.0,2.0);
+        
+        H1D  h3 = new H1D("h3",120,0.0,550.0);
+        H1D  h4 = new H1D("h4",120,0.0,550.0);
+        F1D  f3 = new F1D("gaus+p2",0.0,550.0);
+        
+        DataFactory.createSampleH1D(h3, 30000,220);
+        DataFactory.createSampleH1D(h4, 15000,350);
+        GraphErrors gr = new GraphErrors();
+        
+        DataFactory.createGraphCos(gr, 25,0.0,6.28);
+        
         for(int loop = 0; loop < 5000; loop++){
             h1.fill(Math.random()*2.0);
         }
@@ -138,25 +151,45 @@ public class EmbeddedPad extends JPanel implements MouseMotionListener, MouseLis
             h2.fill(Math.random()*2.0);
         }
         
+
+        
         h1.setLineColor(2);
         h1.setLineWidth(3);
         h2.setLineColor(4);
         h2.setLineWidth(3);
+        
         //h1.setFillColor(3);
 
         //h2.setFillColor(9);
+        f3.setParameter(0, 200);
+        f3.setParameter(1, 120.0);
+        f3.setParameter(2, 10);
         
         GraphErrors sinGraph = new GraphErrors();
         
-        EmbeddedPad pad  = new EmbeddedPad(); 
-        pad.add(h1);
-        pad.add(h2);
-        //pad.setLog("Y", true);
+        EmbeddedPad pad  = new EmbeddedPad(600,400);
+        h3.setLineColor(1);
+        h3.setFillColor(2);
+        h4.setFillColor(33);
+        
+        h3.setLineWidth(2);
+        h3.fit(f3);
+        System.out.println(gr);
+        pad.add(h3);
+        pad.add(h4);
+        pad.add(f3);
+        gr.setMarkerColor(2);
+        gr.setMarkerStyle(2);
+        gr.setMarkerSize(12);
+        //pad.add(gr);
+        //pad.add(h1);
+        //pad.add(h2);
+        pad.setLog("Y", true);
         LatexText tex = new LatexText("M^x(ep#rarrow e^'p #pi^+ #pi^- (#gamma) (e^#uarrow^#darrow) )",0.05,0.1);
         tex.setColor(1);
         tex.setFontSize(24);
         pad.addText(tex);
-        TStyle.setStatBoxFont("Helvetica", 24);
+        //TStyle.setStatBoxFont("Helvetica", 24);
         //pad.add(dsXY);
         //pad.add(dsXY2);
         pad.setAutoScale(Boolean.TRUE);
