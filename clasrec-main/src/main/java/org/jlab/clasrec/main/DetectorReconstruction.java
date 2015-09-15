@@ -8,8 +8,10 @@ package org.jlab.clasrec.main;
 
 import java.nio.ByteOrder;
 import java.util.HashMap;
+import java.util.TreeMap;
 import org.jlab.clas12.tools.MimeType;
 import org.jlab.clasrec.utils.DataBaseLoader;
+import org.jlab.clasrec.utils.DatabaseConstantProvider;
 import org.jlab.clasrec.utils.ServiceConfiguration;
 import org.jlab.coda.clara.core.ICService;
 import org.jlab.coda.clara.core.JioSerial;
@@ -35,10 +37,22 @@ public abstract class DetectorReconstruction implements ICService {
     private String serviceVersion  = "1.0";
     private String serviceAuthor  = "undefined";
     private String serviceDescription = "No description";
+    
     private final String mainModuleName     = "[CLASREC-MAIN] ====>>>>> ";
+    
     private final HashMap<String,Detector>  detectorGeometry = new HashMap<String,Detector>();
     private final ServiceConfiguration serviceConfig = new ServiceConfiguration();
-    private Integer serviceDebugLevel   = 0;    
+    
+    private Integer serviceDebugLevel   = 0;
+    
+    private Integer geometryRunNumber      = 10;
+    private String  geometryVariation      = "default";
+    private Integer calibrationRunNumber   = 10;
+    private String  calibrationVariation   = "default";
+
+    private TreeMap<String,DatabaseConstantProvider>  calibrationConstants = 
+            new TreeMap<String,DatabaseConstantProvider>();
+    
     
     public abstract void processEvent(EvioDataEvent event);
     public abstract void init();
@@ -60,7 +74,43 @@ public abstract class DetectorReconstruction implements ICService {
         if(level<0)  serviceDebugLevel = 0;
         if(level>10) serviceDebugLevel = 10;
     }
+
+    public void setCalibrationVariation(String var){
+        this.calibrationVariation = var;
+        System.out.println("[DET-INIT] ["+this.getName()+"] ====> "
+        + "set calibration variation " + var);
+    }
     
+    public void setCalibrationRun(int run){
+        this.calibrationRunNumber = run;
+        System.out.println("[DET-INIT] ["+this.getName()+"] ====> "
+        + "set calibration run # " + run);
+    }
+    
+    public void setGeometryVariation(String var){
+        this.geometryVariation = var;
+        System.out.println("[DET-INIT] ["+this.getName()+"] ====> "
+        + "set geometry variation " + var);
+    }
+    
+    public void setGeometryRun(int run){
+        this.geometryRunNumber = run;
+        System.out.println("[DET-INIT] ["+this.getName()+"] ====> "
+        + "set geometry run # " + run);
+    }
+    /**
+     * Returns a constant provider for calibration table requested.
+     * In order for the table to be loaded in the init() method one must
+     * call requireCalibration(calib_table_name).
+     * @param name
+     * @return 
+     */
+    public ConstantProvider getConstants(String name){
+        if(this.calibrationConstants.containsKey(name)==true){
+            return (ConstantProvider) this.calibrationConstants.get(name);
+        }
+        return null;
+    }
     /**
      * Returns geometry object for detector "geom". To use this function
      * first the geometry for given detector has to be loaded through
@@ -87,7 +137,7 @@ public abstract class DetectorReconstruction implements ICService {
         
         if(geometryPackage.compareTo("DC::Tilted")==0){
             DCFactory factory = new DCFactory();
-            ConstantProvider  data = DataBaseLoader.getConstantsDC();
+            ConstantProvider  data = DataBaseLoader.getConstantsDC(this.geometryRunNumber, this.geometryVariation);
             Detector geomFTOF = factory.createDetectorTilted(data);
             detectorGeometry.put("DC::Tilted", geomFTOF);
             System.err.println(mainModuleName + "geometry for detector " +
@@ -97,7 +147,7 @@ public abstract class DetectorReconstruction implements ICService {
         
         if(geometryPackage.compareTo("DC")==0){
             DCFactory factory = new DCFactory();
-            ConstantProvider  data = DataBaseLoader.getConstantsDC();
+            ConstantProvider  data = DataBaseLoader.getConstantsDC(this.geometryRunNumber,this.geometryVariation);
             Detector geomFTOF = factory.createDetectorCLAS(data);
             detectorGeometry.put("DC", geomFTOF);
             System.err.println(mainModuleName + "geometry for detector " +
@@ -140,7 +190,11 @@ public abstract class DetectorReconstruction implements ICService {
     }
     
     public void requireCalibration(String calibPackage){
-        
+        DatabaseConstantProvider  provider = new DatabaseConstantProvider(
+                this.calibrationRunNumber,this.calibrationVariation);
+        provider.loadTable(calibPackage);
+        provider.disconnect();
+        this.calibrationConstants.put(calibPackage, provider);
     }
     
     public DetectorReconstruction(String name, String author,String version){

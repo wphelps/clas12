@@ -283,4 +283,15 @@ public class TBrowser extends JFrame implements ActionListener {
         }
         
     }
+    
+    public static void main(String[] args){
+        if(args.length>0){
+            TDirectory dir = new TDirectory();
+            dir.readFile(args[0]);
+            
+            TBrowser br = new TBrowser(dir);
+        } else {
+            TBrowser br = new TBrowser();
+        }
+    }
 }

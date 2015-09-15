@@ -312,6 +312,19 @@ public class H2D implements EvioWritableTree,IDataSet {
             return slices;
         }
         
+        public void add(H2D h){
+            if(h.getXAxis().getNBins()==this.getXAxis().getNBins()&&
+                    h.getYAxis().getNBins()==this.getYAxis().getNBins()){
+                for(int loop = 0; loop < this.hBuffer.length; loop++){
+                    this.hBuffer[loop] = this.hBuffer[loop] + h.hBuffer[loop];
+                }
+            } else {
+                System.out.println("[warning] ---> error adding histograms " 
+                        + this.getName() + "  " + h.getName()
+                        + ". inconsistent bin numbers");
+            }
+        }
+        
         public void divide(H2D h){
             if(h.getXAxis().getNBins()==this.getXAxis().getNBins()&&
                     h.getYAxis().getNBins()==this.getYAxis().getNBins()){

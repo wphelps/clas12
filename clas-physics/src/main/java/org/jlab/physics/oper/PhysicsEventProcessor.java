@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import org.jlab.clas.physics.EventFilter;
+import org.jlab.clas.physics.Particle;
 import org.jlab.clas.physics.PhysicsEvent;
 
 /**
@@ -18,19 +20,45 @@ import org.jlab.clas.physics.PhysicsEvent;
 public class PhysicsEventProcessor {
     
     private final TreeMap<String,PhysicsEventOperator>  operators = new TreeMap<String,PhysicsEventOperator>();
-        
-    public PhysicsEventProcessor(){
-        
+    private final TreeMap<String,PhysicsParticleDescriptor>  particleDescriptors = 
+            new TreeMap<String,PhysicsParticleDescriptor>();
+    private final TreeMap<String,PhysicsCutDescriptor>  cutDescriptors = 
+            new TreeMap<String,PhysicsCutDescriptor>();
+    private Particle beamParticle = new Particle(11,0.0,0.0,11.0,0.0,0.0,0.0);
+    private EventFilter    eventFilter = new EventFilter();
+    
+    
+    public PhysicsEventProcessor(double energy, String filter){
+        beamParticle.setVector(11, 0.0,0.0,energy,0.0,0.0,0.0);
+        eventFilter.setFilter(filter);
+    }
+    
+    
+    public void addParticle(String name,String particle, String variable){
+        this.particleDescriptors.put(name, new PhysicsParticleDescriptor(name,particle,variable));
+    }
+    
+    public void addCut(String cutname, String variable, double min, double max){
+        this.cutDescriptors.put(cutname, new PhysicsCutDescriptor(cutname,variable,min,max));
     }
     
     public void addOperator(PhysicsEventOperator oper){
         this.operators.put(oper.getName(), oper);
     }
     
+    public boolean isEventValid(PhysicsEvent event){
+        return eventFilter.isValid(event);
+    }
+    
     public void apply(PhysicsEvent event){
-        for(Map.Entry<String,PhysicsEventOperator> entry : this.operators.entrySet()){
-            entry.getValue().apply(event);
+        //for(Map.Entry<String,PhysicsEventOperator> entry : this.operators.entrySet()){
+        //    entry.getValue().apply(event);
+        //}
+        event.setBeamParticle(beamParticle);
+        for(Map.Entry<String,PhysicsParticleDescriptor> desc : this.particleDescriptors.entrySet()){
+            desc.getValue().applyEvent(event);
         }
+        
     }
     
     public PhysicsEventOperator getOperator(String name){
@@ -72,9 +100,12 @@ public class PhysicsEventProcessor {
     @Override
     public String toString(){
         StringBuilder str = new StringBuilder();
-        for(Map.Entry<String,PhysicsEventOperator> entry : this.operators.entrySet()){
-            str.append(entry.getValue().stringValue());
-            str.append("\n");
+        //for(Map.Entry<String,PhysicsEventOperator> entry : this.operators.entrySet()){
+        //    str.append(entry.getValue().stringValue());
+        //    str.append("\n");
+        //}
+        for(Map.Entry<String,PhysicsParticleDescriptor> desc : this.particleDescriptors.entrySet()){
+            str.append(String.format("* %-12s * ", desc.getValue().getVariable()));
         }
         return str.toString();
     }

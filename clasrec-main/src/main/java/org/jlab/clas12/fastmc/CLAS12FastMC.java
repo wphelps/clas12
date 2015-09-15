@@ -44,7 +44,7 @@ public class CLAS12FastMC {
     private void initDetectors(){
         // Init DC detector
         DCFactory      dcfactory = new DCFactory();
-        ConstantProvider  dcdata = DataBaseLoader.getConstantsDC();
+        ConstantProvider  dcdata = DataBaseLoader.getConstantsDC(10,"default");
         Detector geomDC = dcfactory.createDetectorCLAS(dcdata);
         this.detectors.put("DC", geomDC);
         // Init FTOF detector

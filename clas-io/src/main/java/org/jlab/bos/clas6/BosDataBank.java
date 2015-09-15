@@ -103,7 +103,7 @@ public class BosDataBank implements DataBank {
                 + "  >>>> SIZE = " + size);
         
         for(Map.Entry<String,short[]> item : shortContainer.entrySet()){
-            System.out.print(String.format("%14s : ",item.getKey()));
+            System.out.print(String.format("%14s (short) : ",item.getKey()));
             short[] itemdata = item.getValue();
             for(int loop = 0; loop < itemdata.length;loop++) 
                 System.out.print(String.format(" %12.3f  ", itemdata[loop]));
@@ -111,14 +111,14 @@ public class BosDataBank implements DataBank {
         }
        
         for(Map.Entry<String,int[]> item : intContainer.entrySet()){
-            System.out.print(String.format("%14s : ",item.getKey()));
+            System.out.print(String.format("%14s ( int ) : ",item.getKey()));
             int[] itemdata = item.getValue();
             for(int loop = 0; loop < itemdata.length;loop++) 
                 System.out.print(String.format(" %12d  ", itemdata[loop]));
             System.out.println();
         }
         for(Map.Entry<String,float[]> item : floatContainer.entrySet()){
-            System.out.print(String.format("%14s : ",item.getKey()));
+            System.out.print(String.format("%14s (float) : ",item.getKey()));
             float[] itemdata = item.getValue();
             for(int loop = 0; loop < itemdata.length;loop++) 
                 System.out.print(String.format(" %12.5f  ", itemdata[loop]));

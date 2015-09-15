@@ -392,7 +392,15 @@ public class H1D implements EvioWritableTree,IDataSet {
     		histogramDataError[bin] = Math.sqrt(Math.abs(histogramData[bin]));
     	}
     }
-    
+    public void add(H1D h){
+        if(h.getAxis().getNBins()==this.getXaxis().getNBins()){
+            for(int loop = 0; loop < this.histogramData.length; loop++){
+                this.setBinContent(loop, this.getBinContent(loop)+h.getBinContent(loop));
+            }
+        } else {
+            System.out.println("[warning] ---> histograms have different bin number. not added.");
+        }
+    }
     /**
      * Divides the current histogram object by the parameter 1-D histogram. 
      * Requires that both histograms have the same number of bins.

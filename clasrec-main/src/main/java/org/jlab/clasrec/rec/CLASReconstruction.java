@@ -6,6 +6,8 @@
 
 package org.jlab.clasrec.rec;
 
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +17,7 @@ import java.util.logging.Logger;
 import org.jlab.clas.tools.benchmark.Benchmark;
 import org.jlab.clas.tools.utils.CommandLineTools;
 import org.jlab.clas.tools.utils.JarFileScanner;
+import org.jlab.clas.tools.utils.StringTable;
 
 import org.jlab.clasrec.loader.ClasPluginLoader;
 import org.jlab.clasrec.main.DetectorReconstruction;
@@ -118,10 +121,29 @@ public class CLASReconstruction {
     public void init(){
         for(DetectorReconstruction detectorRec : this.detectorFactory ){
             try {
+                System.err.println("[DET-INIT] ---> starting initialization for detector "
+                        + detectorRec.getName() );
                 detectorRec.setDebugLevel(this.debugLevel);
                 detectorRec.configure(serviceConfig);
                 detectorRec.init();
-                System.err.println("---> detector initialization "
+                if(this.serviceConfig.hasItem("CCDB", "GEOMRUN")==true){
+                    detectorRec.setGeometryRun(
+                            Integer.parseInt(this.serviceConfig.asString("CCDB", "GEOMRUN")));
+                }
+                if(this.serviceConfig.hasItem("CCDB", "GEOMVAR")==true){
+                    detectorRec.setGeometryVariation(this.serviceConfig.asString("CCDB", "GEOMVAR"));
+                }
+                
+                if(this.serviceConfig.hasItem("CCDB", "CALIBRUN")==true){
+                    detectorRec.setCalibrationRun(
+                            Integer.parseInt(this.serviceConfig.asString("CCDB", "CALIBRUN")));
+                }
+                
+                if(this.serviceConfig.hasItem("CCDB", "CALIBVAR")==true){
+                    detectorRec.setGeometryVariation(this.serviceConfig.asString("CCDB", "CALIBVAR"));
+                }
+                
+                System.err.println("[DET-INIT] ---> detector initialization "
                         + detectorRec.getName() + " ......... success");
             } catch (Exception e) {
                 System.err.println("---> (error) initializing detector "
@@ -200,6 +222,24 @@ public class CLASReconstruction {
         
     }
     
+    public void showAvailableDetectors(){
+        
+        System.out.println("\n\nSHOW AVAILABLE DETECTORS : " + this.detectorFactoryStore.size());
+        System.out.println("\n");
+        System.out.println("\t" + StringTable.getCharacterString("*", 65));
+        System.out.println("\t" + String.format("* %-12s * %-24s * %8s * %8s *",
+                    "MODULE","AUTHOR","VERSION","LANGUAGE"
+            )); 
+        System.out.println("\t" + StringTable.getCharacterString("*", 65));
+        for(Map.Entry<String,DetectorReconstruction> recM : this.detectorFactoryStore.entrySet()){
+            
+            DetectorReconstruction rec = recM.getValue();
+            System.out.println(String.format("\t" + "* %-12s * %-24s * %8s * %8s *", 
+                    rec.getName(),rec.getAuthor(),rec.getVersion(),rec.getLanguage()));
+        }
+        System.out.println("\t" + StringTable.getCharacterString("*", 65));
+        System.out.println("\n\n");
+    }
     
     public void setSkip(Integer skip){
         this.skipEvents = skip;
@@ -265,13 +305,21 @@ public class CLASReconstruction {
     }
     
     public static void printUsage(){
+        System.err.println("\n");
+        System.err.println("\t FLAGS : use -config SYSTEM::ITEM=value syntax to pass configuration.");
+        System.err.println("\n\n Available Configurations :\n");
+        System.err.println("\t -config CCDB::GEOMRUN=10        : set ccdb run number to 10 for loading geometry");
+        System.err.println("\t -config CCDB::GEOMVAR='custom'  : set ccdb variation to 'custom' for loading geometry");
+        System.err.println("\t -config CCDB::CALIBRUN=10       : set ccdb run number to 10 for calibration constant");
+        System.err.println("\t -config CCDB::CALIBVAR='custom' : set ccdb variation to 'custom' for calibration constants");
+        System.err.println("\t -config MAG::torus=0.75         : set scale for TORUS magnet to 3/4");
+        System.err.println("\t -config MAG::solenoid=0.5       : set scale for SOLENOID magnet to 1/2");
+        System.err.println("\t -config DCTB::kalman=true       : enable kalman filter in time based tracking");
         System.err.println("\n\n");
-        System.err.println("\t Usage: CLASReconstruction [service list] [input file] [output file]");
-        System.err.println("\n\n");
-        System.err.println("\t service list : list of services to run (e.g DCHB:DCTB:EC:FTOF:EB)");
-        System.err.println("\t input file   : input file name");
-        System.err.println("\t output file  : output file name (optional)");
-        System.err.println("\n\n");
+        
+        System.out.println("\nDATABASE OPTIONS: ");
+        System.out.println("\t to use local sqlite database type : setenv CCDB_DATABASE etc/database/clas12database.db ");
+        System.out.println();
     }
     
     public static void main(String[] args){
@@ -294,6 +342,23 @@ public class CLASReconstruction {
         
         if(cmdParser.isComplete()==false){
             System.err.println(cmdParser.usageString());
+            CLASReconstruction.printUsage();
+            
+            PrintStream originalStreamOut = System.out;
+            PrintStream originalStreamErr = System.out;
+
+            PrintStream dummyStream    = new PrintStream(new OutputStream(){
+                public void write(int b) {
+                    //NO-OP
+                }
+            });
+            System.setOut(dummyStream);
+            System.setErr(dummyStream);
+            CLASReconstruction scan = new CLASReconstruction();            
+            scan.initDetectors();
+            System.setOut(originalStreamOut);
+            System.setErr(originalStreamErr);
+            scan.showAvailableDetectors();
             System.exit(0);
         }
         //if(args.length<2){

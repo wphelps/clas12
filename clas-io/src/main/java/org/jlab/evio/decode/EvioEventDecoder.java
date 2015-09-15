@@ -243,7 +243,7 @@ public class EvioEventDecoder {
                     for(int loop = 0; loop < intData.length; loop++){
                         int  dataEntry = intData[loop];
                         int  slot      = DataUtils.getInteger(dataEntry, 27, 31 );
-                        int  chan      = DataUtils.getInteger(dataEntry, 19, 25);
+                        int  chan      = DataUtils.getInteger(dataEntry, 19, 24);
                         int  value     = DataUtils.getInteger(dataEntry,  0, 18);
                         DetectorRawData  tdc = new DetectorRawData(crate,slot,chan);
                         tdc.set(DataUtils.getShortFromInt(value));

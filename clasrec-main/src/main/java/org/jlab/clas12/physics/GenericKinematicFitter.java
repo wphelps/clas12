@@ -274,6 +274,7 @@ public class GenericKinematicFitter {
     
     
     public DetectorEvent  getDetectorEvent(EvioDataEvent event){
+        
         DetectorEvent detEvent = new DetectorEvent();
         if(event.hasBank("EVENT::particle")==true){
             EvioDataBank  bank = (EvioDataBank)  event.getBank("EVENT::particle");

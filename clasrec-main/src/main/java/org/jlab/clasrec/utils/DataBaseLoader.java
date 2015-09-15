@@ -49,7 +49,8 @@ public class DataBaseLoader {
         provider.loadTable("/geometry/ftof/panel2/panel");
         return provider;
     }
-    public static ConstantProvider getConstantsDC(){
+    
+    public static ConstantProvider getConstantsDC(int run, String variation){
         DatabaseConstantProvider provider = new DatabaseConstantProvider("mysql://clas12reader@clasdb.jlab.org/clas12");
         provider.loadTable("/geometry/dc/dc");
         provider.loadTable("/geometry/dc/region");

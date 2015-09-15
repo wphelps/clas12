@@ -98,6 +98,48 @@ public class TDirectory implements ITreeViewer {
         }
         return entrySet;
     }
+    /**
+     * Adding content of the directory passed by the argument to current
+     * directory.
+     * @param dir 
+     */
+    public void add(TDirectory dir){
+        int counter = 0;
+        for(Map.Entry<String,TDirectory> item : this.directory.entrySet()){
+            TDirectory current = item.getValue();
+            String dirName = item.getKey();
+            Map<String,Object> objects = current.getObjects();
+            for(Map.Entry<String,Object> obj : objects.entrySet()){
+
+                if(obj.getValue() instanceof H1D){
+
+                    H1D h1 = (H1D) obj.getValue();
+                    if(dir.hasDirectory(dirName)==true){
+                        if(dir.getDirectory(dirName).hasObject(h1.getName())==true){
+                            H1D h1o = (H1D) dir.getDirectory(dirName).getObject(h1.getName());
+                            counter++;
+                            h1.add(h1o);
+                        }
+                    }
+                }
+                
+                
+                if(obj.getValue() instanceof H2D){
+
+                    H2D h2 = (H2D) obj.getValue();
+                    if(dir.hasDirectory(dirName)==true){
+                        if(dir.getDirectory(dirName).hasObject(h2.getName())==true){
+                            H2D h2o = (H2D) dir.getDirectory(dirName).getObject(h2.getName());
+                            counter++;
+                            h2.add(h2o);
+                        }
+                    }
+                }
+            }
+            System.out.println("[directory add] ---> added directory objects : " 
+                    + counter);
+        }
+    }
     
     public void add(String name, EvioWritableTree obj){
         this.directory.get(this.currentDirectory).addObject(name, obj);
@@ -449,5 +491,33 @@ public class TDirectory implements ITreeViewer {
 
     public List<String> getVariables() {
         return new ArrayList<String>();
+    }
+    
+    
+    public static void main(String[] args){
+        String command    = args[0];
+        String outputFile = args[1];
+        
+        ArrayList<String>  fileList = new ArrayList<String>();
+        if(args.length>2){
+            for(int i=2;i<args.length;i++){
+                fileList.add(args[i]);
+            }
+        }
+        
+        if(command.compareTo("add")==0){
+            if(fileList.size()>=2){
+                TDirectory dirMaster = new TDirectory();
+                dirMaster.readFile(fileList.get(0));
+                for(int loop = 1; loop < fileList.size(); loop++){
+                    TDirectory dir = new TDirectory();
+                    dir.readFile(fileList.get(loop));
+                    dirMaster.add(dir);
+                }
+                dirMaster.write(outputFile);
+            } else {
+                System.out.println("[error] ---> you must provide more than one file to add.");
+            }
+        }
     }
 }
