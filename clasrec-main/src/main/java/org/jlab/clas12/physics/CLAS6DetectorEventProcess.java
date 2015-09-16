@@ -16,7 +16,7 @@ import org.jlab.clas.physics.PhysicsEvent;
  */
 public class CLAS6DetectorEventProcess implements IDetectorEventProcessor {    
     
-    public void processDetectorEvent(DetectorEvent event) {
+    public boolean processDetectorEvent(DetectorEvent event) {
         /**
          * getResponse(DetectoType.EC, layer) returns hit for given layer.
          * layer = 0 : ECIN
@@ -36,6 +36,7 @@ public class CLAS6DetectorEventProcess implements IDetectorEventProcessor {
                  event.getParticles().get(0).setPid(0);
              }
          }
+         return true;
     }
     
 }

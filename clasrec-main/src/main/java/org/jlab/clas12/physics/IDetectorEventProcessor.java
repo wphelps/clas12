@@ -11,5 +11,5 @@ package org.jlab.clas12.physics;
  * @author gavalian
  */
 public interface IDetectorEventProcessor {   
-    void  processDetectorEvent(DetectorEvent event);
+    boolean  processDetectorEvent(DetectorEvent event);
 }
