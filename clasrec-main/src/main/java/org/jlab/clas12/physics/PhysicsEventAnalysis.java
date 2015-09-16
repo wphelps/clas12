@@ -19,7 +19,7 @@ import org.root.histogram.H1D;
 public class PhysicsEventAnalysis {
     
     private String  analysisName  = "CLAS12PhysicsAnalysis";
-    private PhysicsEventProcessor  processor = new PhysicsEventProcessor();
+    private PhysicsEventProcessor  processor = new PhysicsEventProcessor(11,"");
     private TDirectory             directory = new TDirectory();
     
     public PhysicsEventAnalysis(){

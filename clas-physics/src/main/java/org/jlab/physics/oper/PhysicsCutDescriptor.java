@@ -20,6 +20,7 @@ public class PhysicsCutDescriptor {
     private String cutName     = "default";
     
     public PhysicsCutDescriptor(String name, String variable, double min, double max){
+        this.cutName = name;
         this.setVariable(variable);
         this.setMinMax(min, max);
     }
@@ -43,5 +44,14 @@ public class PhysicsCutDescriptor {
         if(map.containsKey(this.variable)==false) return false;
         double value = map.get(this.variable).getValue();
         return (value>=this.variableMin&&value<=this.variableMax);
+    }
+    
+    @Override
+    public String toString(){
+        StringBuilder str = new StringBuilder();
+        str.append(String.format("* %-12s * %-12s * (%12.5f, %12.5f) *\n", 
+                this.cutName,this.variable,
+                this.variableMin,this.variableMax));
+        return str.toString();
     }
 }

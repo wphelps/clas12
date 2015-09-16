@@ -69,6 +69,7 @@ public class GenericKinematicFitter {
      */
     public PhysicsEvent  getPhysicsEvent(DataEvent  event){
         if(event instanceof EvioDataEvent){
+            //System.out.println("   CHECK FOR  PARTICLE = " + event.hasBank("EVENT::particle"));
             if(event.hasBank("EVENTHB::particle")==true){
                 PhysicsEvent genEvent = this.getGeneratedEvent(event);
                 PhysicsEvent recEvent =  this.getPhysicsEventClas12((EvioDataEvent) event);
@@ -195,6 +196,7 @@ public class GenericKinematicFitter {
     }
     
     private PhysicsEvent  getPhysicsEventClas6(EvioDataEvent event){
+        //System.out.println("---------- CLAS 6 --------");
         PhysicsEvent physEvent = new PhysicsEvent();
         physEvent.setBeam(this.beamEnergy);
         if(event.hasBank("EVENT::particle")){

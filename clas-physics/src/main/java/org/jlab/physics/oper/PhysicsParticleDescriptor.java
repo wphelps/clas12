@@ -45,4 +45,12 @@ public class PhysicsParticleDescriptor {
     public String getParticle(){ return this.particleString; }
     public String getVariable(){ return this.particleVariable; }
     public double getValue()   { return this.descriptorValue; }
+     
+    @Override
+    public String toString(){
+        StringBuilder str = new StringBuilder();
+        str.append(String.format("* %-12s * %-12s * %-45s *\n", 
+                this.descName, this.particleVariable,this.particleString));
+        return str.toString();
+    }
 }
