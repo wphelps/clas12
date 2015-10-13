@@ -288,10 +288,16 @@ public class DataSetXY implements EvioWritableTree,IDataSet {
         region.MAXIMUM_X = this.dataX.getMax();
         region.MINIMUM_Y = this.dataY.getMin();
         region.MAXIMUM_Y = this.dataY.getMax();
+        
         if(region.MINIMUM_Y==region.MAXIMUM_Y){
-            double range = region.MINIMUM_Y * 0.05;
-            region.MINIMUM_Y = region.MINIMUM_Y - range;
-            region.MAXIMUM_Y = region.MAXIMUM_Y + range;
+            if(region.MINIMUM_Y!=0){
+                double range = region.MINIMUM_Y * 0.05;
+                region.MINIMUM_Y = region.MINIMUM_Y - range;
+                region.MAXIMUM_Y = region.MAXIMUM_Y + range;
+            } else {
+                region.MINIMUM_Y = region.MINIMUM_Y - 1;
+                region.MAXIMUM_Y = region.MAXIMUM_Y + 1;
+            }
         }
         region.growX(0.1, 0.1);
         region.growY(0.1, 0.1);

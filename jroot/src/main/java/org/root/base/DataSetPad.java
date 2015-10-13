@@ -31,11 +31,13 @@ public class DataSetPad {
     public DataSetPad(){
         this.padAxisFrame.getAxisX().setMaxTicks(6);
         this.padAxisFrame.getAxisY().setMaxTicks(8);
+        /*
         statBox.addText("H : h1 " );
         statBox.addText("Entries : 0.5674" );
         statBox.addText("Mean : 0.5674" );
         statBox.addText("RMS  : 0.012" );
         statBox.addText("#pi : 3.545646 +/- 56.784564" );
+        */
     }
     
     public void drawOnCanvas(Graphics2D g2d, int xoffset, int yoffset, int w, int h){
@@ -95,6 +97,7 @@ public class DataSetPad {
         g2d.drawString(latexString.getIterator(), 250,30);
         */
         if(this.statBox.getTexts().size()>0){
+            
             AbsDataSetDraw.drawPaveText(padAxisFrame, statBox, g2d, 0,0,w,h);
         }
     }

@@ -177,7 +177,7 @@ public class ECFactory implements Factory<ECDetector, ECSector, ECSuperlayer, EC
         final double strip_thick = cp.getDouble("/geometry/pcal/pcal/strip_thick", 0)*0.1;
         final double steel_thick = cp.getDouble("/geometry/pcal/pcal/steel_thick", 0)*0.1;
         final double strip_width = cp.getDouble("/geometry/pcal/pcal/strip_width", 0)*0.1;
-        final double max_length = cp.getDouble("/geometry/pcal/UView/max_length", 0)*0.1;
+        final double max_length = cp.getDouble("/geometry/pcal/Uview/max_length", 0)*0.1;
         final double yhigh = cp.getDouble("/geometry/pcal/pcal/yhigh", 0)*0.1;
         final double dz = (strip_thick+steel_thick)*layerId;
         
@@ -236,11 +236,11 @@ public class ECFactory implements Factory<ECDetector, ECSector, ECSuperlayer, EC
         final double strip_thick = cp.getDouble("/geometry/pcal/pcal/strip_thick", 0)*0.1;
         final double steel_thick = cp.getDouble("/geometry/pcal/pcal/steel_thick", 0)*0.1;
         final double strip_width = cp.getDouble("/geometry/pcal/pcal/strip_width", 0)*0.1;
-        final double max_length = cp.getDouble("/geometry/pcal/VView/max_length", 0)*0.1;
+        final double max_length = cp.getDouble("/geometry/pcal/Vview/max_length", 0)*0.1;
         final double yhigh = cp.getDouble("/geometry/pcal/pcal/yhigh", 0)*0.1;
         final double view_angle = Math.toRadians(cp.getDouble("/geometry/pcal/pcal/view_angle", 0));
         
-        final double l0u = cp.getDouble("/geometry/pcal/UView/max_length", 0)*0.1;
+        final double l0u = cp.getDouble("/geometry/pcal/Uview/max_length", 0)*0.1;
         final double height = l0u*0.5*Math.tan(view_angle);
         final double ylo = height - yhigh;
         final double dz = (strip_thick+steel_thick)*layerId;
@@ -315,11 +315,11 @@ public class ECFactory implements Factory<ECDetector, ECSector, ECSuperlayer, EC
         final double strip_thick = cp.getDouble("/geometry/pcal/pcal/strip_thick", 0)*0.1;
         final double steel_thick = cp.getDouble("/geometry/pcal/pcal/steel_thick", 0)*0.1;
         final double strip_width = cp.getDouble("/geometry/pcal/pcal/strip_width", 0)*0.1;
-        final double max_length = cp.getDouble("/geometry/pcal/WView/max_length", 0)*0.1;
+        final double max_length = cp.getDouble("/geometry/pcal/Wview/max_length", 0)*0.1;
         final double yhigh = cp.getDouble("/geometry/pcal/pcal/yhigh", 0)*0.1;
         final double view_angle = Math.toRadians(cp.getDouble("/geometry/pcal/pcal/view_angle", 0));
         
-        final double l0u = cp.getDouble("/geometry/pcal/UView/max_length", 0)*0.1;
+        final double l0u = cp.getDouble("/geometry/pcal/Uview/max_length", 0)*0.1;
         final double height = l0u*0.5*Math.tan(view_angle);
         final double ylo = height - yhigh;
         
@@ -400,7 +400,7 @@ public class ECFactory implements Factory<ECDetector, ECSector, ECSuperlayer, EC
         return L1 - paddleId*width*(Math.tan(Math.toRadians(27.1))+Math.tan(Math.toRadians(35.8)));
     }
     private static void makePcalPlaneAndBoundary(ConstantProvider cp, ECLayer layer, double depth) {
-        final double u_length = cp.getDouble("/geometry/pcal/UView/max_length", 0)*0.1;
+        final double u_length = cp.getDouble("/geometry/pcal/Uview/max_length", 0)*0.1;
         final double yhigh = cp.getDouble("/geometry/pcal/pcal/yhigh", 0)*0.1;
         final double view_angle = Math.toRadians(cp.getDouble("/geometry/pcal/pcal/view_angle", 0));
         

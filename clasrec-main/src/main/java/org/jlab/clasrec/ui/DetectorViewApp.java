@@ -80,7 +80,7 @@ public class DetectorViewApp extends JFrame implements IDetectorComponentSelecti
     }
     
     public final void initDetector(String name){
-        
+        /*
         if(name.compareTo("BST")==0){
             CLASGeometryLoader  loader = new CLASGeometryLoader();
             List<DetectorComponentUI>  components = loader.getLayerUI("BST",0,0);
@@ -151,7 +151,7 @@ public class DetectorViewApp extends JFrame implements IDetectorComponentSelecti
             panelFTCAL.layerUI = layerUI;
             panelFTCAL.setSelectionListener(this);
             this.detectorView.addDetectorLayer("FTCAL", panelFTCAL);
-        }
+        }*/
     }
     
     private void initComponents(){

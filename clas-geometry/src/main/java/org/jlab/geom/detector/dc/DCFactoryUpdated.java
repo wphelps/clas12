@@ -286,10 +286,10 @@ public class DCFactoryUpdated implements Factory<DCDetector, DCSector, DCSuperla
     protected static double midpointXOffset(int layer, double w_layer) {
         
         // old, incorrect method:
-        return (1 + (layer%2))*w_layer;
+        //return (1 + (layer%2))*w_layer;
         
         // new, correct method:
-        //return (3 - (layer%2))*w_layer;   // KEEP
+        return (3 - (layer%2))*w_layer;   // KEEP
     }
 
     /**

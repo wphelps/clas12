@@ -5,6 +5,9 @@
  */
 package org.root.attr;
 
+import java.awt.Color;
+
+
 /**
  *
  * @author gavalian
@@ -15,6 +18,9 @@ public class TStyle {
     private static String  axisFontStringName    = "Helvetica";
     private static Integer axisFontSize          = 18;
     
+    private static Color   padBackgroundColor    = Color.WHITE;
+    private static Color   padFrameColor         = Color.WHITE;
+    private static Color   axisFrameColor        = Color.BLACK;
     
     private static String  statBoxFontStringName = "Courier New";
     private static Integer statBoxFontSize       = 18;
@@ -24,6 +30,30 @@ public class TStyle {
     public  static void setAxisFont(String name, int size){
         TStyle.axisFontStringName = name;
         TStyle.axisFontSize = size;
+    }
+    
+    public static Color getFrameBackgroundColor(){
+        return TStyle.padBackgroundColor;
+    }
+    
+    public static Color getFrameFillColor(){
+        return TStyle.padFrameColor;
+    }
+    
+    public static Color getAxisColor(){
+        return TStyle.axisFrameColor;
+    }
+    
+    public static void setFrameFillColor(int red, int green, int blue){
+        padFrameColor = new Color(red,green,blue);
+    }
+    
+    public static void setFrameBackgroundColor(int red, int green, int blue){
+        padBackgroundColor = new Color(red,green,blue);
+    }
+    
+    public static void setAxisColor(int red, int green, int blue){
+        axisFrameColor = new Color(red,green,blue);
     }
     
     public static int getAxisFontSize(){

@@ -28,10 +28,12 @@ public class F1D extends Function1D implements EvioWritableTree,IDataSet {
     private Attributes attr = new Attributes();
     
     public F1D(String function){
+        super();
         this.initFunction(function,0.0,1.0);
     }
     
     public F1D(String function,double min, double max){
+        super();
         this.initFunction(function,min,max);
     }
     

@@ -6,6 +6,7 @@
 
 package org.jlab.clasrec.utils;
 
+import org.jlab.clas.detector.DetectorType;
 import org.jlab.geom.base.ConstantProvider;
 
 /**
@@ -27,9 +28,9 @@ public class DataBaseLoader {
     public static ConstantProvider getCalorimeterConstants(){
         DatabaseConstantProvider provider = new DatabaseConstantProvider("mysql://clas12reader@clasdb.jlab.org/clas12");
         provider.loadTable("/geometry/pcal/pcal");
-        provider.loadTable("/geometry/pcal/UView");
-        provider.loadTable("/geometry/pcal/VView");
-        provider.loadTable("/geometry/pcal/WView");
+        provider.loadTable("/geometry/pcal/Uview");
+        provider.loadTable("/geometry/pcal/Vview");
+        provider.loadTable("/geometry/pcal/Wview");
         provider.loadTable("/geometry/ec/ec");
         provider.loadTable("/geometry/ec/uview");
         provider.loadTable("/geometry/ec/vview");
@@ -37,7 +38,88 @@ public class DataBaseLoader {
         return provider;
     }
     
-   
+    
+    public static ConstantProvider  getGeometryConstants(DetectorType type){
+        return DataBaseLoader.getGeometryConstants(type, 10, "default");
+    }
+    
+    public static ConstantProvider  getGeometryConstants(DetectorType type, int run){
+        return DataBaseLoader.getGeometryConstants(type, run, "default");
+    }
+    
+    public static ConstantProvider getCalibrationConstants(DetectorType type, int run){
+        return DataBaseLoader.getCalibrationConstants(type, run, "default");
+    }
+    
+    public static ConstantProvider getCalibrationConstants(DetectorType type, int run, String variation){
+        if(type==DetectorType.FTOF){
+            DatabaseConstantProvider provider = new DatabaseConstantProvider(run,variation);
+            provider.loadTable("/calibration/ftof/attenuation");
+            provider.loadTable("/calibration/ftof/effective_velocity");
+            provider.loadTable("/calibration/ftof/gain_balance");
+            provider.loadTable("/calibration/ftof/timing_offset");
+            provider.disconnect();
+            return provider;
+        }
+        return null;
+    }
+    
+    
+    public static ConstantProvider  getGeometryConstants(DetectorType type, int run, String variation){
+        
+        if(type==DetectorType.FTCAL){
+            DatabaseConstantProvider provider = new DatabaseConstantProvider(run,variation);
+            provider.loadTable("/geometry/ft/ftcal");
+            provider.disconnect();
+            return provider;
+        }
+        
+        if(type==DetectorType.CND){
+            DatabaseConstantProvider provider = new DatabaseConstantProvider(run,variation);
+            provider.loadTable("/geometry/cnd/cnd");
+            provider.loadTable("/geometry/cnd/layer");
+            provider.disconnect();
+            return provider;
+        }
+        
+        if(type==DetectorType.DC){
+            DatabaseConstantProvider provider = new DatabaseConstantProvider(run,variation);
+            provider.loadTable("/geometry/dc/dc");
+            provider.loadTable("/geometry/dc/region");
+            provider.loadTable("/geometry/dc/superlayer");
+            provider.loadTable("/geometry/dc/layer");
+            provider.disconnect();
+            return provider;
+        }
+        
+        if(type==DetectorType.EC){
+            DatabaseConstantProvider provider = new DatabaseConstantProvider(run,variation);
+            provider.loadTable("/geometry/pcal/pcal");
+            provider.loadTable("/geometry/pcal/Uview");
+            provider.loadTable("/geometry/pcal/Vview");
+            provider.loadTable("/geometry/pcal/Wview");
+            provider.loadTable("/geometry/ec/ec");
+            provider.loadTable("/geometry/ec/uview");
+            provider.loadTable("/geometry/ec/vview");
+            provider.loadTable("/geometry/ec/wview");
+            provider.disconnect();
+            return provider;
+        }
+        
+        if(type==DetectorType.FTOF){
+            DatabaseConstantProvider provider = new DatabaseConstantProvider(run,variation);
+            provider.loadTable("/geometry/ftof/panel1a/paddles");        
+            provider.loadTable("/geometry/ftof/panel1a/panel");
+            provider.loadTable("/geometry/ftof/panel1b/paddles");
+            provider.loadTable("/geometry/ftof/panel1b/panel");
+            provider.loadTable("/geometry/ftof/panel2/paddles");
+            provider.loadTable("/geometry/ftof/panel2/panel");
+            provider.disconnect();
+            return provider;
+        }
+        
+        return null;
+    }
     
     public static ConstantProvider getTimeOfFlightConstants(){
         DatabaseConstantProvider provider = new DatabaseConstantProvider("mysql://clas12reader@clasdb.jlab.org/clas12");
@@ -59,7 +141,7 @@ public class DataBaseLoader {
         return provider;
     }
     
-     public static ConstantProvider getConstantsEC(){
+    public static ConstantProvider getConstantsEC(){
         DatabaseConstantProvider provider = new DatabaseConstantProvider("mysql://clas12reader@clasdb.jlab.org/clas12");
         provider.loadTable("/geometry/pcal/pcal");
         provider.loadTable("/geometry/pcal/UView");

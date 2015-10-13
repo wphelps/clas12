@@ -77,6 +77,18 @@ public class H2D implements EvioWritableTree,IDataSet {
                 this.attr.getProperties().setProperty("ytitle", "");
 	}
 
+        public H2D(String name, String title, int bx, double xmin, double xmax, int by,
+			double ymin, double ymax) {
+                
+		hName = name;
+                this.setTitle(title);
+		this.set(bx, xmin, xmax, by, ymin, ymax);
+		offset = new MultiIndex(bx, by);
+		hBuffer = new double[offset.getArraySize()];
+                this.attr.getProperties().setProperty("title", "");
+                this.attr.getProperties().setProperty("xtitle", "");
+                this.attr.getProperties().setProperty("ytitle", "");
+	}
 	/**
 	 * Sets the bins to the x and y axes and creates the buffer of the histogram
 	 * 

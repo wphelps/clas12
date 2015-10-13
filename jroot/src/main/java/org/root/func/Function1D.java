@@ -7,6 +7,7 @@
 
 package org.root.func;
 import java.util.ArrayList;
+import org.root.attr.Attributes;
 import org.root.data.DataSetXY;
 
 
@@ -22,8 +23,36 @@ public class Function1D  {
     
     private final ArrayList<RealParameter>  funcParams = new ArrayList<RealParameter>();
     
+    private final Attributes attr = new Attributes();
+    
     public Function1D(){
-        
+        this.setLineColor(4);
+        this.setLineWidth(2);
+        this.setLineStyle(1);
+    }
+    
+    public int  getLineColor(){
+        return Integer.parseInt(this.attr.getProperties().getProperty("line-color"));
+    }
+    
+    public int  getLineWidth(){
+        return Integer.parseInt(this.attr.getProperties().getProperty("line-width"));
+    }
+    
+    public int  getLineStyle(){
+        return Integer.parseInt(this.attr.getProperties().getProperty("line-style"));
+    }
+    
+    public final void setLineColor(Integer color){
+        this.attr.getProperties().put("line-color", color.toString());
+    }
+    
+    public final void setLineWidth(Integer width){
+        this.attr.getProperties().put("line-width", width.toString());
+    }
+    
+    public final void setLineStyle(Integer style){
+        this.attr.getProperties().put("line-style", style.toString());
     }
     
     public void setRange(double min, double max){

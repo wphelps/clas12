@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import org.jlab.data.detector.DetectorType;
+import org.jlab.clas.detector.DetectorType;
 import org.jlab.geom.DetectorHit;
 import org.jlab.geom.DetectorId;
 import org.jlab.geom.base.ConstantProvider;
@@ -19,6 +19,8 @@ import org.jlab.geom.component.ScintillatorPaddle;
 import org.jlab.geom.component.SiStrip;
 import org.jlab.geom.detector.bst.BSTFactory;
 import org.jlab.geom.detector.bst.BSTLayer;
+import org.jlab.geom.detector.dc.DCDetector;
+import org.jlab.geom.detector.dc.DCFactory;
 import org.jlab.geom.detector.ec.ECDetector;
 import org.jlab.geom.detector.ec.ECFactory;
 import org.jlab.geom.detector.ftof.FTOFDetector;
@@ -46,11 +48,12 @@ public class CLASGeometryLoader {
         
     }
     
-    public void loadGeometry(String name){
+    
+    public void loadGeometry(String name, int run, String variation){
         
         if(name.compareTo("EC")==0){
             System.out.println("[GEOMETRY-LOADER] --> loading geometry EC");
-            ConstantProvider    cp = DataBaseLoader.getConstantsEC();
+            ConstantProvider  cp = DataBaseLoader.getGeometryConstants(DetectorType.EC, run, variation);
             ECFactory      factory = new ECFactory();
             ECDetector     ecdet   = factory.createDetectorCLAS(cp);
             this.clasDetectors.put("EC", ecdet);
@@ -58,12 +61,37 @@ public class CLASGeometryLoader {
         
         if(name.compareTo("FTOF")==0){
             System.out.println("[GEOMETRY-LOADER] --> loading geometry FTOF");
-            ConstantProvider      cp = DataBaseLoader.getConstantsFTOF();
+            ConstantProvider      cp = DataBaseLoader.getGeometryConstants(DetectorType.FTOF, run, variation);
             FTOFFactory      factory = new FTOFFactory();
             FTOFDetector     ftofdet = factory.createDetectorCLAS(cp);
             this.clasDetectors.put("FTOF", ftofdet);
         }
         
+        if(name.compareTo("DC")==0){
+            System.out.println("[GEOMETRY-LOADER] --> loading geometry FTOF");
+            ConstantProvider      cp = DataBaseLoader.getGeometryConstants(DetectorType.DC, run, variation);
+            FTOFFactory      factory = new FTOFFactory();
+            FTOFDetector     ftofdet = factory.createDetectorCLAS(cp);
+            this.clasDetectors.put("FTOF", ftofdet);
+        }
+        
+        if(name.compareTo("DC-tilted")==0){
+            System.out.println("[GEOMETRY-LOADER] --> loading geometry FTOF");
+            ConstantProvider      cp = DataBaseLoader.getGeometryConstants(DetectorType.DC, run, variation);
+            DCFactory      factory = new DCFactory();
+            DCDetector     ftofdet = factory.createDetectorTilted(cp);
+            this.clasDetectors.put("FTOF", ftofdet);
+        }
+        
+        
+        
+    }
+    
+    public void loadGeometry(String name){
+        
+        this.loadGeometry(name, 10, "default");
+        
+       /*        
         if(name.compareTo("BST")==0){
             System.out.println("[GEOMETRY-LOADER] --> loading geometry BST");
             bstLayers.clear();
@@ -75,14 +103,8 @@ public class CLASGeometryLoader {
             System.out.println("BOUNDARY \n " + layerUP.getBoundary());
             bstLayers.add(layerDOWN);
             bstLayers.add(layerUP);
-        }
-        /*
-        if(name.compareTo("FTOF")==0){
-            ConstantProvider      cp = DataBaseLoader.getConstantsFTOF();
-            FTOFFactory      factory = new FTOFFactory();
-            FTOFDetector     ftofdet = factory.createDetectorCLAS(cp);
-            this.clasDetectors.put("EC", ftofdet);
-        } */       
+        }*/
+        
     }
     
     public Detector  getDetector(String name){
@@ -91,7 +113,7 @@ public class CLASGeometryLoader {
         }
         return null;
     }
-    
+    /*
     public DetectorComponent getComponent(DetectorType t, int sector, int layer,
             int component){
         
@@ -116,8 +138,8 @@ public class CLASGeometryLoader {
         }
         
         return null;
-    }
-    
+    }*/
+    /*
     public DetectorComponent getComponent(String ts, int sector, int layer,
             int component){
         if(ts.compareTo("EC")==0){
@@ -142,70 +164,7 @@ public class CLASGeometryLoader {
         return this.getComponents(DetectorType.getType(t), sector, layer, component);
     }
     
-    
-    public List<DetectorComponentUI>  getLayerUI(String detector, int sector, int layer){
-        
-        if(detector.compareTo("BST")==0){
-            ArrayList<DetectorComponentUI>  uiList = new ArrayList<DetectorComponentUI>();
-            int[] sectors = new int[]{10,14,18,24};
-            double[] radius = new double[]{200,300,400,500};
-            double   width  = 30;
-            double   angleGap = 1.0;
-            for(int loop = 0; loop < 8; loop++){
-                int region = loop/2;
-                int regionLayer = loop%2;
-                double angle = 360.0/sectors[region];
-                for(int sec = 0; sec < sectors[region]; sec++){
-                    DetectorComponentUI comp = new DetectorComponentUI();
-                    comp.COMPONENT = -1;
-                    comp.SECTOR    = sec;
-                    comp.LAYER     = loop;
-                    
-                    double xc = (radius[region] + regionLayer*width)*Math.cos(Math.toRadians(angle*sec));
-                    double yc = (radius[region] + regionLayer*width)*Math.sin(Math.toRadians(angle*sec));
-                    double xp = 0;
-                    double yp = 0;
-                    double offset = width*regionLayer;
-                    xp = (radius[region] + offset - width/4.0)*Math.cos(Math.toRadians(angle*sec - angle/2.0 + angleGap));
-                    yp = (radius[region] + offset - width/4.0)*Math.sin(Math.toRadians(angle*sec - angle/2.0 + angleGap));
-                    comp.shapePolygon.addPoint((int) yp,(int) -xp);
-
-                    xp = (radius[region] + offset + width/4.0)*Math.cos(Math.toRadians(angle*sec - angle/2.0 + angleGap));
-                    yp = (radius[region] + +offset+ width/4.0)*Math.sin(Math.toRadians(angle*sec - angle/2.0 + angleGap));
-                    comp.shapePolygon.addPoint((int) yp,(int) -xp);
-                    
-                    xp = (radius[region] + offset + width/4.0)*Math.cos(Math.toRadians(angle*sec + angle/2.0 - angleGap));
-                    yp = (radius[region] + offset + width/4.0)*Math.sin(Math.toRadians(angle*sec + angle/2.0 - angleGap));
-                    comp.shapePolygon.addPoint((int) yp,(int) -xp);
-                    
-                    xp = (radius[region] + offset - width/4.0)*Math.cos(Math.toRadians(angle*sec + angle/2.0 - angleGap));
-                    yp = (radius[region] + offset - width/4.0)*Math.sin(Math.toRadians(angle*sec + angle/2.0 - angleGap));
-                    comp.shapePolygon.addPoint((int) yp,(int) -xp);
-                    
-                    /*
-                    xp = (radius[region] - regionLayer*width/2.0)*Math.cos(Math.toRadians(angle*sec - sec*angle/2.0));
-                    yp = (radius[region] - regionLayer*width/2.0)*Math.sin(Math.toRadians(angle*sec - sec*angle/2.0));
-                    comp.shapePolygon.addPoint((int) xp,(int) yp);
-
-                    xp = (radius[region] + regionLayer*width/2.0)*Math.cos(Math.toRadians(angle*sec - sec*angle/2.0));
-                    yp = (radius[region] + regionLayer*width/2.0)*Math.sin(Math.toRadians(angle*sec - sec*angle/2.0));
-                    comp.shapePolygon.addPoint((int) xp,(int) yp);
-
-                    xp = (radius[region] + regionLayer*width/2.0)*Math.cos(Math.toRadians(angle*sec + sec*angle/2.0));
-                    yp = (radius[region] + regionLayer*width/2.0)*Math.sin(Math.toRadians(angle*sec + sec*angle/2.0));
-                    comp.shapePolygon.addPoint((int) xp,(int) yp);
-                    
-                    xp = (radius[region] - regionLayer*width/2.0)*Math.cos(Math.toRadians(angle*sec + sec*angle/2.0));
-                    yp = (radius[region] - regionLayer*width/2.0)*Math.sin(Math.toRadians(angle*sec + sec*angle/2.0));
-                    comp.shapePolygon.addPoint((int) xp,(int) yp);
-                    */
-                    uiList.add(comp);
-                }
-            }
-            return uiList;
-        }
-        return null;
-    }
+    */
     
     public List<DetectorHit>  getDetectorHits(String detector, Path3D path){
         if(detector.compareTo("BST")==0){
@@ -292,47 +251,5 @@ public class CLASGeometryLoader {
         //System.out.println(" S/L/C " + " " + region + " " + sector + "  " + layer + " distance = " + distance);
         DetectorHit hit = new DetectorHit(DetectorId.BST,sector,region,layer,cid,ip);
         return hit;
-    }
-    
-    public ArrayList<DetectorShape3D> getDetectorShapes(DetectorType type, int sector, int layer){
-        if(type==DetectorType.FTOF){
-            
-            ArrayList<DetectorShape3D> components = new ArrayList<DetectorShape3D>();
-            List<ScintillatorPaddle> paddles = this.clasDetectors.get("FTOF").getSector(sector).getSuperlayer(layer).getLayer(0).getAllComponents();
-            for(ScintillatorPaddle paddle : paddles){
-                DetectorShape3D entry = new DetectorShape3D();
-                entry.SECTOR = sector;
-                entry.LAYER  = layer;
-                entry.COMPONENT = paddle.getComponentId();
-                
-                entry.shapePath.addPoint(
-                        (int) paddle.getVolumePoint(0).x(),
-                        (int) paddle.getVolumePoint(0).y(),
-                        0.0
-                );
-                entry.shapePath.addPoint(
-                        (int) paddle.getVolumePoint(1).x(),
-                        (int) paddle.getVolumePoint(1).y(),
-                        0.0
-                );
-                entry.shapePath.addPoint(
-                        (int) paddle.getVolumePoint(5).x(),
-                        (int) paddle.getVolumePoint(5).y(),
-                        0.0
-                );
-                entry.shapePath.addPoint(
-                        (int) paddle.getVolumePoint(4).x(),
-                        (int) paddle.getVolumePoint(4).y(),
-                        0.0
-                );
-                
-                
-            components.add(entry);
-            }
-            return components;
-        }
-        return null;
-    }
-
-    
+    }        
 }

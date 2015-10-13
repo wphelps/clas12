@@ -19,6 +19,7 @@ import java.util.List;
 import org.root.attr.ColorPalette;
 import org.root.attr.MarkerPainter;
 import org.root.attr.TStyle;
+import org.root.func.F1D;
 import org.root.histogram.H2D;
 
 /**
@@ -27,14 +28,23 @@ import org.root.histogram.H2D;
  */
 public class AbsDataSetDraw {
     
+    public static float[]  dashPattern1 = new float[]{10.0f,5.0f};
+    public static float[]  dashPattern2 = new float[]{10.0f,5.0f,2.0f,5.0f};
+    public static float[]  dashPattern3 = new float[]{2.0f,5.0f,2.0f,5.0f};
+    
     public static void drawAxisBackGround(AxisRegion axis, Graphics2D g2d, 
             int startX, int startY, int gWidth, int gHeight){
         Color background  = ColorPalette.getColor(axis.getAttributes().getAsInt("background-color"));
         Color linecolor   = ColorPalette.getColor(axis.getAttributes().getAsInt("line-color"));
         Integer lineWidth = axis.getAttributes().getAsInt("line-width");
-       
-        g2d.setColor(background);
+        Color backgroundColor = TStyle.getFrameBackgroundColor();
+        g2d.setColor(backgroundColor);
         g2d.fillRect(startX,startY,gWidth,gHeight);
+        
+         Color   frameColor = TStyle.getFrameFillColor();
+         g2d.setColor(frameColor);
+        g2d.fillRect(axis.getFrame().x, axis.getFrame().y, 
+                axis.getFrame().width, axis.getFrame().height);
         g2d.setColor(linecolor);
         
     }
@@ -91,7 +101,7 @@ public class AbsDataSetDraw {
         double originX = originXbox + xoffset;
         double originY = originYbox + + TStyle.getStatBoxTextGap()*TStyle.getStatBoxFontSize();
         
-        g2d.setColor(Color.BLACK);
+        g2d.setColor(TStyle.getAxisColor());
         g2d.setStroke(new BasicStroke(1));
         g2d.drawRect(
                 (int) originXbox, (int) originYbox,
@@ -123,10 +133,17 @@ public class AbsDataSetDraw {
         Color background  = ColorPalette.getColor(axis.getAttributes().getAsInt("background-color"));
         Color linecolor   = ColorPalette.getColor(axis.getAttributes().getAsInt("line-color"));
         Integer lineWidth = axis.getAttributes().getAsInt("line-width");
+        Color   axisColor = TStyle.getAxisColor();
        
+        
         //g2d.setColor(background);
         //g2d.fillRect(startX,startY,gWidth,gHeight);
-        g2d.setColor(linecolor);
+        /*
+        g2d.setColor(frameColor);
+        g2d.fillRect(axis.getFrame().x, axis.getFrame().y, 
+                axis.getFrame().width, axis.getFrame().height);
+        */
+        g2d.setColor(axisColor);
         g2d.setStroke(new BasicStroke(lineWidth));
         g2d.drawRect(axis.getFrame().x, axis.getFrame().y, 
                 axis.getFrame().width, axis.getFrame().height);
@@ -137,7 +154,8 @@ public class AbsDataSetDraw {
         ArrayList<String>  stringX = axis.getAxisX().getCoordinatesLabels();
         ArrayList<String>  stringY = axis.getAxisY().getCoordinatesLabels();
         
-        Font  axisFont = new Font("Helvetica",Font.PLAIN,axis.axisLabelSize);
+        //Font  axisFont = new Font("Helvetica",Font.PLAIN,axis.axisLabelSize);
+        Font  axisFont = new Font("Helvetica",Font.PLAIN,TStyle.getAxisFontSize());
         //Font  axisFont = new Font(Font.SANS_SERIF,Font.PLAIN,axis.axisLabelSize);
         FontMetrics  fm = g2d.getFontMetrics(axisFont);
         
@@ -220,10 +238,17 @@ public class AbsDataSetDraw {
         Rectangle2D rect = fma.getStringBounds(axis.getTitle().getText().getIterator(), 0,
                 axis.getTitle().getText().getIterator().getEndIndex(),g2d);
         
+        
+        Rectangle2D rectY = fma.getStringBounds(axis.getYTitle().getText().getIterator(), 0,
+                axis.getYTitle().getText().getIterator().getEndIndex(),g2d);
+        
+        Rectangle2D rectX = fma.getStringBounds(axis.getXTitle().getText().getIterator(), 0,
+                axis.getXTitle().getText().getIterator().getEndIndex(),g2d);
+         
         double xt = axis.getFramePointX(axis.getXTitle().getX());
         double yt = axis.getFramePointY(axis.getXTitle().getY());
         
-        g2d.drawString(axis.getXTitle().getText().getIterator(), (int) (xt - rect.getWidth()/2.0), (int) yt+48);
+        g2d.drawString(axis.getXTitle().getText().getIterator(), (int) (xt - rectX.getWidth()/2.0), (int) yt+48);
         
         xt = axis.getFramePointX(axis.getTitle().getX());
         yt = axis.getFramePointY(axis.getTitle().getY());
@@ -232,7 +257,7 @@ public class AbsDataSetDraw {
         yt = axis.getFrame().y - 0.8*rect.getHeight();
         g2d.drawString(axis.getTitle().getText().getIterator(), (int) xt, (int) yt);
         
-        xt = -axis.getFrame().height+100;
+        xt = -axis.getFrame().height-axis.getFrame().y + axis.getFrame().height/2.0 - rectY.getWidth()/2.0;
         yt = 50;
         AffineTransform orig = g2d.getTransform();
         g2d.rotate(-Math.PI/2);
@@ -270,13 +295,46 @@ public class AbsDataSetDraw {
     public static void drawDataSetAsFunction(AxisRegion axis, Graphics2D g2d, IDataSet ds,
             int startX, int startY, int gWidth, int gHeight){
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        int line_color = 1;
+        int line_width = 1;
+        int line_style = 1;
+        if(ds.getClass().isAssignableFrom(F1D.class)==true){
+            F1D func = (F1D) ds;
+            line_color = func.getLineColor();
+            line_width = func.getLineWidth();
+            line_style = func.getLineStyle();
+        }
+        
         MarkerPainter  mPainter = new MarkerPainter();
         //int markerStyle = ds.getAttributes().getAsInt("marker-style");
         //int markerColor = ds.getAttributes().getAsInt("marker-color");
         //int markerSize  = ds.getAttributes().getAsInt("marker-size");
+        
         int npoints = ds.getDataSize();
         //System.out.println("Graph points = " + npoints);
         GeneralPath  path = new GeneralPath();
+        g2d.setStroke(new BasicStroke(line_width));
+        /*
+        float dash[] = { 10.0f, 5.0f , 2.0f , 5.0f};
+        g2d.setStroke(new BasicStroke(4.0f, BasicStroke.CAP_BUTT,
+        BasicStroke.JOIN_MITER, 20.0f, dash, 0.0f));
+        */
+        if(line_style==2){
+            g2d.setStroke(new BasicStroke(line_width, BasicStroke.CAP_BUTT,
+                    BasicStroke.JOIN_MITER, 20.0f, dashPattern1, 0.0f));
+        }
+        
+        if(line_style==3){
+            g2d.setStroke(new BasicStroke(line_width, BasicStroke.CAP_BUTT,
+                    BasicStroke.JOIN_MITER, 20.0f, dashPattern2, 0.0f));
+        }
+        
+        if(line_style==4){
+            g2d.setStroke(new BasicStroke(line_width, BasicStroke.CAP_BUTT,
+                    BasicStroke.JOIN_MITER, 20.0f, dashPattern3, 0.0f));
+        }
+        
+        g2d.setColor(ColorPalette.getColor(line_color));
         for(int loop = 0; loop < npoints; loop++){
             if(axis.getDataRegion().contains(ds.getDataX(loop),ds.getDataY(loop)) == true){
                 double xr = axis.getDataRegion().fractionX(ds.getDataX(loop));

@@ -74,7 +74,9 @@ public class EvioETSource implements DataSource {
             statConfig.setBlockMode(EtConstants.stationBlocking);
             statConfig.setUserMode(EtConstants.stationUserSingle);
             statConfig.setRestoreMode(EtConstants.stationRestoreOut);
-            EtStation station = sys.createStation(statConfig, "my_station");
+            //EtStation station = sys.createStation(statConfig, "GRAND_CENTRAL");
+            EtStation station = sys.createStation(statConfig, "reader_station");
+            
             myAttachment = sys.attach(station);
         } catch (EtException ex) {
             this.connectionOK = false;
@@ -128,13 +130,21 @@ public class EvioETSource implements DataSource {
         }
         if(sys.alive()==true){
             try {
-                EtEvent[] events = sys.getEvents(myAttachment, Mode.TIMED, null, 0, 1);
+                EtEvent[] events = sys.getEvents(myAttachment, Mode.SLEEP, null, 0, 1);                
+                
                 if(events!=null){
                     if(events.length>0){
                         ByteBuffer buffer = events[0].getDataBuffer();
-                        EvioDataEvent evioEvent = new EvioDataEvent(buffer,
-                                EvioFactory.getDictionary());
-                        return evioEvent;
+                        System.out.println(" RECEIVED A BUFFER WITH SIZE " + buffer.capacity());
+                        byte[]  array = buffer.array();
+                        for(int loop = 0; loop < 20; loop++){
+                            System.out.print(String.format(" %X ", array[loop]));
+                        }
+                        System.out.println();
+                        //EvioDataEvent evioEvent = new EvioDataEvent(buffer,
+                        //        EvioFactory.getDictionary());
+                        //return evioEvent;
+                        return null;
                     }
                 }
             } catch (EtException ex) {

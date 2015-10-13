@@ -34,34 +34,28 @@ public class DatabaseConstantProvider implements ConstantProvider {
     private JDBCProvider provider;
     
     
+    public DatabaseConstantProvider(){
+        this.loadTimeErrors = 0;
+        this.runNumber = 10;
+        this.variation = "default";
+        
+        String address = "mysql://clas12reader@clasdb.jlab.org/clas12";
+        
+        String envAddress = this.getEnvironment();        
+        if(envAddress!=null) address = envAddress;
+        this.initialize(address);
+    }
     
     public DatabaseConstantProvider(int run, String var){
+        
         this.loadTimeErrors = 0;
         this.runNumber = run;
         this.variation = var;
         
-        String envCCDB   = System.getenv("CCDB_DATABASE");
-        String envCLAS12 = System.getenv("CLAS12DIR");
-        
         String address = "mysql://clas12reader@clasdb.jlab.org/clas12";
         
-        if(envCCDB!=null){
-            if(envCLAS12!=null){
-                StringBuilder str = new StringBuilder();
-                str.append("sqlite:///");
-                if(envCLAS12.charAt(0)!='/') str.append("/");
-                str.append(envCLAS12);
-                if(envCCDB.charAt(0)!='/' && envCLAS12.charAt(envCLAS12.length()-1)!='/'){
-                    str.append("/");
-                }
-                str.append(envCCDB);
-                address = str.toString();
-            }  else {
-                System.out.println("[DB CONFIG] ---> CLAS12DIR environment is not set.");
-            }
-        } else {
-            System.out.println("[DB CONFIG] ---> environment CCDB_DATABASE is not set.");
-        }
+        String envAddress = this.getEnvironment();        
+        if(envAddress!=null) address = envAddress;
         this.initialize(address);
     }
     
@@ -74,6 +68,43 @@ public class DatabaseConstantProvider implements ConstantProvider {
         this.initialize(address);
     }
     
+    private String getEnvironment(){
+        
+        String envCCDB   = System.getenv("CCDB_DATABASE");
+        String envCLAS12 = System.getenv("CLAS12DIR");
+        
+        String propCLAS12 = System.getProperty("CLAS12DIR");
+        String propCCDB   = System.getProperty("CCDB_DATABASE");
+        
+        //System.out.println("ENVIRONMENT : " + envCLAS12 + " " + envCCDB + " " + propCLAS12 + " " + propCCDB);
+        
+        if(envCCDB!=null&&envCLAS12!=null){
+            StringBuilder str = new StringBuilder();
+            str.append("sqlite:///");
+            if(envCLAS12.charAt(0)!='/') str.append("/");
+            str.append(envCLAS12);
+            if(envCCDB.charAt(0)!='/' && envCLAS12.charAt(envCLAS12.length()-1)!='/'){
+                str.append("/");
+            }
+            str.append(envCCDB);
+            return str.toString();
+        }
+        
+        if(propCCDB!=null&&propCLAS12!=null){
+            StringBuilder str = new StringBuilder();
+            str.append("sqlite:///");
+            if(propCLAS12.charAt(0)!='/') str.append("/");
+            str.append(propCLAS12);
+            if(propCCDB.charAt(0)!='/' && propCLAS12.charAt(propCLAS12.length()-1)!='/'){
+                str.append("/");
+            }
+            str.append(propCCDB);
+            return str.toString();
+        }
+        
+        return null;
+    }
+    
     private void initialize(String address){
         provider = CcdbPackage.createProvider(address);
         System.out.println("[DB] --->  open connection with : " + address);
@@ -82,9 +113,9 @@ public class DatabaseConstantProvider implements ConstantProvider {
         
         provider.connect();
         if(provider.getIsConnected()==true){
-            System.out.println("[DB] ---> database connection   : success");
+            System.out.println("[DB] --->  database connection  : success");
         } else {
-            System.out.println("[DB] ---> database connection   : failed");
+            System.out.println("[DB] --->  database connection  : failed");
         }
         
         provider.setDefaultVariation(variation);
@@ -166,6 +197,7 @@ public class DatabaseConstantProvider implements ConstantProvider {
     }
     
     public void disconnect(){
+        System.out.println("[DB] --->  database disconnect  : success");
         this.provider.close();
     }
     /**
@@ -230,4 +262,10 @@ public class DatabaseConstantProvider implements ConstantProvider {
         }
         return graph;
     }
+
+    public static void main(String[] args){
+        DatabaseConstantProvider provider = new DatabaseConstantProvider();
+        provider.disconnect();
+    }
+
 }

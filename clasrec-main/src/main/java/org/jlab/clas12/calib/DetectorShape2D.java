@@ -46,8 +46,7 @@ public class DetectorShape2D {
         this.shapePath.addPoint( width/2.0, -height/2.0,0.0);        
     }
     
-    
-    
+        
     public boolean isContained(double x, double y){
         int i, j;
         boolean c = false;

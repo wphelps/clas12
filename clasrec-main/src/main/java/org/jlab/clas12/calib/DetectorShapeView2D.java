@@ -5,11 +5,14 @@
  */
 package org.jlab.clas12.calib;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -28,12 +31,20 @@ public class DetectorShapeView2D extends JPanel implements MouseListener , Mouse
     public  Rectangle  drawRegion = new Rectangle();
     private String     canvasName = "undefined";
     private List<DetectorShape2D>   shapes = new ArrayList<DetectorShape2D>();
+    private Integer                 selectedShape = -1;
+    private ActionListener          listener = null;
+    
+    
     public boolean MOUSEOVER_CALLBACK = true;
     
     public DetectorShapeView2D(String name){
         canvasName = name;
+        addMouseListener(this);
     }
     
+    public void setActionListener(ActionListener al){
+        this.listener = al;
+    }
     
     public String getName(){ return this.canvasName;}
     
@@ -56,12 +67,23 @@ public class DetectorShapeView2D extends JPanel implements MouseListener , Mouse
         drawRegion.x = 0;
         drawRegion.y = 0;
         drawRegion.width = 0;
-        drawRegion.width = 0;
+        drawRegion.height = 0;
+        double minX = 0;
+        double maxX = 0;
+        double minY = 0;
+        double maxY = 0;
         
         for(DetectorShape2D shape : shapes){
+            
             int npoints = shape.getShapePath().size();
             for(int p = 0; p < npoints; p++){
                 Point3D point = shape.getShapePath().point(p);
+                
+                if(point.x()>maxX) maxX = point.x();
+                if(point.x()<minX) minX = point.x();
+                if(point.y()>maxY) maxY = point.y();
+                if(point.y()<minY) minY = point.y();
+                
                 if(point.x()<drawRegion.x) drawRegion.x = (int) point.x();
                 if(point.y()<drawRegion.y) drawRegion.y = (int) point.y();
                 
@@ -74,6 +96,20 @@ public class DetectorShapeView2D extends JPanel implements MouseListener , Mouse
                 }
             }
         }
+        //System.out.println("UPDATE MINX/MAXX = " + minX + " " + maxX);
+        drawRegion.width  = (int) (maxX - minX);
+        drawRegion.height = (int) (maxY - minY);
+        
+        int rw  = (int) ( (double)  drawRegion.width   * 0.1);
+        int rh  = (int) ( (double)  drawRegion.height  * 0.1);
+        
+        drawRegion.x -= rw;
+        drawRegion.y -= rh;
+        drawRegion.width  = (int) (drawRegion.width + 2.0*rw);
+        drawRegion.height = (int) (drawRegion.height + 2.0*rh);
+        
+        
+        //drawRegion.height = drawRegion.width;
         /*
         System.out.println(" BEFORE : DRAWING REGION " + drawRegion.x + " " +
                 drawRegion.y + "  " + drawRegion.width + " x " + drawRegion.height);
@@ -112,44 +148,88 @@ public class DetectorShapeView2D extends JPanel implements MouseListener , Mouse
         return (int) (relY*h);
     }
     
+    public List<DetectorShape2D>  getShapes(){
+        return this.shapes;
+    }
+    
     public void draw2D(Graphics2D g2d, int xoff, int yoff, int width, int height){
         
         RenderingHints rh = new RenderingHints(
                 RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         
+        //System.out.println("DRAW : " + width + "  " + height);
         this.updateDrawRegion();
+        
         g2d.setRenderingHints(rh);
         
         g2d.setColor(new Color(165,155,155));
         g2d.fillRect(xoff, yoff, width, height);
-        
+        int counter = 0;
         for(DetectorShape2D shape : shapes){
             
             GeneralPath path = new GeneralPath();
             int npoints = shape.getShapePath().size();
-            for(int p = 0; p < npoints; p++){
+            Point3D  startpoint = shape.getShapePath().point(0);
+            int startx = this.getX( (int) startpoint.x(), width);
+            int starty = this.getY( (int) startpoint.y(), height);
+            path.moveTo(startx, starty);
+            for(int p = 1; p < npoints; p++){
                 Point3D  point = shape.getShapePath().point(p);
                 int x = this.getX( (int) point.x(), width);
                 int y = this.getY( (int) point.y(), height);
-                if(p==0){
-                    path.moveTo(x, y);
-                } else {
-                    path.lineTo(x, y);
-                }
+                path.lineTo(x, y);
             }
+            path.lineTo(startx, starty);
             
-            g2d.setColor(new Color(100,240,100));
+            g2d.setColor(shape.getSwingColor());
+            
+            if(counter==this.selectedShape){
+                g2d.setColor(Color.red);
+            }
             g2d.fill(path);
+            g2d.setStroke(new BasicStroke(1));
             g2d.setColor(Color.BLACK);
             g2d.draw(path);
+            
+            counter++;
         }
     }
     
+    public DetectorShape2D getSelectedShape(){
+        if(this.selectedShape>=0) return this.shapes.get(this.selectedShape);
+        return null;
+    }
     
-    
+    public void showDrawRegion(){
+        System.out.println(String.format("DRAW REGION X/Y %5d %5d  W/H %6d %6d", 
+                this.drawRegion.x,this.drawRegion.y,this.drawRegion.width,this.drawRegion.height));
+    }
 
-    public void mouseClicked(MouseEvent e) {    }
+    public void mouseClicked(MouseEvent e) {  
+        double coordinateX = (((double)e.getX())/this.getWidth())*this.drawRegion.width + this.drawRegion.x;
+        double coordinateY = (((double) e.getY())/this.getHeight())*this.drawRegion.height + this.drawRegion.y;
+        this.showDrawRegion();
+        //System.out.println("Mouse clicked " + e.getX() + " x " + e.getY()
+        //+ "   REAL WORLD COORDINATES = " + coordinateX + "  " + coordinateY);
+        //this.selectedShape = -1;
+        int  index = -1;
+        for(int loop = 0; loop < this.shapes.size(); loop++){
+            if(this.shapes.get(loop).isContained(coordinateX, coordinateY)==true){
+                //System.out.println(" SELECTED SHAPE = " + loop);
+                index = loop;
+                break;
+            }
+        }
+        if(index>=0&&index!=this.selectedShape){
+            this.selectedShape = index;
+            System.out.println("SHAPE SELECTION HAS CHANGED TO " + index);
+            this.repaint();
+            if(this.listener!=null){
+                this.listener.actionPerformed(new ActionEvent("PROBE",10,this.getName()));
+            }
+        }
+    }
 
     public void mousePressed(MouseEvent e) {    }
 
