@@ -28,6 +28,9 @@ import org.jlab.coda.et.exception.EtExistsException;
 import org.jlab.coda.et.exception.EtTimeoutException;
 import org.jlab.coda.et.exception.EtTooManyException;
 import org.jlab.coda.et.exception.EtWakeUpException;
+import org.jlab.coda.jevio.EvioEvent;
+import org.jlab.coda.jevio.EvioException;
+import org.jlab.coda.jevio.EvioReader;
 import org.jlab.data.io.DataEvent;
 import org.jlab.data.io.DataEventList;
 import org.jlab.data.io.DataSource;
@@ -43,6 +46,8 @@ public class EvioETSource implements DataSource {
     private Integer  etRingPort   = 11111;
     private EtSystem sys = null;
     private EtAttachment  myAttachment = null;
+    private Boolean       remoteConnection = false;
+    
     
     public EvioETSource(){
         this.etRingPort = EtConstants.serverPort;
@@ -51,6 +56,10 @@ public class EvioETSource implements DataSource {
     public EvioETSource(String host){
         this.etRingHost = host;
         this.etRingPort = EtConstants.serverPort;
+    }
+    
+    public void setRemote(Boolean flag){
+        this.remoteConnection = flag;
     }
     
     public boolean hasEvent() {
@@ -62,16 +71,31 @@ public class EvioETSource implements DataSource {
     }
 
     public void open(String filename) {
+        System.out.println("[ETSOURCE] --> connecting to host : [" +
+                this.etRingHost + "]  FILE [" + filename + "]  PORT [" + 
+                this.etRingPort + "]");
+        System.out.println("[ETSOURCE] --> connecting remotely : " + this.remoteConnection);
         try {
             this.connectionOK = true;
             String etFile = filename;
             
             EtSystemOpenConfig config = new EtSystemOpenConfig( etFile,this.etRingHost,this.etRingPort);
+            if(this.remoteConnection==true){
+                config.setConnectRemotely(true);
+            }
+            //config.setConnectRemotely(true);
+            //System.out.println("-------------->>>>> CONNECTING REMOTELY");
+            
+            //System.out.println("-------------->>>>> CONNECTING LOCALY");
+            
             sys = new EtSystem(config);
+            sys.setDebug(EtConstants.debugInfo);
             sys.open();
             
             EtStationConfig statConfig = new EtStationConfig();
             statConfig.setBlockMode(EtConstants.stationBlocking);
+            //statConfig.setBlockMode(EtConstants.stationNonBlocking);
+            
             statConfig.setUserMode(EtConstants.stationUserSingle);
             statConfig.setRestoreMode(EtConstants.stationRestoreOut);
             //EtStation station = sys.createStation(statConfig, "GRAND_CENTRAL");
@@ -134,16 +158,68 @@ public class EvioETSource implements DataSource {
                 
                 if(events!=null){
                     if(events.length>0){
+                        
                         ByteBuffer buffer = events[0].getDataBuffer();
-                        System.out.println(" RECEIVED A BUFFER WITH SIZE " + buffer.capacity());
+                        
+                        byte[] data = events[0].getData();
+                        
+                        System.out.println("---> RECEIVED EVENT LENGTH   = " + events[0].getLength());
+                        System.out.println("---> DATA BYTE BUFFER LENGTH = " + data.length);
+                        //System.out.println(" RECEIVED A BUFFER WITH SIZE " + buffer.capacity());
+                        
                         byte[]  array = buffer.array();
-                        for(int loop = 0; loop < 20; loop++){
-                            System.out.print(String.format(" %X ", array[loop]));
-                        }
+                        System.out.println(" RECEIVED A BUFFER WITH SIZE " + buffer.capacity()
+                        + "  ARRAY SIZE = " + array.length);
+                        
+                        //for(int k = 0; k < 10; k++){
+                            for(int loop = 0; loop < array.length; loop++){
+                                System.out.print(String.format(" %X ", array[loop]));
+                                if((loop+1)%20==0) System.out.println();
+                                if(loop>200) break;
+                            }
+                            
                         System.out.println();
-                        //EvioDataEvent evioEvent = new EvioDataEvent(buffer,
-                        //        EvioFactory.getDictionary());
-                        //return evioEvent;
+                        int length = events[0].getLength();
+                        
+                      
+                        ByteBuffer  evioBuffer = ByteBuffer.allocate(events[0].getLength());
+                        evioBuffer.put(data, 8*4*2, length);
+                        evioBuffer.order(buffer.order());
+                        
+                         System.out.println("---> ENDIAN = " + buffer.order() + "  new "
+                                 + evioBuffer.order());
+                         
+                         byte[]  arrayE = evioBuffer.array();
+                         System.out.println(" RECEIVED A BUFFER WITH SIZE " + buffer.capacity()
+                                 + "  ARRAY SIZE = " + array.length);
+                         
+                         //for(int k = 0; k < 10; k++){
+                         for(int loop = 0; loop < arrayE.length; loop++){
+                             System.out.print(String.format(" %X ", arrayE[loop]));
+                             if((loop+1)%20==0) System.out.println();
+                             if(loop>200) break;
+                         }
+                         
+                         System.out.println();
+                        
+                        EvioReader reader;
+                        
+                        try {
+                            reader = new EvioReader(buffer);
+                            
+                            EvioEvent  event = reader.parseNextEvent();
+                            System.out.println(" READER EVENT # = " + reader.getEventCount());
+                            System.out.println(" PARSED EVENT # = " + event + "  BLOCK # " + reader.getBlockCount()
+                            + "   BUFFER LIMIT = " + reader.getByteBuffer().limit()
+                            + "  VERSION = " + reader.getEvioVersion());
+                        } catch (EvioException ex) {
+                            Logger.getLogger(EvioETSource.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                     
+                        /*
+                        EvioDataEvent evioEvent = new EvioDataEvent(evioBuffer,
+                                EvioFactory.getDictionary());
+                        return evioEvent;*/
                         return null;
                     }
                 }
@@ -187,6 +263,7 @@ public class EvioETSource implements DataSource {
     public static void main(String[] args){
         String ethost = "129.57.76.215";
         String file   = "/tmp/myEtRing";
+        Boolean isRemote = false;
         
         if(args.length>1){
             ethost = args[0];
@@ -196,7 +273,15 @@ public class EvioETSource implements DataSource {
             System.exit(0);            
         }
         
+        if(args.length>2){
+            String flag = args[2];
+            if(flag.compareTo("true")==0){
+                isRemote = true;
+            }
+        }
+        
         EvioETSource reader = new EvioETSource(ethost);
+        reader.setRemote(isRemote);
         reader.open(file);
         //for(int loop = 0 ; loop < 10 ; loop++){
         int counter = 0;
@@ -217,3 +302,4 @@ public class EvioETSource implements DataSource {
         //}
     }
 }
+          

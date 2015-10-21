@@ -88,18 +88,19 @@ public class EvioETSync implements DataSync {
     public void writeEvent(DataEvent event) {
         EvioDataEvent  evioEvent = (EvioDataEvent) event;
         
-        byte[]  buffer = evioEvent.getHandler().getStructure().getByteBuffer().array();
+        //byte[]  buffer = evioEvent.getHandler().getStructure().getByteBuffer().array();
         //EtEventImpl  etEvent = new EtEventImpl(buffer.length);
         //etEvent.setData(buffer);
         //etEvent.setOwner(1);
         //EtEvent[]  evs = new EtEvent[]{etEvent};
+        byte[] buffer = new byte[200];
         int eventLength = buffer.length;
         
         System.out.println("WRITING DATA WITH LENGTH " + buffer.length);
          try {
              
              EtEvent[]  etevents = sys.newEvents(myAttachment, Mode.SLEEP, false, 
-                     0,1,buffer.length+50, 1);
+                     0,1,buffer.length, 1);
              
              ByteBuffer byteBuffer = etevents[0].getDataBuffer();
              byteBuffer.put(buffer);
@@ -111,7 +112,7 @@ public class EvioETSync implements DataSync {
              //+ "  LENGTH = " + etevents[0].getLength());
              
              
-             //sys.putEvents(myAttachment, etevents);
+             sys.putEvents(myAttachment, etevents);
              
          } catch (IOException ex) {
              Logger.getLogger(EvioETSync.class.getName()).log(Level.SEVERE, null, ex);

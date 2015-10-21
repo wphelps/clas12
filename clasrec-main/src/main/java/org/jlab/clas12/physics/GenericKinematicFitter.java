@@ -258,8 +258,9 @@ public class GenericKinematicFitter {
                     physEvent.addParticle(part);
                 } else {
                     Particle part = new Particle();
+                    int charge = evntBank.getInt("charge", loop);
                     part.setParticleWithMass(evntBank.getFloat("mass", loop),
-                            evntBank.getByte("charge", loop),
+                            (byte) charge,
                             evntBank.getFloat("px", loop),
                             evntBank.getFloat("py", loop),
                             evntBank.getFloat("pz", loop),
