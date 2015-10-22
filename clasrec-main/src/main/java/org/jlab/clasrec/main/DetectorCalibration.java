@@ -49,6 +49,11 @@ public abstract class DetectorCalibration {
     
     public abstract void processEvent(EvioDataEvent event);
     
+    
+    public  void  updateView(EvioDataEvent event){
+        
+    }
+    
     public  void  update(DetectorShape2D  shape){
         //System.out.println("UPDATING SHAPE COLORS");
         if(shape.getDescriptor().getComponent()%2==0){

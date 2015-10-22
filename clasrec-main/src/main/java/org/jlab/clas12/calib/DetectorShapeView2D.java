@@ -138,6 +138,16 @@ public class DetectorShapeView2D extends JPanel implements MouseListener , Mouse
         */
     }
     
+    public void setColor(int sector, int layer, int component, int r, int g, int b){
+        for(DetectorShape2D shape: this.shapes){
+            if(shape.getDescriptor().getLayer()==layer &&
+                    shape.getDescriptor().getSector()==sector&&
+                    shape.getDescriptor().getComponent()==component){
+                shape.setColor(r, g, b);
+            }
+        }
+    }
+    
     public int getX(float x, int w){        
         double relX = (x - this.drawRegion.x)/this.drawRegion.width;
         return (int) (relX*w);
