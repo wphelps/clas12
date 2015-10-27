@@ -48,6 +48,14 @@ public abstract class DetectorCalibration {
     }
     
     public abstract void processEvent(EvioDataEvent event);
+
+    public void processCalibration(){
+        System.out.println("[processCalibration] THIS IS A METHOD FROM SUPER CLASS and DOES NOTHING");
+    }
+    
+    public void writeOutput(){
+        System.out.println("[writeOutput] THIS IS A METHOD FROM SUPER CLASS and DOES NOTHING");
+    }
     
     public  void  update(DetectorShape2D  shape){
         //System.out.println("UPDATING SHAPE COLORS");

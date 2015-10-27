@@ -7,6 +7,7 @@ package org.jlab.clas12.calib;
 
 import java.awt.Color;
 import org.jlab.clas.detector.DetectorDescriptor;
+import org.jlab.clas.detector.DetectorType;
 import org.jlab.geom.prim.Path3D;
 
 /**
@@ -24,7 +25,13 @@ public class DetectorShape2D {
     public DetectorShape2D(){
         
     }
-        
+    
+    public DetectorShape2D(DetectorType type, int sector, int layer, int component){
+        this.desc.setType(type);
+        this.desc.setSectorLayerComponent(sector, layer, component);
+    }
+    
+    
     public DetectorDescriptor  getDescriptor(){ return desc;}
     public Path3D              getShapePath(){ return shapePath;}
     
@@ -46,7 +53,50 @@ public class DetectorShape2D {
         this.shapePath.addPoint( width/2.0, -height/2.0,0.0);        
     }
     
+    public void createArc(double radiusInner, double radiusOutter,
+            double angleStart, double angleEnd){
         
+        this.shapePath.clear();
+        int   numberOfPoints = 40;
+        
+        this.shapePath.addPoint(
+                radiusInner*Math.cos(Math.toRadians(angleStart)),
+                radiusInner*Math.sin(Math.toRadians(angleStart)),
+                0.0);
+        
+        this.shapePath.addPoint(
+                radiusOutter*Math.cos(Math.toRadians(angleStart)),
+                radiusOutter*Math.sin(Math.toRadians(angleStart)),
+                0.0);
+        
+        double step = (angleEnd - angleStart)/numberOfPoints;
+        for(double angle = angleStart; angle < angleEnd; angle+=step){
+            this.shapePath.addPoint(
+                    radiusOutter*Math.cos(Math.toRadians(angle)),
+                    radiusOutter*Math.sin(Math.toRadians(angle)),
+                    0.0);
+        }
+        
+        this.shapePath.addPoint(
+                radiusOutter*Math.cos(Math.toRadians(angleEnd)),
+                radiusOutter*Math.sin(Math.toRadians(angleEnd)),
+                0.0);
+        this.shapePath.addPoint(
+                radiusInner*Math.cos(Math.toRadians(angleEnd)),
+                radiusInner*Math.sin(Math.toRadians(angleEnd)),
+                0.0);
+        for(double angle = angleEnd; angle > angleStart; angle-=step){
+            this.shapePath.addPoint(
+                    radiusInner*Math.cos(Math.toRadians(angle)),
+                    radiusInner*Math.sin(Math.toRadians(angle)),
+                    0.0);
+        }
+    }
+    
+    public void setColorByStatus(int status){
+        
+    }
+    
     public boolean isContained(double x, double y){
         int i, j;
         boolean c = false;
