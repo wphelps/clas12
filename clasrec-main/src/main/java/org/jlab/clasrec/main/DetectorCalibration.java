@@ -57,6 +57,11 @@ public abstract class DetectorCalibration {
         System.out.println("[writeOutput] THIS IS A METHOD FROM SUPER CLASS and DOES NOTHING");
     }
     
+    
+    public  void  updateView(EvioDataEvent event){
+        
+    }
+    
     public  void  update(DetectorShape2D  shape){
         //System.out.println("UPDATING SHAPE COLORS");
         if(shape.getDescriptor().getComponent()%2==0){

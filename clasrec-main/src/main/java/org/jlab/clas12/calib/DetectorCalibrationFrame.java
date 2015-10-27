@@ -56,7 +56,14 @@ public class DetectorCalibrationFrame extends JInternalFrame implements ActionLi
             
         }
     }
-    
+        
+    public void updateView(EvioDataEvent event){
+        try {
+            this.calibration.updateView(event);
+        } catch(Exception e){
+            System.out.println("----> something went wrong with this event");
+        }
+    }
     public void reset(){
         this.calibration.init();
     }

@@ -6,11 +6,13 @@
 
 package org.jlab.evio.clas12;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.GZIPOutputStream;
 import org.jlab.coda.jevio.DataType;
 import org.jlab.coda.jevio.EventBuilder;
 import org.jlab.coda.jevio.EventWriter;
@@ -75,6 +77,7 @@ public class EvioDataBucket {
             Logger.getLogger(EvioDataBucket.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
     public void writeEvent(EvioEvent ev){
         try {
             this.writer.writeEvent(ev);
@@ -107,6 +110,24 @@ public class EvioDataBucket {
         this.eventBuffer.get(array,0,array.length);
         return array;
     }
+        
+    public byte[]  getEventArrayGzip(){
+        return EvioDataBucket.gzip(this.getEventArray());
+    }
+    
+    public static byte[] gzip(byte[] ungzipped) {
+        final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        try {
+            final GZIPOutputStream gzipOutputStream = new GZIPOutputStream(bytes);
+            gzipOutputStream.write(ungzipped);
+            gzipOutputStream.close();
+        } catch (IOException e) {
+           // LOG.error("Could not gzip " + Arrays.toString(ungzipped));
+            System.out.println("[iG5DataCompressor] ERROR: Could not gzip the array....");
+        }
+        return bytes.toByteArray();
+    }
+    
     public void writeEvent(EvioDataEvent event){
         this.writeEvent(event.getEventBuffer());
     }

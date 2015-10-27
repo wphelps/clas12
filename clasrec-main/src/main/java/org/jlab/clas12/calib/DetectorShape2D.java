@@ -94,7 +94,13 @@ public class DetectorShape2D {
     }
     
     public void setColorByStatus(int status){
-        
+        int rs = status;
+        if(status>10) rs = 10;
+        if(status<0)  rs = 0;
+        int red   = (25*rs);
+        int green = (255-red);
+        System.out.println(" setting color " + red + " " + green + " 0");
+        this.setColor(red,green,0);
     }
     
     public boolean isContained(double x, double y){
