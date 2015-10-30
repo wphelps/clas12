@@ -23,6 +23,7 @@ import org.root.group.ITreeViewer;
 import org.root.group.TDirectory;
 import org.root.histogram.H1D;
 import org.root.histogram.H2D;
+import org.root.pad.EmbeddedCanvas;
 import org.root.pad.RootCanvas;
 
 /**
@@ -238,13 +239,14 @@ public class NTuple implements ITreeViewer {
         return root;
     }
 
-    public void draw(String obj, String selection, String options, RootCanvas canvas) {
+    public void draw(String obj, String selection, String options, EmbeddedCanvas canvas) {
         if(obj.contains("%")==true){
             String[] tokens = obj.split("%");
             System.out.println("NOT IMPLEMENTED YET to DRAW " + tokens[0] + " vs "
             + tokens[1]);
             DataVector  vecX = null;
             DataVector  vecY = null;
+            
             if(selection.length()>0){
                 vecX = this.getVector(tokens[1], selection);
                 vecY = this.getVector(tokens[0], selection);
@@ -252,8 +254,40 @@ public class NTuple implements ITreeViewer {
                 vecX = this.getVector(tokens[1]);
                 vecY = this.getVector(tokens[0]);
             }
+            
+            String[] ot = options.split(",");
+            
+            int binsX = 100;
+            int binsY = 100;
+            double minX = vecX.getMin();
+            double maxX = vecX.getMax();
+            double minY = vecY.getMin();
+            double maxY = vecY.getMax();
+            
+            if(ot.length>2){
+                try {
+                    binsX = Integer.parseInt(ot[0]);
+                    minX  = Double.parseDouble(ot[1]);
+                    maxX  = Double.parseDouble(ot[2]);
+                } catch(Exception e){
+                    System.out.println("Syntax error in options : (" + 
+                            options + ")");
+                }
+            }
+            
+            if(ot.length>5){
+                try {
+                    binsY = Integer.parseInt(ot[3]);
+                    minY  = Double.parseDouble(ot[4]);
+                    maxY  = Double.parseDouble(ot[5]);
+                } catch(Exception e){
+                    System.out.println("Syntax error in options : (" + 
+                            options + ")");
+                }
+            }
+            
+            H2D H = new H2D(obj,binsX,minX,maxX,binsY,minY,maxY);
 
-            H2D H = new H2D(obj,100,vecX.getMin(),vecX.getMax(),100,vecY.getMin(),vecY.getMax());
             H.setTitle(obj);
             H.setXTitle(tokens[1]);
             H.setYTitle(tokens[0]);
@@ -261,11 +295,30 @@ public class NTuple implements ITreeViewer {
             for(int loop = 0; loop < vecX.size(); loop++){
                 H.fill(vecX.getValue(loop), vecY.getValue(loop));
             }
-            canvas.draw(canvas.getCurrentPad(), H);
+            //canvas.draw(canvas.getCurrentPad(), H);
+            canvas.draw(H);
             canvas.incrementPad();
             
         } else {
             System.out.println("NOT IMPLEMENTED YET to DRAW " + obj);
+            String[] optiontokens = options.split(",");
+            
+            int numberOfBins = 100;
+            System.out.println(" OPTIONS = " + options);
+            if(optiontokens.length>0){
+                for(int loop = 0; loop < optiontokens.length; loop++){
+                    System.out.println(" TOKEN " + loop + "  =  " + optiontokens[loop]);
+                }
+                int parsed = -1;
+                try {
+                    parsed = Integer.parseInt(optiontokens[0]);
+                    System.out.println(" NUMBER OF BINS = parsed " + parsed);
+                    numberOfBins = parsed;
+                } catch (Exception e){
+                    
+                }
+            }
+            
             int currentpad = canvas.getCurrentPad();
             DataVector  vec = null;
             if(selection.length()>0){
@@ -273,13 +326,30 @@ public class NTuple implements ITreeViewer {
             } else {
                 vec = this.getVector(obj);//, selection);
             }
+            
             System.out.println("VECTOR SIZE = " + vec.size() + " " + vec.getMin()
                     + " " + vec.getMax());
-            H1D H = new H1D(obj,100,vec.getMin(),vec.getMax());
+
+            
+            double hmin = vec.getMin();
+            double hmax = vec.getMax();
+            if(optiontokens.length>2){
+                try {
+                    hmin = Double.parseDouble(optiontokens[1]);
+                    hmax = Double.parseDouble(optiontokens[2]);
+                } catch (Exception e) {
+                    
+                }
+            }
+            H1D H = new H1D(obj,numberOfBins,hmin,hmax);
+            
+
+            
+            
             for(int loop = 0; loop < vec.getSize(); loop++){
                 H.fill(vec.getValue(loop));
             }
-            canvas.draw(currentpad, H);
+            canvas.draw( H);
             canvas.incrementPad();
         }
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

@@ -96,6 +96,7 @@ public class CLAS12Desktop extends JFrame implements ActionListener {
 
     
     public void processFile(String filename){
+        
         for(DetectorCalibrationFrame frame : this.calibrationFrames){
                 frame.reset();
         }

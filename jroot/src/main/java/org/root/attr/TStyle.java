@@ -22,7 +22,7 @@ public class TStyle {
     private static Color   padFrameColor         = Color.WHITE;
     private static Color   axisFrameColor        = Color.BLACK;
     
-    private static String  statBoxFontStringName = "Courier New";
+    private static String  statBoxFontStringName = "Courier";
     private static Integer statBoxFontSize       = 18;
     private static Boolean statBoxOptions        = true;
     private static Double  statBoxTextGap        = 1.2;

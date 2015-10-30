@@ -66,4 +66,5 @@ public class TGCanvas extends JFrame {
         this.embCanvas.setLogZ(logFlag);
     }
     
+    
 }

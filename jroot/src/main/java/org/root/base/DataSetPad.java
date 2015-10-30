@@ -49,9 +49,9 @@ public class DataSetPad {
         DataRegion  region = this.collection.getDataRegion();
         this.padAxisFrame.setDataRegion(region);
         //System.out.println(region);
-        AbsDataSetDraw.drawAxisBackGround(padAxisFrame, g2d,0,0,w,h);
-        g2d.setClip(this.padAxisFrame.getFrame().x, 
-                this.padAxisFrame.getFrame().y,
+        AbsDataSetDraw.drawAxisBackGround(padAxisFrame, g2d,xoffset,yoffset,w,h);
+        g2d.setClip(this.padAxisFrame.getFrame().x + xoffset, 
+                this.padAxisFrame.getFrame().y + yoffset,
                 this.padAxisFrame.getFrame().width,
                 this.padAxisFrame.getFrame().height);
         for(int loop = 0; loop < this.collection.getCount(); loop++){
@@ -59,29 +59,29 @@ public class DataSetPad {
             IDataSet  ds = collection.getDataSet(loop);
             if(ds instanceof DataSetXY){
                 AbsDataSetDraw.drawDataSetAsGraph(padAxisFrame, g2d, 
-                        collection.getDataSet(loop), 0 , 0, w, h);
+                        collection.getDataSet(loop), xoffset , yoffset, w, h);
             }
             
             if(ds instanceof F1D){
                 AbsDataSetDraw.drawDataSetAsFunction(padAxisFrame, g2d, 
-                        collection.getDataSet(loop), 0 , 0, w, h);
+                        collection.getDataSet(loop), xoffset , yoffset, w, h);
             }
             
             if(ds instanceof H1D){
                 AbsDataSetDraw.drawDataSetAsHistogram1D(padAxisFrame, g2d, 
-                        ds, 0 , 0, w, h);
+                        ds, xoffset, yoffset, w, h);
             }
             
             if(ds instanceof H2D){
                 AbsDataSetDraw.drawDataSetAsHistogram2D(padAxisFrame, g2d, 
-                        ds, 0 , 0, w, h);
+                        ds, xoffset, yoffset , w, h);
             }
         }
         g2d.setClip(null);
-        AbsDataSetDraw.drawAxisFrame(padAxisFrame, g2d,0,0,w,h);
+        AbsDataSetDraw.drawAxisFrame(padAxisFrame, g2d,xoffset,yoffset,w,h);
         
         for(LatexText txt : this.textCollection){
-            AbsDataSetDraw.drawText(padAxisFrame, g2d, txt, 0,0,w,h);
+            AbsDataSetDraw.drawText(padAxisFrame, g2d, txt, xoffset, yoffset,w,h);
         }
         /*
         Font textFont = new Font("Helvetica",Font.PLAIN,24);
@@ -98,7 +98,7 @@ public class DataSetPad {
         */
         if(this.statBox.getTexts().size()>0){
             
-            AbsDataSetDraw.drawPaveText(padAxisFrame, statBox, g2d, 0,0,w,h);
+            AbsDataSetDraw.drawPaveText(padAxisFrame, statBox, g2d, xoffset,yoffset,w,h);
         }
     }
     
@@ -129,9 +129,9 @@ public class DataSetPad {
                 H1D h1 = (H1D) ds;
                 this.statBox.setFont(TStyle.getStatBoxFontName(), TStyle.getStatBoxFontSize());
                 this.statBox.addText( String.format("%s", h1.getName()));
-                this.statBox.addText(String.format("Entries %12d", h1.getEntries()));
-                this.statBox.addText(String.format("Mean    %12.4f", h1.getMean()));
-                this.statBox.addText(String.format("RMS     %12.4f", h1.getRMS()));
+                this.statBox.addText(String.format("Entries %8d", h1.getEntries()));
+                this.statBox.addText(String.format("Mean    %8.4f", h1.getMean()));
+                this.statBox.addText(String.format("RMS     %8.4f", h1.getRMS()));
             }
         }
         

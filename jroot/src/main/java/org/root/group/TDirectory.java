@@ -23,6 +23,7 @@ import org.root.histogram.GraphErrors;
 import org.root.histogram.H1D;
 import org.root.histogram.H2D;
 import org.root.histogram.PaveText;
+import org.root.pad.EmbeddedCanvas;
 import org.root.pad.RootCanvas;
 
 /**
@@ -447,7 +448,7 @@ public class TDirectory implements ITreeViewer {
         return str.toString();
     }
 
-    public void draw(String obj, String selection, String options, RootCanvas canvas) {
+    public void draw(String obj, String selection, String options, EmbeddedCanvas canvas) {
         //System.out.println(" Asking to draw following object " + obj);
         int index = obj.lastIndexOf("/");
         if(index>0&&index<obj.length()){
@@ -460,27 +461,27 @@ public class TDirectory implements ITreeViewer {
                     Object dirObject = this.getDirectory(directoryL).getObject(object);
                     if(dirObject instanceof H1D){
                         H1D h1 = (H1D) dirObject;
-                        canvas.draw(canvas.getCurrentPad(), h1, options);
+                        canvas.draw( h1, options);
                         canvas.incrementPad();
                     }
                     if(dirObject instanceof H2D){
                         H2D h2 = (H2D) dirObject;
-                        canvas.draw(canvas.getCurrentPad(), h2, options);
+                        canvas.draw( h2, options);
                         canvas.incrementPad();
                     }
                     if(dirObject instanceof GraphErrors){
                         GraphErrors gr = (GraphErrors) dirObject;
-                        canvas.draw(canvas.getCurrentPad(), gr);
+                        canvas.draw( gr);
                         canvas.incrementPad();
                     }
                     if(dirObject instanceof DataSetXY){
                         DataSetXY gr = (DataSetXY) dirObject;
-                        canvas.draw(canvas.getCurrentPad(), gr);
+                        canvas.draw( gr);
                         canvas.incrementPad();
                     }
                     if(dirObject instanceof F1D){
                         F1D func = (F1D) dirObject;
-                        canvas.draw(canvas.getCurrentPad(), func);
+                        canvas.draw( func);
                         canvas.incrementPad();
                     }
                 }

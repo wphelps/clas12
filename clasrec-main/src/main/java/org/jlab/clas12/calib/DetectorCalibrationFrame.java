@@ -13,6 +13,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
 import org.jlab.clasrec.main.DetectorCalibration;
 import org.jlab.evio.clas12.EvioDataEvent;
 import org.root.attr.TStyle;
@@ -27,6 +28,8 @@ public class DetectorCalibrationFrame extends JInternalFrame implements ActionLi
     JSplitPane       splitPane = new JSplitPane();
     EmbeddedCanvas   canvas    = new EmbeddedCanvas();
     DetectorShapeTabView tabView = null;
+    private		      JTabbedPane rightTabbedPane = null;
+    
     private DetectorCalibration  calibration = null;
     
     public DetectorCalibrationFrame(DetectorCalibration calib){                 
@@ -35,12 +38,17 @@ public class DetectorCalibrationFrame extends JInternalFrame implements ActionLi
         tabView = new DetectorShapeTabView();
         this.calibration = calib;
         tabView.initWith(calib); 
+        this.rightTabbedPane = new JTabbedPane();
+        this.rightTabbedPane.add("Canvas", this.canvas);
         splitPane = new JSplitPane();
         splitPane.setSize(1200, 600);
         splitPane.setPreferredSize(new Dimension(1200,600));
         splitPane.setDividerLocation(550);
         splitPane.setLeftComponent(this.tabView);
-        splitPane.setRightComponent(this.canvas);
+        
+        splitPane.setRightComponent(this.rightTabbedPane);
+        //splitPane.setRightComponent(this.canvas);
+        
         tabView.setCalibrationModule(calib);
         tabView.setCanvas(canvas);
         this.add(splitPane);
@@ -56,7 +64,7 @@ public class DetectorCalibrationFrame extends JInternalFrame implements ActionLi
             
         }
     }
-        
+    
     public void updateView(EvioDataEvent event){
         try {
             this.calibration.updateView(event);

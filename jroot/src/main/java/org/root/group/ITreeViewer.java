@@ -7,6 +7,7 @@ package org.root.group;
 
 import java.util.List;
 import javax.swing.tree.DefaultMutableTreeNode;
+import org.root.pad.EmbeddedCanvas;
 import org.root.pad.RootCanvas;
 
 /**
@@ -16,5 +17,5 @@ import org.root.pad.RootCanvas;
 public interface ITreeViewer { 
     public List<String>  getVariables();
     DefaultMutableTreeNode getTree();
-    void  draw(String obj, String selection, String options, RootCanvas canvas);
+    void  draw(String obj, String selection, String options, EmbeddedCanvas canvas);
 }

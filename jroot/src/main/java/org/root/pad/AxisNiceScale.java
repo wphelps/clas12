@@ -171,6 +171,25 @@ public class AxisNiceScale {
         }
     }
     
+    public int getAxisOffset(FontMetrics fm, boolean vertical ){
+        int offset = 0;
+        
+        if(vertical==false){
+            offset  = fm.getHeight();
+            return 3*offset;
+        }
+        
+        if(vertical==true){
+            for(String label : this.niceCoordinateLabels){
+                int width = fm.stringWidth(label);
+                if(width>offset) offset = width;
+            }
+            offset += 2*fm.getHeight();
+        }
+        
+        return offset;
+    }
+    
     public String getStringFormat(int sig){
         StringBuilder str = new StringBuilder();
         str.append('%');

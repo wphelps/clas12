@@ -6,6 +6,7 @@
 package org.root.base;
 
 import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.Point;
 import java.awt.Rectangle;
 import org.root.attr.Attributes;
@@ -17,9 +18,11 @@ import org.root.pad.AxisNiceScale;
  */
 public class AxisRegion {
     
+    private final Rectangle   axisBoundaries  = new Rectangle();
     private final Rectangle   axisFrame       = new Rectangle();
-    private final DataRegion  frameDataRegion = new DataRegion(); 
+    private final DataRegion  frameDataRegion = new DataRegion();
     private Attributes        axisAttributes  = new Attributes();
+    
     private AxisNiceScale     axisX           = new AxisNiceScale(0.0,1.0);
     private AxisNiceScale     axisY           = new AxisNiceScale(0.0,2.0);
     private AxisNiceScale     axisZ           = new AxisNiceScale(0.0,2.0);
@@ -34,6 +37,26 @@ public class AxisRegion {
     private LatexText         axisTitleY      = new LatexText(" ",0.0,0.5);
     private LatexText         frameTitle      = new LatexText(" ",0.5,1.0);
     
+    
+    public  AxisRegion(int xsize, int ysize){
+        this.axisBoundaries.x = 0;
+        this.axisBoundaries.y = 0;
+        this.axisBoundaries.width  = xsize;
+        this.axisBoundaries.height = ysize;
+        this.axisFrame.setBounds(10, 10, 40, 40);
+        
+        this.axisAttributes.getProperties().setProperty("background-color", "0");
+        this.axisAttributes.getProperties().setProperty("line-color", "1");
+        this.axisAttributes.getProperties().setProperty("line-width", "2");
+        
+        axisTitleX.setFont("Helvetica");
+        axisTitleY.setFont("Helvetica");
+        frameTitle.setFont("Helvetica");
+        
+        axisTitleX.setFontSize(axisLabelSize);
+        axisTitleY.setFontSize(axisLabelSize);
+        frameTitle.setFontSize(axisLabelSize);
+    }
     
     public  AxisRegion(){
         
@@ -51,9 +74,31 @@ public class AxisRegion {
         frameTitle.setFontSize(axisLabelSize);
     }
     
+    public void setSize(int width, int height){
+        this.axisBoundaries.width  = width;
+        this.axisBoundaries.height = height;
+    }
     
     public LatexText getTitle(){
         return this.frameTitle;
+    }
+    
+    
+    public void update(FontMetrics fm){
+        int height = fm.getHeight();
+        int width  = fm.stringWidth("1000");
+        
+        int  xAxisOffset = this.axisX.getAxisOffset(fm, false);
+        int  yAxisOffset = this.axisY.getAxisOffset(fm, true);
+        
+        this.axisFrame.x = xAxisOffset;
+        this.axisFrame.y = yAxisOffset;
+        
+        this.axisFrame.width  = this.axisBoundaries.width  - xAxisOffset - 40;
+        this.axisFrame.height = this.axisBoundaries.height - 2*yAxisOffset;
+        System.out.println(this.axisFrame.x + " " + this.axisFrame.y 
+                + " " + this.axisFrame.width + " " + this.axisFrame.height
+                + "  "  + this.axisBoundaries.width + "  " + this.axisBoundaries.height);
     }
     
     public LatexText getXTitle(){ return this.axisTitleX;}
@@ -83,6 +128,16 @@ public class AxisRegion {
                 this.frameDataRegion.MAXIMUM_Y);
     }
     
+    public double getDataPointX(double dataX){
+        double dataRelativeX = this.frameDataRegion.fractionX(dataX);
+        return this.getFramePointX(dataRelativeX);
+    }
+    
+    public double getDataPointY(double dataY){
+        double dataRelativeY = this.frameDataRegion.fractionX(dataY);
+        return this.getFramePointY(dataRelativeY);
+    }
+    
     public double   getFramePointX(double relX){
         //double length = 
         double xp = this.axisFrame.x+this.axisFrame.width*relX;
@@ -106,5 +161,5 @@ public class AxisRegion {
     public void setDivisionsY(int div){
         this.axisY.setMaxTicks(div);
     }
-    
+            
 }

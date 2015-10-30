@@ -43,8 +43,9 @@ public class EmbeddedCanvas extends JPanel {
              this.currentPad = 0;
              return;
          }
+         
          if(pad>=this.canvasPads.size()){
-             this.currentPad = this.canvasPads.size()-1;
+             this.currentPad = 0;
          }
          this.currentPad = pad;
      }
@@ -100,6 +101,15 @@ public class EmbeddedCanvas extends JPanel {
      public void setAxisRange(double xmin, double xmax, double ymin, double ymax){
         this.getPad().setAxisRange(xmin, xmax, ymin, ymax);
     }
+     
+     public int getCurrentPad(){
+         return this.currentPad;
+     }
+     
+     public void incrementPad(){         
+         this.currentPad++;
+         if(this.currentPad>=this.canvasPads.size()) this.currentPad = 0;
+     }
      
     public final void divide(int rows, int cols){
         this.canvasPads.clear();

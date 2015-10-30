@@ -26,6 +26,7 @@ import javax.swing.tree.TreePath;
 import org.root.data.NTuple;
 import org.root.histogram.H1D;
 import org.root.histogram.H2D;
+import org.root.pad.EmbeddedCanvas;
 import org.root.pad.RootCanvas;
 
 /**
@@ -33,8 +34,9 @@ import org.root.pad.RootCanvas;
  * @author gavalian
  */
 public class TBrowser extends JFrame implements ActionListener {
+    
     private TDirectory browserDirectory = new TDirectory();
-    private RootCanvas       sciCanvas;
+    private EmbeddedCanvas       sciCanvas;
     private JTree           canvasTree;
     private JSplitPane      splitPane;
     private JMenuBar        browserMenuBar = null;
@@ -76,7 +78,7 @@ public class TBrowser extends JFrame implements ActionListener {
         JScrollPane scroll = new JScrollPane(canvasTree);
         splitPane.setLeftComponent(scroll);
 
-        sciCanvas = new RootCanvas(1000,800,1,1);
+        sciCanvas = new EmbeddedCanvas(1000,800,1,1);
         //this.addComponentListener(sciCanvas);
         
         splitPane.setRightComponent(sciCanvas);
@@ -256,10 +258,10 @@ public class TBrowser extends JFrame implements ActionListener {
             }
         }
         if(e.getActionCommand().compareTo("Export PNG")==0){
-            this.sciCanvas.export("jroot.png");
+            //this.sciCanvas.export("jroot.png");
         }
         if(e.getActionCommand().compareTo("Export PDF")==0){
-            this.sciCanvas.exportPDF("jroot.pdf");
+            //this.sciCanvas.exportPDF("jroot.pdf");
         }
         if(e.getActionCommand().compareTo("1x1")==0){
             this.sciCanvas.divide(1, 1);
