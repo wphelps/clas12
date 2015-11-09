@@ -172,6 +172,7 @@ public class EvioETSource implements DataSource {
                         + "  ARRAY SIZE = " + array.length);
                         
                         //for(int k = 0; k < 10; k++){
+                        /*
                             for(int loop = 0; loop < array.length; loop++){
                                 System.out.print(String.format(" %X ", array[loop]));
                                 if((loop+1)%20==0) System.out.println();
@@ -179,6 +180,7 @@ public class EvioETSource implements DataSource {
                             }
                             
                         System.out.println();
+                        */
                         int length = events[0].getLength();
                         
                       
@@ -194,14 +196,15 @@ public class EvioETSource implements DataSource {
                                  + "  ARRAY SIZE = " + array.length);
                          
                          //for(int k = 0; k < 10; k++){
+                         /*
                          for(int loop = 0; loop < arrayE.length; loop++){
                              System.out.print(String.format(" %X ", arrayE[loop]));
                              if((loop+1)%20==0) System.out.println();
                              if(loop>200) break;
-                         }
-                         
-                         System.out.println();
-                        
+                         }*/
+                         //System.out.println();
+                         System.out.println("**************>>>> PUTTING THE EVENT BACK INTO THE CUE");
+                         sys.putEvents(myAttachment, events);                        
                         EvioReader reader;
                         
                         try {
@@ -212,6 +215,10 @@ public class EvioETSource implements DataSource {
                             System.out.println(" PARSED EVENT # = " + event + "  BLOCK # " + reader.getBlockCount()
                             + "   BUFFER LIMIT = " + reader.getByteBuffer().limit()
                             + "  VERSION = " + reader.getEvioVersion());
+
+                            EvioDataEvent dataEvent = new EvioDataEvent(event.getRawBytes(),reader.getByteOrder(),
+                                    EvioFactory.getDictionary());
+                            return dataEvent;
                         } catch (EvioException ex) {
                             Logger.getLogger(EvioETSource.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -220,8 +227,10 @@ public class EvioETSource implements DataSource {
                         EvioDataEvent evioEvent = new EvioDataEvent(evioBuffer,
                                 EvioFactory.getDictionary());
                         return evioEvent;*/
-                        return null;
+                        //return null;
                     }
+
+
                 }
             } catch (EtException ex) {
                 Logger.getLogger(EvioETSource.class.getName()).log(Level.SEVERE, null, ex);
@@ -288,7 +297,7 @@ public class EvioETSource implements DataSource {
         while(true){  
             counter++;
             try {
-                Thread.sleep(400);
+                Thread.sleep(2);
             } catch (InterruptedException ex) {
                 Logger.getLogger(EvioETSource.class.getName()).log(Level.SEVERE, null, ex);
             }

@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -119,6 +120,48 @@ public class TImageCanvas {
         } catch (IOException ex) {
             Logger.getLogger(TImageCanvas.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public static void save(String filename,int xsize, int ysize, int columns, int rows, List<DataSetPad>  pads){
+        try {
+            /*
+            System.err.println("*** SAVE *** : size --> ( "
+                    + width + " x " + height + " ) File = " + file);*/
+            byte[] imageBytes = TImageCanvas.getCanvasImage(xsize, ysize, columns, rows, pads);
+            FileOutputStream output = new FileOutputStream(new File(filename));
+            output.write(imageBytes);
+        } catch (IOException ex) {
+            Logger.getLogger(TImageCanvas.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public static byte[]  getCanvasImage(int xsize, int ysize, int columns, int rows, List<DataSetPad>  pads) throws IOException{
+        BufferedImage bi = new BufferedImage(xsize, ysize, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D ig2 = bi.createGraphics();
+        ig2.setColor(Color.WHITE);
+        ig2.fillRect(0, 0, xsize, ysize);
+        
+        int padWidth  = (int) xsize/columns;
+        int padHeight = (int) ysize/rows;
+        
+        int counter = 0;
+        for(int cY = 0; cY < rows; cY++){
+            for(int cX = 0; cX < columns; cX++){
+                int offsetX = cX * padWidth;
+                int offsetY = cY * padHeight;
+                pads.get(counter).drawOnCanvas(ig2, offsetX, offsetY, padWidth,padHeight);
+                counter++;
+            }
+        }
+        byte[] result = new byte[1];// = ImageIO.
+        //return result;
+        
+        //ImageIO.write(bi, "png", new File("saveFile.png"));
+        ByteArrayOutputStream biStream = new ByteArrayOutputStream();
+        ImageIO.write(bi, "png", biStream);
+        biStream.flush();
+        result = biStream.toByteArray();
+        return result;
     }
     
     public byte[] getCanvasImage() throws IOException {

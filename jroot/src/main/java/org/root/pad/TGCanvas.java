@@ -66,5 +66,11 @@ public class TGCanvas extends JFrame {
         this.embCanvas.setLogZ(logFlag);
     }
     
+    public void update(){
+        this.embCanvas.update();
+    }
     
+    public void save(String filename){
+        this.embCanvas.save(filename);
+    }
 }

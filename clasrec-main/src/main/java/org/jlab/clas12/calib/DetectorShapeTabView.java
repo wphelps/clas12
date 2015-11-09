@@ -14,6 +14,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -35,6 +36,7 @@ public class DetectorShapeTabView extends JPanel implements ActionListener {
     private DetectorCalibration  calibrationModule = null;
     private EmbeddedCanvas       drawCanvas        = null;
     private String               drawOptions       = "default";
+    private List<IDetectorListener>         detectorListeners = new ArrayList<IDetectorListener>();
     
     public DetectorShapeTabView(){
         super();
@@ -68,6 +70,12 @@ public class DetectorShapeTabView extends JPanel implements ActionListener {
         view.setActionListener(this);
     }
     
+    
+    public void addDetectorListener(IDetectorListener lt){
+        for(Map.Entry<String, DetectorShapeView2D> entry : this.detectorView.entrySet()){
+            entry.getValue().addDetectorListener(lt);
+        }
+    }
     public void setCanvas(EmbeddedCanvas cvn){
         this.drawCanvas = cvn;
     }

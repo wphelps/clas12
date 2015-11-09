@@ -8,8 +8,10 @@ package org.root.pad;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import org.root.base.DataSetPad;
 import org.root.base.IDataSet;
 
 /**
@@ -18,6 +20,8 @@ import org.root.base.IDataSet;
  */
 public class EmbeddedCanvas extends JPanel {
     public   ArrayList<EmbeddedPad>  canvasPads = new  ArrayList<EmbeddedPad>();
+    private  int                     canvas_COLUMNS = 1;
+    private  int                     canvas_ROWS    = 1;
     private  Integer currentPad = 0;
     
     public EmbeddedCanvas(){
@@ -115,6 +119,8 @@ public class EmbeddedCanvas extends JPanel {
         this.canvasPads.clear();
         this.removeAll();
         this.revalidate();
+        this.canvas_COLUMNS = rows;
+        this.canvas_ROWS    = cols;
         this.setLayout(new GridLayout(cols,rows));
         int xsize = this.getWidth()/cols;
         int ysize = this.getHeight()/rows;
@@ -126,6 +132,29 @@ public class EmbeddedCanvas extends JPanel {
         this.revalidate();
         //this.update();
         this.repaint();
+    }
+    
+    
+    public void update(){
+        this.repaint();
+    }
+    
+    public void save(String filename){
+        int w = this.getSize().width;
+        int h = this.getSize().height;
+        try {
+            List<DataSetPad>  pads = new ArrayList<DataSetPad>();
+            for(EmbeddedPad  pad : this.canvasPads){
+                pads.add(pad.getPad());
+            }
+            TImageCanvas.save(filename, w,h,this.canvas_COLUMNS,this.canvas_ROWS,
+                    pads);
+            System.out.println(
+                    String.format("[TGCanvas::save] ----> size ( %d x %d )  dim (%dx%d)  FILE : %s",
+                            w,h,this.canvas_COLUMNS,this.canvas_ROWS,filename));
+        } catch (Exception e){
+            
+        }
     }
     
     public static void main(String[] args){

@@ -33,6 +33,7 @@ public class DetectorShapeView2D extends JPanel implements MouseListener , Mouse
     private List<DetectorShape2D>   shapes = new ArrayList<DetectorShape2D>();
     private Integer                 selectedShape = -1;
     private ActionListener          listener = null;
+    private List<IDetectorListener> detectorListeners = new ArrayList<IDetectorListener>();
     
     
     public boolean MOUSEOVER_CALLBACK = true;
@@ -44,6 +45,10 @@ public class DetectorShapeView2D extends JPanel implements MouseListener , Mouse
     
     public void setActionListener(ActionListener al){
         this.listener = al;
+    }
+    
+    public void addDetectorListener(IDetectorListener lt){
+        this.detectorListeners.add(lt);
     }
     
     public String getName(){ return this.canvasName;}
@@ -176,7 +181,12 @@ public class DetectorShapeView2D extends JPanel implements MouseListener , Mouse
         g2d.setColor(new Color(165,155,155));
         g2d.fillRect(xoff, yoff, width, height);
         int counter = 0;
+        
         for(DetectorShape2D shape : shapes){
+            
+            for(IDetectorListener lt : this.detectorListeners){
+                lt.update(shape);
+            }
             
             GeneralPath path = new GeneralPath();
             int npoints = shape.getShapePath().size();
@@ -231,13 +241,18 @@ public class DetectorShapeView2D extends JPanel implements MouseListener , Mouse
                 break;
             }
         }
+        
         if(index>=0&&index!=this.selectedShape){
             this.selectedShape = index;
             System.out.println("SHAPE SELECTION HAS CHANGED TO " + index);
             this.repaint();
+            for(IDetectorListener lt : this.detectorListeners){
+                lt.detectorSelected(this.shapes.get(this.selectedShape).getDescriptor());
+            }
+            /*
             if(this.listener!=null){
                 this.listener.actionPerformed(new ActionEvent("PROBE",10,this.getName()));
-            }
+            }*/
         }
     }
 

@@ -90,15 +90,15 @@ public class DetectorDescriptor {
         return hash;
     }
     
-    public int getSectorFromHash(int hash){
+    public static int getSectorFromHash(int hash){
         return DataUtils.getInteger(hash, 16, 23);
     }
     
-    public int getLayerFromHash(int hash){
+    public static int getLayerFromHash(int hash){
         return DataUtils.getInteger(hash, 8, 15);
     }
     
-    public int getComponentFromHash(int hash){
+    public static int getComponentFromHash(int hash){
         return DataUtils.getInteger(hash, 0, 7);
     }
     
