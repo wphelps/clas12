@@ -6,6 +6,7 @@
 package org.jlab.clas12.calib;
 
 import java.awt.BorderLayout;
+import java.awt.Dialog;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -58,6 +59,16 @@ public class DetectorDatasetPane extends JPanel implements IDetectorCollectionLi
             canvas.cd(0);
             canvas.draw(this.detectorCollection.get(sector, layer, component));
         }
+    }
+    
+    public static void showDialog(DetectorCollection<? extends IDataSet> coll){
+        DetectorDatasetPane      pane = new DetectorDatasetPane(coll);
+        JDialog dialog = new JDialog();
+        dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+        dialog.setSize(800, 800);
+        dialog.setContentPane(pane);
+        dialog.setVisible(true);
+        
     }
     
     public static void main(String[] args){

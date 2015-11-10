@@ -5,6 +5,8 @@
  */
 package org.jlab.clas.detector;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +47,14 @@ public class DetectorCollection<T> {
     public boolean hasEntry(int sector, int layer, int comp){
         return this.collection.containsKey(DetectorDescriptor.generateHashCode(sector, layer, comp));
     }
-    
+    public List<T> getList(){
+        Collection<T> vc = this.collection.values();
+        List<T>  list = new ArrayList<T>();
+        for(T c : vc){
+            list.add(c);
+        }
+        return list;
+    }
     public T  get(int sector, int layer, int comp){
         return this.collection.get(DetectorDescriptor.generateHashCode(sector, layer, comp));
     }
