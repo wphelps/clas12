@@ -104,6 +104,12 @@ public class F1D extends Function1D implements EvioWritableTree,IDataSet {
                 pars.add("p3");
             }
             
+            if(f.compareTo("erf")==0){
+                pars.add("p0");
+                pars.add("p1");
+                pars.add("p2");
+                pars.add("p3");
+            }
         }
         
         this.setNParams(pars.size());
@@ -152,6 +158,15 @@ public class F1D extends Function1D implements EvioWritableTree,IDataSet {
                 //        this.parameter(parOffset+1).value(),
                 //        this.parameter(parOffset+2).value()));
                 parOffset += 2;
+            }
+            
+            if(f.compareTo("erf")==0){
+                values.add( ErrorFunction.erf(this.parameter(parOffset).value(),
+                        this.parameter(parOffset+1).value(),
+                        this.parameter(parOffset+2).value(),
+                        this.parameter(parOffset+3).value(),                        
+                        x));
+                parOffset += 4;
             }
             
             if(f.compareTo("p0")==0){

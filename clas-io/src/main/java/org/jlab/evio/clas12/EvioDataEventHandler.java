@@ -62,6 +62,7 @@ public class EvioDataEventHandler {
     }
     
     public EvioCompactStructureHandler getStructure(){return this.structure;}
+    
     public void setStructure(EvioCompactStructureHandler struct){ 
         this.structure = struct;
         try {
@@ -152,9 +153,16 @@ public class EvioDataEventHandler {
     
     public void list(){
         System.out.println("  LIST ========>  EVIO NODES ");
-        for(EvioNode node : this.eventNodes){
-            System.out.println(String.format(" tag = %8d  num = %8d  type = %s", 
-                    node.getTag(),node.getNum(),node.getDataTypeObj()));
+        List<EvioNode>  childnodes;
+        try {
+            childnodes = this.structure.getNodes();
+            for(EvioNode node : childnodes){
+                //for(EvioNode node : this.eventNodes){
+                System.out.println(String.format(" tag = %8d  num = %8d  type = %s", 
+                        node.getTag(),node.getNum(),node.getDataTypeObj()));
+            }
+        } catch (EvioException ex) {
+            Logger.getLogger(EvioDataEventHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
