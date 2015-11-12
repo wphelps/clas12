@@ -5,6 +5,10 @@
  */
 package org.jlab.geom.geant;
 
+import java.util.ArrayList;
+import java.util.List;
+import org.jlab.geom.base.ConstantProvider;
+
 /**
  *
  * @author gavalian
@@ -20,6 +24,12 @@ public class GemcTestProgram {
         }
         str.append(ns);
         return str.toString();
+    }
+    
+    public static List<G4BaseVolume>  getList(ConstantProvider cp){
+        List<G4BaseVolume>  volumes = new ArrayList<G4BaseVolume>();
+        
+        return volumes;
     }
     /**
      * This is a test program
