@@ -58,6 +58,10 @@ public class EmbeddedPad extends JPanel implements MouseMotionListener, MouseLis
         dPad.drawOnCanvas(g2d, xoffset, yoffset, w, h);
     }
     
+    public void add(IDataSet ds,String option){
+        this.dPad.add(ds, option);
+    }
+    
     public void add(IDataSet ds){
         this.dPad.add(ds);
     }

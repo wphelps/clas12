@@ -7,6 +7,7 @@
 package org.root.fitter;
 
 import org.freehep.math.minuit.FCNBase;
+import org.root.base.IDataSet;
 import org.root.data.DataVector;
 import org.root.func.Function1D;
 
@@ -17,52 +18,21 @@ import org.root.func.Function1D;
  */
 public class FitterFunction implements FCNBase {
     
-    private DataVector  vectorX;
-    private DataVector  vectorY;
+    private IDataSet    dataset;
     private Function1D  function;
     
-    public FitterFunction(DataVector x, DataVector y, Function1D func){
-        vectorX  = x;
-        vectorY  = y;
+    public FitterFunction(IDataSet ds, Function1D func){
+        dataset  = ds;
         function = func;
     }
-    
-    public FitterFunction(double[] x, double[] y, Function1D func){
-        vectorX = new DataVector();
-        vectorY = new DataVector();
-        vectorX.set(x);
-        vectorY.set(y);
-        function = func;
-    }
-    
+        
     public Function1D getFunction(){return function;}
+    public IDataSet   getDataSet() { return this.dataset;}
     
     @Override
     public double valueOf(double[] pars) {
-        double chi2 = 0.0;
-        function.setParameters(pars);
-        for(int loop = 0; loop < vectorX.getSize(); loop++){
-            double xv = vectorX.getValue(loop);
-            double yv = vectorY.getValue(loop);
-            //System.err.println(" DATA VALUES = " + xv + "  " + yv);
-            if(xv>=function.getMin()&&xv<=function.getMax()){
-                double fv = function.eval(xv);
-                //System.err.println(" FUNCTION VALUE " + fv);
-                if(yv!=0){
-                    //System.err.println("adding to chi2 " + chi2
-                    //+ "  " + (yv-fv)*(yv-fv)/fv + " x = " + xv 
-                    //+ " y = " + yv + " fv = " + fv);
-                    //double chi2step  = (yv-fv)*(yv-fv)/fv;
-                    //double chi2step2 = (yv-fv)*(yv-fv)/yv;
-                    //System.out.println(" CHI TEST " + chi2step + "  "
-                    //        + chi2step2);                    
-                    chi2 += (yv-fv)*(yv-fv);
-                }
-            }
-        }
-        
-        //function.show();
-        //System.err.println("\n************ CHI 2 = " + chi2);
+        this.function.setParameters(pars);
+        double chi2 = this.function.getChiSquare(dataset);
         return chi2;
         
     }

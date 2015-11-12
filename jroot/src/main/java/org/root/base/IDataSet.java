@@ -14,6 +14,8 @@ import org.root.attr.Attributes;
 
 public interface IDataSet {
 
+    void        setName(String name);
+    String      getName();
     DataRegion  getDataRegion(); 
     Integer     getDataSize();
     Integer     getDataSize(int axis);

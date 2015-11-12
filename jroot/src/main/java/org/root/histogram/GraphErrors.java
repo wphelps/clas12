@@ -31,6 +31,22 @@ public class GraphErrors extends DataSetXY {
         setName("GraphErrors");        
     } 
     
+    public GraphErrors(String name,double[] x, double[] y){
+        super(x,y);
+        setName(name);        
+    } 
+    
+    
+    public GraphErrors(double[] x, double[] y, double[] ex, double[] ey){
+        super(x,y,ex,ey);
+        setName("GraphErrors");        
+    } 
+    
+    public GraphErrors(String name, double[] x, double[] y, double[] ex, double[] ey){
+        super(x,y,ex,ey);
+        setName(name);
+    }
+    
     public void fit(F1D func){
         DataFitter.fit(this, func);
     }

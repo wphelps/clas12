@@ -78,6 +78,99 @@ public class MarkerPainter {
         g2d.drawLine((int) xr, (int) yt, (int) xl, (int) yb);
     }
     
+    
+     public void drawMarkerBasic(
+             Graphics2D g2d, int x, int y , int mtype, int msize,          
+            int linewidth, int linecolor, int fillcolor){
+             
+        
+        switch (mtype){
+            case 1: {
+                this.drawMarkerCircle(g2d, x, y, msize, linewidth, linecolor, fillcolor);
+            } break;
+                
+            case 2: {
+                this.drawMarkerSquare(g2d, x, y, msize, linewidth, linecolor, fillcolor);
+            } break;
+                
+            case 3: {
+                this.drawMarkerTriangle(g2d, x, y, msize, linewidth, linecolor, fillcolor);
+            } break;
+                
+            case 4: {
+                this.drawMarkerCross(g2d, x, y, msize, linewidth, linecolor, fillcolor);
+            } break;
+        }
+    }
+    
+    public void drawMarkerTriangle(Graphics2D g2d, int x, int y , int msize,            
+            int linewidth, int linecolor, int fillcolor){
+        GeneralPath path = new GeneralPath();
+        int    hc = (int) (msize*0.5); // This is marker size divided by 6
+        path.moveTo(x , y - hc);
+        path.lineTo(x - hc, y + hc);
+        path.lineTo(x + hc, y + hc);
+        path.lineTo(x , y - hc);
+        g2d.setColor(ColorPalette.getColor(fillcolor));
+        g2d.fill(path);
+        g2d.setColor(ColorPalette.getColor(linecolor));
+        g2d.setStroke(new BasicStroke(linewidth));
+        g2d.draw(path);
+    }
+    
+    public void drawMarkerCircle(Graphics2D g2d, int x, int y , int msize,            
+            int linewidth, int linecolor, int fillcolor){
+                
+        g2d.setColor(ColorPalette.getColor(fillcolor));
+        g2d.fillOval(x-msize/2, y-msize/2, msize, msize);
+        
+        g2d.setColor(ColorPalette.getColor(linecolor));
+        g2d.setStroke(new BasicStroke(linewidth));
+        g2d.drawOval(x-msize/2, y-msize/2, msize, msize);
+    }
+    
+    public void drawMarkerSquare(Graphics2D g2d, int x, int y , int msize,            
+            int linewidth, int linecolor, int fillcolor){
+        GeneralPath path = new GeneralPath();
+        int    hc = (int) (msize*0.5); // This is marker size divided by 6
+        path.moveTo(x - hc, y - hc);
+        path.lineTo(x - hc, y + hc);
+        path.lineTo(x + hc, y + hc);
+        path.lineTo(x + hc, y - hc);
+        path.lineTo(x - hc, y - hc);
+        
+        g2d.setColor(ColorPalette.getColor(fillcolor));
+        g2d.fill(path);
+        g2d.setColor(ColorPalette.getColor(linecolor));
+        g2d.setStroke(new BasicStroke(linewidth));
+        g2d.draw(path);
+    }
+    
+    public void drawMarkerCross(Graphics2D g2d, int x, int y , int msize,            
+            int linewidth, int linecolor, int fillcolor){
+        GeneralPath path = new GeneralPath();
+        int    hc = (int) (msize*0.166667); // This is marker size divided by 6
+        path.moveTo(x - hc, y - hc);
+        path.lineTo(x - hc, y - 2*hc);
+        path.lineTo(x + hc, y - 2*hc);
+        path.lineTo(x + hc, y - hc);
+        path.lineTo(x + 2*hc, y - hc);
+        path.lineTo(x + 2*hc, y + hc);
+        path.lineTo(x + hc, y + hc);
+        path.lineTo(x + hc, y + 2*hc);
+        path.lineTo(x - hc, y + 2*hc);
+        path.lineTo(x - hc, y + hc);
+        path.lineTo(x - 2*hc, y + hc);
+        path.lineTo(x - 2*hc, y - hc);
+        path.lineTo(x - hc, y - hc);
+        g2d.setColor(ColorPalette.getColor(fillcolor));
+        g2d.fill(path);
+        g2d.setColor(ColorPalette.getColor(linecolor));
+        g2d.setStroke(new BasicStroke(linewidth));
+        g2d.draw(path);
+    }
+    
+    
     public void drawTriangle(Graphics2D g2d, int x, int y, int msize, int factor){
         double xl = x - msize/2;
         double xr = x + msize/2;

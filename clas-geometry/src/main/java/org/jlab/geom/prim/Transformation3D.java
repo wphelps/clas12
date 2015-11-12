@@ -221,6 +221,7 @@ public class Transformation3D implements Showable {
          * @return the inverse of this transform
          */
         public abstract Transform inverse();
+        public abstract String    getName();
     }
     
     /**
@@ -251,6 +252,10 @@ public class Transformation3D implements Showable {
         public String toString() {
             return "Translate:\t("+dx+", "+dy+", "+dz+")";
         }
+
+        public String getName() {
+            return "xyx";
+        }
     }
     
     /**
@@ -276,6 +281,10 @@ public class Transformation3D implements Showable {
         @Override
         public String toString() {
             return "Rotate-X: \t"+angle+" rad";
+        }
+
+        public String getName() {
+            return "rx";
         }
     }
     
@@ -303,6 +312,10 @@ public class Transformation3D implements Showable {
         public String toString() {
             return "Rotate-Y: \t"+angle+" rad";
         }
+
+        public String getName() {
+            return "ry";
+        }
     }
     
     /**
@@ -328,6 +341,10 @@ public class Transformation3D implements Showable {
         @Override
         public String toString() {
             return "Rotate-Z: \t"+angle+" rad";
+        }
+
+        public String getName() {
+            return "rz";
         }
     }
 }

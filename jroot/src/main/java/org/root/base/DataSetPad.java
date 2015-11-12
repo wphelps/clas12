@@ -107,7 +107,11 @@ public class DataSetPad {
     }
     
     public void add(IDataSet ds){
-        this.collection.addDataSet(ds);
+        this.add(ds, "");
+    }
+    
+    public void add(IDataSet ds,String option){
+        this.collection.addDataSet(ds,option);
         if(this.collection.getCount()==1){
             try {
                 this.padAxisFrame.setTitle(ds.getAttributes().getProperties().getProperty("title"));

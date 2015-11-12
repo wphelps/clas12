@@ -17,7 +17,7 @@ public class DataSetFitterFunction {
     private Function1D  function;
     
     public DataSetFitterFunction(IDataSet ds, Function1D f1d){
-        this.dataSet = ds;
+        this.dataSet  = ds;
         this.function = f1d;
     }
     

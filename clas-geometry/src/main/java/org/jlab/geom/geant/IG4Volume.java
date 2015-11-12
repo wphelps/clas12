@@ -6,6 +6,7 @@
 package org.jlab.geom.geant;
 
 import java.util.List;
+import org.jlab.geom.gemc.GemcDetector;
 import org.jlab.geom.prim.Point3D;
 import org.jlab.geom.prim.Shape3D;
 
@@ -19,7 +20,7 @@ public interface IG4Volume {
     String   getParent();
     String   gemcString();
     Shape3D  getShape();
-    
+    GemcDetector  getDetector();
     G4Material getMaterial();
     void       setMaterial(G4Material mat);
     

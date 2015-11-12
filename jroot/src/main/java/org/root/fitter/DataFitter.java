@@ -12,6 +12,7 @@ import org.freehep.math.minuit.FunctionMinimum;
 import org.freehep.math.minuit.MnMigrad;
 import org.freehep.math.minuit.MnScan;
 import org.freehep.math.minuit.MnUserParameters;
+import org.root.base.IDataSet;
 import org.root.data.DataSetXY;
 import org.root.func.Function1D;
 import org.root.func.RealParameter;
@@ -30,11 +31,11 @@ public class DataFitter {
         
     }
     
-    public static void fit(DataSetXY  data, Function1D func){
-        FitterFunction funcFitter = new FitterFunction(
-                data.getDataX(),data.getDataY(),func);
         
+    public static void fit(IDataSet ds, Function1D func){
         
+        FitterFunction funcFitter = new FitterFunction(ds,func);
+                
         int npars = funcFitter.getFunction().getNParams();
         ByteArrayOutputStream pipeOut = new ByteArrayOutputStream();
         PrintStream  outStream = System.out;

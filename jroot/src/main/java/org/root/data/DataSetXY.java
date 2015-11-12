@@ -20,6 +20,8 @@ public class DataSetXY implements EvioWritableTree,IDataSet {
     
     private final DataVector dataX = new DataVector();
     private final DataVector dataY = new DataVector();
+    private final DataVector dataEX = new DataVector();
+    private final DataVector dataEY = new DataVector();
     
     private String dataSetName = "dataSetXY";
     private String dataTitle  = "";
@@ -34,10 +36,13 @@ public class DataSetXY implements EvioWritableTree,IDataSet {
     }
     
     public DataSetXY(String name){
-        this.dataSetName = name;  
+        this.dataSetName = name;
+        this.initAttributes();
+        /*
         this.attr.addFillProperties();
         this.attr.addLineProperties();
         this.attr.addMarkerAttributes();
+                */
     }
     
     public void setName(String name){
@@ -46,30 +51,62 @@ public class DataSetXY implements EvioWritableTree,IDataSet {
     
     public String getName(){ return this.dataSetName;}
     
+    
+    private void initAttributes(){        
+        this.attr.getProperties().setProperty("line-color"   , "1");
+        this.attr.getProperties().setProperty("line-width"   , "1");
+        this.attr.getProperties().setProperty("line-style"   , "1");
+        this.attr.getProperties().setProperty("marker-color" , "1");
+        this.attr.getProperties().setProperty("marker-size"  , "12");
+        this.attr.getProperties().setProperty("marker-style" , "1");
+        this.attr.getProperties().setProperty("marker-width" , "2");
+        this.attr.getProperties().setProperty("fill-color"   , "0");
+        this.attr.getProperties().setProperty("title"   , "Graph Errors");
+        this.attr.getProperties().setProperty("xtitle"   , "x");
+        this.attr.getProperties().setProperty("ytitle"   , "y");
+
+    }
+    
     public DataSetXY(String name, DataVector x, DataVector y){
         this.dataSetName = name;
         dataX.copy(x);
         dataY.copy(y);
-        this.attr.addFillProperties();
-        this.attr.addLineProperties();
-        this.attr.addMarkerAttributes();
+        this.initAttributes();
     }
     
     public DataSetXY(String name, double[] x, double[] y){
         this.dataSetName = name;
         dataX.set(x);
         dataY.set(y);
-        this.attr.addFillProperties();
-        this.attr.addLineProperties();
-        this.attr.addMarkerAttributes();
+        dataEX.set(new double[x.length]);
+        dataEY.set(new double[y.length]);
+        this.initAttributes();
+    }
+    
+    public DataSetXY(String name, double[] x, double[] y,double[] ex, double[] ey){
+        this.dataSetName = name;
+        dataX.set(x);
+        dataY.set(y);
+        dataEX.set(ex);
+        dataEY.set(ey);
+        this.initAttributes();
     }
     
     public DataSetXY(double[] x, double[] y){
         dataX.set(x);
         dataY.set(y);
-        this.attr.addFillProperties();
-        this.attr.addLineProperties();
-        this.attr.addMarkerAttributes();
+        dataEX.set(new double[x.length]);
+        dataEY.set(new double[y.length]);
+        this.initAttributes();
+    }
+    
+    public DataSetXY(double[] x, double[] y, double[] ex, double[] ey){
+        dataX.set(x);
+        dataY.set(y);
+        dataEX.set(ex);
+        dataEY.set(ey);
+        this.initAttributes();
+
     }
     
     public void setTiles(String t, String xt, String yt){
@@ -78,19 +115,25 @@ public class DataSetXY implements EvioWritableTree,IDataSet {
         this.dataYtitle = yt;
     }
     
-    public String getTitle(){ return this.dataTitle;}
-    public String getXTitle(){ return this.dataXtitle;}
-    public String getYTitle(){ return this.dataYtitle;}
+    public String getTitle(){ return this.attr.getProperties().getProperty("title");}
+    public String getXTitle(){ return this.attr.getProperties().getProperty("xtitle");}
+    public String getYTitle(){ return this.attr.getProperties().getProperty("ytitle");}
     public void setTitle(String t){ this.attr.getProperties().put("title", t);}
     public void setXTitle(String t){ this.attr.getProperties().put("xtitle", t);}
     public void setYTitle(String t){ this.attr.getProperties().put("ytitle", t);}
     
     public void add(double x, double y){
+        this.add(x, y,0.0,0.0);
+    }
+    
+    public void add(double x, double y, double ex, double ey){
         if(x!=Double.NaN&&y!=Double.NaN&&
                 x!=Double.NEGATIVE_INFINITY&&y!=Double.NEGATIVE_INFINITY
                 &&x!=Double.POSITIVE_INFINITY&&y!=Double.POSITIVE_INFINITY){
             dataX.add(x);
             dataY.add(y);
+            dataEX.add(ex);
+            dataEY.add(ey);
         } else {
             System.err.println("[DataSetXY::add] ERROR : can not add point "
             + x + " " + y);
@@ -212,6 +255,8 @@ public class DataSetXY implements EvioWritableTree,IDataSet {
         //hcontainer.put(3, new double[]{this.getxAxis().min(),this.getxAxis().max()});
         hcontainer.put(4, this.dataX.getArray());
         hcontainer.put(5, this.dataY.getArray());
+        hcontainer.put(6, this.dataEX.getArray());
+        hcontainer.put(7, this.dataEY.getArray());
         //byte[] nameBytes = this.dataSetName.getBytes();
         //hcontainer.put(6, nameBytes);
         return hcontainer;
@@ -222,10 +267,14 @@ public class DataSetXY implements EvioWritableTree,IDataSet {
             if(  ((int[]) map.get(1))[0]==6){
                 double[]  xdata    = ((double[]) map.get(4));
                 double[]  ydata    = ((double[]) map.get(5));
+                double[]  exdata    = ((double[]) map.get(6));
+                double[]  eydata    = ((double[]) map.get(7));
                 byte[] name     = (byte[]) map.get(2);
                 this.dataSetName = new String(name);                
                 this.dataX.set(xdata);
                 this.dataY.set(ydata);
+                this.dataEX.set(exdata);
+                this.dataEY.set(eydata);
             }
         }
     }
@@ -270,6 +319,22 @@ public class DataSetXY implements EvioWritableTree,IDataSet {
         this.attr.getProperties().setProperty("marker-size", size.toString());
     }
     
+    public void setMarkerWidth(Integer width){
+        this.attr.getProperties().setProperty("marker-width", width.toString());
+    }
+    
+    public void setFillColor(Integer color){
+        this.attr.getProperties().setProperty("fill-color", color.toString());
+    }
+    
+    public int getMarkerWidth(){
+        return Integer.parseInt(this.attr.getProperties().getProperty("marker-width"));
+    }
+    
+    public int getFillColor(){
+        return Integer.parseInt(this.attr.getProperties().getProperty("fill-color"));
+    }
+    
     public int getMarkerColor(){
         return Integer.parseInt(this.attr.getProperties().getProperty("marker-color"));
     }
@@ -283,11 +348,25 @@ public class DataSetXY implements EvioWritableTree,IDataSet {
     }
 
     public DataRegion getDataRegion() {
+        
         DataRegion  region = new DataRegion();
         region.MINIMUM_X = this.dataX.getMin();
         region.MAXIMUM_X = this.dataX.getMax();
         region.MINIMUM_Y = this.dataY.getMin();
         region.MAXIMUM_Y = this.dataY.getMax();
+        for(int loop = 0; loop < this.getDataSize(); loop++){
+            double xl = this.getDataX(loop) - this.getErrorX(loop);
+            double xh = this.getDataX(loop) + this.getErrorX(loop);
+            if(xl < region.MINIMUM_X) region.MINIMUM_X = xl;
+            if(xh > region.MAXIMUM_X) region.MAXIMUM_X = xh;
+            
+            double yl = this.getDataY(loop) - this.getErrorY(loop);
+            double yh = this.getDataY(loop) + this.getErrorY(loop);
+            
+            if(yl < region.MINIMUM_Y) region.MINIMUM_Y = yl;
+            if(yh > region.MAXIMUM_Y) region.MAXIMUM_Y = yh;
+                
+        }
         
         if(region.MINIMUM_Y==region.MAXIMUM_Y){
             if(region.MINIMUM_Y!=0){
@@ -321,11 +400,11 @@ public class DataSetXY implements EvioWritableTree,IDataSet {
     }
 
     public Double getErrorX(int index) {
-        return 0.0;
+        return this.dataEX.getValue(index);
     }
 
     public Double getErrorY(int index) {
-        return 0.0;
+        return this.dataEY.getValue(index);
     }
 
     public Double getData(int x, int y) {

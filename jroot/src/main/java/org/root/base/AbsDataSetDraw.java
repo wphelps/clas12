@@ -276,19 +276,49 @@ public class AbsDataSetDraw {
         int markerStyle = ds.getAttributes().getAsInt("marker-style");
         int markerColor = ds.getAttributes().getAsInt("marker-color");
         int markerSize  = ds.getAttributes().getAsInt("marker-size");
+        int errorLineWidth  = ds.getAttributes().getAsInt("line-width");
+        int errorLineColor  = ds.getAttributes().getAsInt("line-color");
+        int markerLineWidth = ds.getAttributes().getAsInt("marker-width");
+        int markerFillColor = ds.getAttributes().getAsInt("fill-color");
+        
         int npoints = ds.getDataSize();
-        //System.out.println("Graph points = " + npoints);
+        BasicStroke  errorStroke = new BasicStroke(errorLineWidth);
+        Color        lineColor   = ColorPalette.getColor(errorLineColor);
+//System.out.println("Graph points = " + npoints);
         for(int loop = 0; loop < npoints; loop++){
             if(axis.getDataRegion().contains(ds.getDataX(loop),ds.getDataY(loop)) == true){
+                
                 double xr = axis.getDataRegion().fractionX(ds.getDataX(loop),axis.getAxisX().getAxisLog());
                 double yr = axis.getDataRegion().fractionY(ds.getDataY(loop),axis.getAxisY().getAxisLog());
+                
                 double xf = axis.getFramePointX(xr);
                 double yf = axis.getFramePointY(yr);
                 //System.out.println(" POINT = " + loop + "  " + xr + "  " + yr
                 //+ " " + xf + " " + yf);
-                mPainter.drawMarker(g2d, (int) xf, (int) yf, markerStyle, 
-                        markerSize, markerColor, 1,1);
-
+                double xer = axis.getDataRegion().fractionX(ds.getErrorX(loop),axis.getAxisX().getAxisLog());
+                double yer = axis.getDataRegion().fractionY(ds.getErrorY(loop),axis.getAxisY().getAxisLog());
+                
+                double xerLen = axis.getFrame().width*xer;
+                double yerLen = axis.getFrame().height*yer;
+                
+                //System.out.println(loop + "  XERR = " + ds.getErrorX(loop) + "  FRACIOTN = " + xer);
+                
+                g2d.setStroke(errorStroke);
+                g2d.setColor(lineColor);
+                
+                if(ds.getErrorX(loop)>0){
+                    g2d.drawLine((int) (xf-xerLen), (int) yf, (int) (xf+xerLen) , (int) yf);
+                }
+                
+                if(ds.getErrorY(loop)>0){
+                    g2d.drawLine((int) xf, (int) (yf-yerLen), (int) xf , (int) (yf+yerLen));
+                }
+                mPainter.drawMarkerBasic(g2d, (int) xf, (int) yf, markerStyle,
+                        markerSize,
+                        markerLineWidth,markerColor,markerFillColor);
+                //mPainter.drawMarker(g2d, (int) xf, (int) yf, markerStyle, 
+                //        markerSize, markerColor, 1,1);
+                //mPainter.drawMarkerCircle(g2d, (int) xf, (int) yf, markerSize, 3, 2, 3);
             }
         }
     }

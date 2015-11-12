@@ -68,7 +68,7 @@ public class EmbeddedCanvas extends JPanel {
          if(option.contains("same")==false){
              this.clear();
          }
-         this.canvasPads.get(this.currentPad).getPad().add(dataset);
+         this.canvasPads.get(this.currentPad).getPad().add(dataset,option);
          this.canvasPads.get(this.currentPad).repaint();
      }
      

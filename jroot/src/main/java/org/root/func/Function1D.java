@@ -8,6 +8,7 @@
 package org.root.func;
 import java.util.ArrayList;
 import org.root.attr.Attributes;
+import org.root.base.IDataSet;
 import org.root.data.DataSetXY;
 
 
@@ -20,6 +21,7 @@ public class Function1D  {
     private double     functionMin = 0;
     private double     functionMax = 0;
     private String  functionString = "g";
+    private int     calculatedNDF  = 0;
     
     private final ArrayList<RealParameter>  funcParams = new ArrayList<RealParameter>();
     
@@ -122,6 +124,9 @@ public class Function1D  {
         return data;
     }
     
+    public int getNDF(){
+        return this.calculatedNDF;
+    }
     
     public int    getNDF(DataSetXY data){
         int npoints = 0;
@@ -134,6 +139,40 @@ public class Function1D  {
         return npoints-this.getNParams();
     }
     
+    public double getChiSquare(IDataSet ds){
+        double errorSumm = 0.0;
+        for(int b = 0; b < ds.getDataSize();b++){
+            errorSumm += ds.getErrorY(b);
+        }
+        boolean ignoreErrors = false;
+        if(errorSumm==0){
+            ignoreErrors = true;
+        }
+        double chiSquare = 0.0;
+        int    ndfPoints = 0;
+        
+        for(int bin = 0; bin < ds.getDataSize(); bin++){
+            double yerror = ds.getErrorY(bin);
+            if(ignoreErrors==true){
+                double xv = ds.getDataX(bin);
+                double yv = ds.getDataY(bin);
+                double fv = this.eval(xv);                
+                chiSquare += (yv-fv)*(yv-fv);
+                ndfPoints++;
+            } else {
+                double xv = ds.getDataX(bin);
+                double yv = ds.getDataY(bin);
+                double fv = this.eval(xv);
+                if(yerror!=0){
+                    chiSquare += (yv-fv)*(yv-fv)/(yerror*yerror);
+                    ndfPoints++;
+                }
+            }
+        }
+        this.calculatedNDF = ndfPoints - this.getNParams();
+        return chiSquare;
+    }
+    /*
     public double getChiSquare(DataSetXY data){
         double chi2 = 0.0;
         for(int loop = 0; loop < data.getDataY().getSize();loop++){
@@ -146,7 +185,7 @@ public class Function1D  {
             }
         }
         return chi2;
-    }
+    }*/
     
     public void show(){
         StringBuilder str = new StringBuilder();

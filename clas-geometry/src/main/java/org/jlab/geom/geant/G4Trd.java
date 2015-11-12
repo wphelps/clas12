@@ -16,7 +16,7 @@ import org.jlab.geom.prim.Triangle3D;
  *
  * @author gavalian
  */
-public class G4Trd implements IG4Volume {
+public class G4Trd extends G4BaseVolume {
     
     G4Material volumeMaterial = new G4Material();
     
@@ -37,18 +37,10 @@ public class G4Trd implements IG4Volume {
         this.g4trd_dy1 = dy1;
         this.g4trd_dy2 = dy2;
         this.g4trd_dz = dz;
-    }
-    
-    public String getName() {
-        return volumeName;
-    }
-
-    public String getParent() {
-        return this.volumeParent;
-    }
-
-    public String gemcString() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        this.getDetector().put("type", "Trd");        
+        this.getDetector().put("dimensions", 
+                String.format("%.4f*cm %.4f*cm %.4f*cm %.4f*cm %.4f*cm", dx1,dx2,dy1,dy2,dz));
     }
 
     /**
@@ -68,10 +60,12 @@ public class G4Trd implements IG4Volume {
         }        
     }
     
+    @Override
     public Shape3D getShape() {
         return this.volumeShape;
     }
 
+    @Override
     public List<Point3D> getPoints() {
         ArrayList<Point3D>  points = new ArrayList<Point3D>();
         
@@ -92,6 +86,7 @@ public class G4Trd implements IG4Volume {
      * returns array with the faces based on the points.
      * @return 
      */
+    @Override
     public int[] getFaces() {
         int[] faces = new int[]{
             0, 1, 2,
@@ -115,6 +110,7 @@ public class G4Trd implements IG4Volume {
      * Returns array of faces with texture map.
      * @return 
      */
+    @Override
     public int[] getMeshFaces() {
         int[] faces = this.getFaces();
         int[] meshfaces = new int[faces.length*2];
@@ -124,6 +120,7 @@ public class G4Trd implements IG4Volume {
         return meshfaces;
     }
 
+    @Override
     public float[] getMeshPoints() {
         
         float[]  points = new float[]{
@@ -141,10 +138,12 @@ public class G4Trd implements IG4Volume {
         return points;
     }    
 
+    @Override
     public G4Material getMaterial() {
         return this.volumeMaterial;
     }
 
+    @Override
     public void setMaterial(G4Material mat) {
         this.volumeMaterial = mat;
     }

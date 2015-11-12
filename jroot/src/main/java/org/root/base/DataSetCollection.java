@@ -14,6 +14,8 @@ import java.util.ArrayList;
 public class DataSetCollection {
     
     private ArrayList<IDataSet>  dsCollection = new ArrayList<IDataSet>();
+    private ArrayList<String>    dsCollectionOptions = new ArrayList<String>();
+    
     private Boolean              collectionDataRangeScale = true;
     private DataRegion           fixedDataRegion = new DataRegion();
     
@@ -23,6 +25,7 @@ public class DataSetCollection {
     
     public void clear(){
         this.dsCollection.clear();
+        this.dsCollectionOptions.clear();
     }
     
     public DataRegion getDataRegion(){
@@ -68,11 +71,17 @@ public class DataSetCollection {
     }
     
     public void addDataSet(IDataSet ds){
+        this.addDataSet(ds, "");
+    }
+    
+    public void addDataSet(IDataSet ds, String option){
         this.dsCollection.add(ds);
+        this.dsCollectionOptions.add(option);
     }
     
     public int  getCount(){ return this.dsCollection.size();}
     public IDataSet  getDataSet(int index){ return this.dsCollection.get(index);}
+    public String    getDataSetOption(int index){ return this.dsCollectionOptions.get(index);}
     
     public void setAxisLog(boolean flag, String axis){
         //if(axis.compareTo("X")==0) 
