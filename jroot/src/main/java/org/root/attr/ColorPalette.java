@@ -77,7 +77,7 @@ public class ColorPalette {
         
         if(mode==3){
             palette.clear();
-            palette.add(new Color(255,255,255));
+            palette.add(new Color(245,245,245));
             for(int loop = 0; loop < red.length; loop++){
                 int pred   = (int) (255.0*red[loop]);
                 int pgreen = (int) (255.0*green[loop]);
@@ -85,6 +85,14 @@ public class ColorPalette {
                 palette.add(new Color(pred,pgreen,pblue));
             }
         }
+    }
+    
+    public Color getColor3D(int bin){
+        return this.palette.get(bin);
+    }
+    
+    public int getColor3DSize(){
+        return this.palette.size();
     }
     
     public Color getColor3D(double value, double max, boolean islog){        

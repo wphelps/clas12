@@ -5,11 +5,17 @@
  */
 package org.root.base;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
+import java.util.List;
 import org.root.attr.Attributes;
+import org.root.attr.ColorPalette;
 import org.root.pad.AxisNiceScale;
 
 /**
@@ -33,12 +39,27 @@ public class AxisRegion {
     private LatexText         axisTitleY      = new LatexText("#gamma^3 [deg]",0.0,0.5);
     private LatexText         frameTitle      = new LatexText("ep^#uarrow #rarrowe^'#pi^- X(#gamma)",0.5,1.0);
     */
-    private LatexText         axisTitleX      = new LatexText(" ",0.5,0.0);
+    
+    private LatexText         axisTitleX      = new LatexText("M^2 [Gev/c^2]",0.5,0.0);
     private LatexText         axisTitleY      = new LatexText(" ",0.0,0.5);
     private LatexText         frameTitle      = new LatexText(" ",0.5,1.0);
     
+    private Font              axisTickFont    = new Font("Helvetica",Font.PLAIN,14);
+    private Font              axisTitleFont   = new Font("Helvetica",Font.PLAIN,14);
+    private int               axisFrameFillColor      = 1;
+    private int               axisFrameColor          = 0;
+    private int               axisFrameTitleColor     = 0;
+    private boolean           axisGridOptionX         = true;
+    private boolean           axisGridOptionY         = true;
+    private boolean           axisDrawOptionZ         = true;
+    
+    public static float[]  dashPattern1 = new float[]{10.0f,5.0f};
+    public static float[]  dashPattern2 = new float[]{10.0f,5.0f,2.0f,5.0f};
+    public static float[]  dashPattern3 = new float[]{2.0f,5.0f,2.0f,5.0f};
+
     
     public  AxisRegion(int xsize, int ysize){
+        
         this.axisBoundaries.x = 0;
         this.axisBoundaries.y = 0;
         this.axisBoundaries.width  = xsize;
@@ -83,6 +104,176 @@ public class AxisRegion {
         return this.frameTitle;
     }
     
+    public void update(Graphics2D g2d, int w, int h){
+        
+        FontMetrics fma = g2d.getFontMetrics(axisTickFont);
+        FontMetrics fmt = g2d.getFontMetrics(axisTitleFont);
+        
+        int  xAxisOffset = this.axisX.getAxisOffset(fma, false);
+        int  yAxisOffset = this.axisY.getAxisOffset(fma, true);
+        int  zAxisOffset = this.axisZ.getAxisOffset(fma, true);
+        
+        int fw = w; //g2d.getDeviceConfiguration().getBounds().width;
+        int fh = h; //g2d.getDeviceConfiguration().getBounds().height;
+        
+        Rectangle2D  boundsX = this.axisTitleX.getBounds(fmt, g2d);
+        Rectangle2D  boundsY = this.axisTitleY.getBounds(fmt, g2d);
+        
+        this.axisFrame.x      = fmt.getHeight()*2 + yAxisOffset;
+        this.axisFrame.width  = fw - axisFrame.x - 20 - (xAxisOffset + 20);
+        this.axisFrame.y      = fmt.getHeight()*2;
+        this.axisFrame.height = fh - axisFrame.y - fmt.getHeight()*2 - fma.getHeight()*2;
+        this.getAxisX().updateWithFont(fma, this.getFrame().width, false);
+        this.getAxisY().updateWithFont(fma, this.getFrame().height, true);
+        /*System.out.println("W = " + fw + " H = " + fh +
+                "  XOFF = " + xAxisOffset + "  YOFF = " + 
+                yAxisOffset);
+                */
+    }
+    
+    public void drawOnCanvas(Graphics2D g2d, int w, int h, int xoffset, int yoffset){
+        
+        g2d.setColor(Color.BLACK);
+
+        FontMetrics fma = g2d.getFontMetrics(axisTickFont);
+        FontMetrics fmt = g2d.getFontMetrics(axisTitleFont);
+        
+        g2d.setFont(axisTickFont);
+               BasicStroke   lineStroke = new BasicStroke(2);
+        BasicStroke   gridStroke = new BasicStroke(1, BasicStroke.CAP_BUTT,
+                    BasicStroke.JOIN_MITER, 20.0f, dashPattern1, 0.0f);
+        //---------------------------------------------------------------------
+        // Draging X axis 
+        //---------------------------------------------------------------------
+        List<String>  xticksL = this.getAxisX().getCoordinatesLabels();
+        List<Double>  xticksC = this.getAxisX().getCoordinates();
+        
+        for(int loop = 0 ; loop < xticksC.size(); loop++){            
+            double x = this.getDataPointX(xticksC.get(loop));
+            //System.out.println(loop + "  " + xticksC.get(loop) + "  " + x);
+            int    lw = fma.stringWidth(xticksL.get(loop));
+            int    lh = fma.getHeight();
+
+            if(this.axisGridOptionX==true){
+                g2d.setColor(Color.LIGHT_GRAY);
+                g2d.setStroke(gridStroke);
+                
+                g2d.drawLine(
+                        xoffset + (int) x,
+                        yoffset + this.axisFrame.y,
+                        xoffset + (int) x,
+                        yoffset + this.axisFrame.y + this.axisFrame.height
+                );
+            }
+            
+            g2d.setColor(Color.BLACK);
+            g2d.setStroke(lineStroke);
+            g2d.drawLine(xoffset + (int) x,
+                    yoffset + this.getFrame().y, 
+                    xoffset + (int) x, 
+                    yoffset + this.getFrame().y + 5);
+            g2d.drawLine(xoffset + (int) x,
+                    yoffset + this.getFrame().y+this.getFrame().height, 
+                    xoffset + (int) x, 
+                    yoffset + this.getFrame().y + this.getFrame().height - 10);
+            g2d.drawString(
+                    xticksL.get(loop),
+                    xoffset + (int) x - lw/2, 
+                    yoffset + this.getFrame().y + this.getFrame().height + lh);            
+        }
+        
+        //---------------------------------------------------------------------
+        // Draging Y axis 
+        //---------------------------------------------------------------------
+        List<String>  yticksL = this.getAxisY().getCoordinatesLabels();
+        List<Double>  yticksC = this.getAxisY().getCoordinates();
+        
+        for(int loop = 0 ; loop < yticksC.size(); loop++){            
+            double y = this.getDataPointY(yticksC.get(loop));
+            //System.out.println(loop + "  " + xticksC.get(loop) + "  " + x);
+            int    lw = fma.stringWidth(yticksL.get(loop));
+            int    lh = fma.getHeight();
+            
+            if(this.axisGridOptionY==true){
+                g2d.setColor(Color.LIGHT_GRAY);
+                g2d.setStroke(gridStroke);
+                
+                g2d.drawLine(
+                        xoffset + this.axisFrame.x,
+                        yoffset + (int) y,
+                        xoffset + this.axisFrame.x + this.axisFrame.width,
+                        yoffset + (int) y
+                );
+            }
+            
+            g2d.setColor(Color.BLACK);
+            g2d.setStroke(lineStroke);
+            g2d.drawLine(
+                    xoffset + axisFrame.x + axisFrame.width - 5,
+                    yoffset + (int) y, 
+                    xoffset + axisFrame.x + axisFrame.width ,
+                    yoffset + (int) y);
+            
+            g2d.drawLine(
+                    xoffset + axisFrame.x ,
+                    yoffset + (int) y, 
+                    xoffset + axisFrame.x + 10,
+                    yoffset + (int) y);
+            
+            g2d.drawString(
+                    xticksL.get(loop),
+                    xoffset + (int) axisFrame.x - lw - 5, 
+                    yoffset + lh/2 + (int) y );            
+        }
+        
+        //---------------------------------------------------------------------
+        // Draging Z axis 
+        //---------------------------------------------------------------------
+        List<String>  zticksL = this.getAxisY().getCoordinatesLabels();
+        List<Double>  zticksC = this.getAxisY().getCoordinates();
+        ColorPalette  palette = new ColorPalette();
+        int ncolors = palette.getColor3DSize();
+        int step    = this.axisFrame.height/ncolors;
+        int ypos = this.axisFrame.y + this.axisFrame.height - step;
+        for(int c = 0 ; c < ncolors; c++){
+            g2d.setColor(palette.getColor3D(c));
+            g2d.fillRect(axisFrame.x + axisFrame.width,ypos,20,step);
+            ypos -= step;
+        }
+        
+        g2d.setColor(Color.BLACK);
+        g2d.drawRect(axisFrame.x + axisFrame.width, axisFrame.y, 20, axisFrame.height);
+        for(int loop = 0 ; loop < zticksC.size(); loop++){ 
+            double z = this.getDataPointZ(zticksC.get(loop));
+            System.out.println(loop + "  " + xticksC.get(loop) + "  " + z);
+            int    lw = fma.stringWidth(zticksL.get(loop));
+            int    lh = fma.getHeight();
+            g2d.setColor(Color.BLACK);
+            g2d.setStroke(lineStroke);
+            g2d.drawLine(
+                    xoffset + axisFrame.x + axisFrame.width + 20,
+                    yoffset + (int) z, 
+                    xoffset + axisFrame.x + axisFrame.width + 20 + 5,
+                    yoffset + (int) z);
+            
+            g2d.drawString(
+                    xticksL.get(loop),
+                    xoffset + (int) axisFrame.x + axisFrame.width + 20 + 10,
+                    yoffset + lh/2 + (int) z );   
+        }
+        g2d.drawRect(this.axisFrame.x + xoffset, this.axisFrame.y+yoffset,
+                this.axisFrame.width,this.axisFrame.height);
+        
+        this.axisTitleX.setFont("Helvetica");
+        this.axisTitleX.setFontSize(24);
+        Rectangle2D rectX = axisTitleX.getBounds(fmt, g2d);
+        int th = fmt.getHeight();
+        g2d.drawString(this.axisTitleX.getText().getIterator(), 
+                axisFrame.x, 
+                h - th/2);
+    }
+    
+    public Font getAxisFont(){return this.axisTickFont;}
     
     public void update(FontMetrics fm){
         int height = fm.getHeight();
@@ -90,11 +281,12 @@ public class AxisRegion {
         
         int  xAxisOffset = this.axisX.getAxisOffset(fm, false);
         int  yAxisOffset = this.axisY.getAxisOffset(fm, true);
+        int  zAxisOffset = this.axisZ.getAxisOffset(fm, true);
         
         this.axisFrame.x = xAxisOffset;
         this.axisFrame.y = yAxisOffset;
         
-        this.axisFrame.width  = this.axisBoundaries.width  - xAxisOffset - 40;
+        this.axisFrame.width  = this.axisBoundaries.width  - xAxisOffset - 40 ;
         this.axisFrame.height = this.axisBoundaries.height - 2*yAxisOffset;
         System.out.println(this.axisFrame.x + " " + this.axisFrame.y 
                 + " " + this.axisFrame.width + " " + this.axisFrame.height
@@ -126,6 +318,8 @@ public class AxisRegion {
                 this.frameDataRegion.MAXIMUM_X);
         this.axisY.setMinMaxPoints(this.frameDataRegion.MINIMUM_Y, 
                 this.frameDataRegion.MAXIMUM_Y);
+        this.axisZ.setMinMaxPoints(this.frameDataRegion.MINIMUM_Z,this.
+                frameDataRegion.MAXIMUM_Z);
     }
     
     public double getDataPointX(double dataX){
@@ -136,6 +330,12 @@ public class AxisRegion {
     public double getDataPointY(double dataY){
         double dataRelativeY = this.frameDataRegion.fractionX(dataY);
         return this.getFramePointY(dataRelativeY);
+    }
+    
+    public double getDataPointZ(double dataZ){
+        double dataRelativeZ = this.frameDataRegion.fractionZ(dataZ);
+        System.out.println(" Z = " + dataZ + "  fraction = " + dataRelativeZ );
+        return this.getFramePointY(dataRelativeZ);
     }
     
     public double   getFramePointX(double relX){

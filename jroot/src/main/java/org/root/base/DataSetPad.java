@@ -96,8 +96,7 @@ public class DataSetPad {
         //g2d.drawString(latex, 200,30);
         g2d.drawString(latexString.getIterator(), 250,30);
         */
-        if(this.statBox.getTexts().size()>0){
-            
+        if(this.statBox.getTexts().size()>0&&TStyle.getOptStat()==true){            
             AbsDataSetDraw.drawPaveText(padAxisFrame, statBox, g2d, xoffset,yoffset,w,h);
         }
     }

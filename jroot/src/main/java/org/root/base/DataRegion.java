@@ -29,11 +29,23 @@ public class DataRegion {
         this.MAXIMUM_Y = ymax;
     }
     
+     public DataRegion(double xmin, double xmax, double ymin, double ymax, 
+             double zmin, double zmax){
+        this.MINIMUM_X = xmin;
+        this.MAXIMUM_X = xmax;
+        this.MINIMUM_Y = ymin;
+        this.MAXIMUM_Y = ymax;
+        this.MINIMUM_Z = zmin;
+        this.MAXIMUM_Z = zmax;
+    }
+     
     public DataRegion(DataRegion region){
         this.MAXIMUM_X = region.MAXIMUM_X;
         this.MINIMUM_X = region.MINIMUM_X;
         this.MAXIMUM_Y = region.MAXIMUM_Y;
         this.MINIMUM_Y = region.MINIMUM_Y;
+        this.MINIMUM_Z = region.MINIMUM_Z;
+        this.MAXIMUM_Z = region.MAXIMUM_Z;
     }
     
     public void copy(DataRegion region){
@@ -41,6 +53,8 @@ public class DataRegion {
         this.MAXIMUM_X = region.MAXIMUM_X;
         this.MINIMUM_Y = region.MINIMUM_Y;
         this.MAXIMUM_Y = region.MAXIMUM_Y;
+        this.MINIMUM_Z = region.MINIMUM_Z;
+        this.MAXIMUM_Z = region.MAXIMUM_Z;
     }
     
     public void combine(DataRegion region){
@@ -48,6 +62,8 @@ public class DataRegion {
         if(region.MAXIMUM_X>this.MAXIMUM_X) this.MAXIMUM_X = region.MAXIMUM_X;
         if(region.MINIMUM_Y<this.MINIMUM_Y) this.MINIMUM_Y = region.MINIMUM_Y;
         if(region.MAXIMUM_Y>this.MAXIMUM_Y) this.MAXIMUM_Y = region.MAXIMUM_Y;
+        if(region.MINIMUM_Z<this.MINIMUM_Z) this.MINIMUM_Z = region.MINIMUM_Z;
+        if(region.MAXIMUM_Z>this.MAXIMUM_Z) this.MAXIMUM_Z = region.MAXIMUM_Z;
     }
     
     public double fractionX(double x, boolean logFlag){
@@ -84,6 +100,27 @@ public class DataRegion {
         //double length = Math.log(this.MAXIMUM_Y) - Math.log(this.MINIMUM_Y);
         //return (Math.log(y) - Math.log(this.MINIMUM_Y) ) / length;
     }
+    
+    public double fractionZ(double z, boolean logFlag){
+        if(logFlag==false) return this.fractionZ(z);
+        double L_max = 0.0;
+        double L_min = 0.0;
+        if(this.MINIMUM_Z>0.0){
+            L_min = Math.log(this.MINIMUM_Z);
+        }
+        if(this.MAXIMUM_Z>0.0){
+            L_max = Math.log(this.MAXIMUM_Z);
+        }
+        
+        double L_z   = Math.log(z);
+        //System.out.println(" LOGS ( " + this.MINIMUM_Y + " )  " + L_min + " " + L_max + " " + L_y);
+        return (L_z-L_min)/(L_max-L_min); 
+        //double length = Math.log(this.MAXIMUM_Y) - Math.log(this.MINIMUM_Y);
+        //return (Math.log(y) - Math.log(this.MINIMUM_Y) ) / length;
+    }
+    
+   
+    
     public double  fractionX(double x){
         double length = this.MAXIMUM_X - this.MINIMUM_X;
         if(length==0) return 0.0;
@@ -96,6 +133,13 @@ public class DataRegion {
         if(length==0) return 0.0;
         if(length<0)  System.err.println("(DataRegion) error: negative length");
         return (y-this.MINIMUM_Y)/length;
+    }
+    
+    public double  fractionZ(double z){
+        double length = this.MAXIMUM_Z - this.MINIMUM_Z;
+        if(length==0) return 0.0;
+        if(length<0)  System.err.println("(DataRegion) error: negative length");
+        return (z-this.MINIMUM_Z)/length;
     }
     
     public Boolean contains(double x, double y){

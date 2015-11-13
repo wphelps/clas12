@@ -176,7 +176,7 @@ public class AxisNiceScale {
         
         if(vertical==false){
             offset  = fm.getHeight();
-            return 3*offset;
+            return offset;
         }
         
         if(vertical==true){
@@ -184,7 +184,7 @@ public class AxisNiceScale {
                 int width = fm.stringWidth(label);
                 if(width>offset) offset = width;
             }
-            offset += 2*fm.getHeight();
+            //offset += fm.getHeight();
         }
         
         return offset;
@@ -284,7 +284,8 @@ public class AxisNiceScale {
     }
     
     public int getSigFig(){
-        double min = niceCoordinates.get(0);;
+        if(niceCoordinates.size()<1) return 0;
+        double min = niceCoordinates.get(0);
         double max = niceCoordinates.get(niceCoordinates.size()-1);
         double difference = max-min;
         int   placeOfDifference = (int) Math.floor(Math.log(difference) / Math.log(10));        

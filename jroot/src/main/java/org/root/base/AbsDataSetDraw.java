@@ -271,7 +271,9 @@ public class AbsDataSetDraw {
     
     public static void drawDataSetAsGraph(AxisRegion axis, Graphics2D g2d, IDataSet ds,
             int startX, int startY, int gWidth, int gHeight){
+        
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        
         MarkerPainter  mPainter = new MarkerPainter();
         int markerStyle = ds.getAttributes().getAsInt("marker-style");
         int markerColor = ds.getAttributes().getAsInt("marker-color");
