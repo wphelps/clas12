@@ -12,7 +12,7 @@ package org.jlab.clas.detector;
 public enum DetectorType {
       
     UNDEFINED ( 0, "undefined"),
-    BST       ( 1, "BST"),
+    BST       ( 1, "BST"),    
     BMT       ( 2, "BMT"),
     CND       ( 3, "CND"),
     CTOF      ( 4, "CTOF"),
@@ -32,8 +32,8 @@ public enum DetectorType {
     ECTOT     (112, "ECTOT"),
     LAC       (113, "LAC"),
     SC        (114, "SC"),
-    CC        (115, "CC");
-    
+    CC        (115, "CC"),
+    SVT       (220, "SVT");
     private final int detectorId;
     private final String detectorName;
     

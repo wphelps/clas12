@@ -23,6 +23,7 @@ public class GraphErrors extends DataSetXY {
     public AttributesMarker  graphMarkerAttributes = new AttributesMarker();
     
     public GraphErrors(){
+        super();
         setName("GraphErrors");        
     } 
     
@@ -49,18 +50,6 @@ public class GraphErrors extends DataSetXY {
     
     public void fit(F1D func){
         DataFitter.fit(this, func);
-    }
-    
-    public void setMarkerStyle(int style){ 
-        this.graphMarkerAttributes.MARKER_STYLE = style; 
-    }
-    
-    public void setMarkerColor(int color){ 
-        this.graphMarkerAttributes.MARKER_COLOR = color; 
-    }
-    
-    public void setMarkerSize(int size){ 
-        this.graphMarkerAttributes.MARKER_SIZE = size; 
     }
      
     @Override

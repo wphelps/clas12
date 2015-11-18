@@ -52,8 +52,9 @@ public class AxisRegionFrameTest extends JPanel {
         g2d.setColor(Color.white);
         g2d.fillRect(0, 0, w, h);
         
-        axis.setDataRegion(new DataRegion(5.0,25.0,0.0,25.0,0.0,25.0));
-        axis.getAxisX().setAxisLog(true);
+        axis.setDataRegion(new DataRegion(5.0,650.0,0.0,250.0,0.0,2400.0));
+        //axis.getAxisX().setAxisLog(true);
+        //axis.getAxisY().setAxisLog(true);
         axis.update(g2d,w,h);        
         axis.drawOnCanvas(g2d, w, h, 0, 0);
 

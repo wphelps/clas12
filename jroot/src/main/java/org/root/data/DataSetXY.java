@@ -30,9 +30,10 @@ public class DataSetXY implements EvioWritableTree,IDataSet {
     private Attributes  attr = new Attributes();
     
     public DataSetXY(){
-        this.attr.addFillProperties();
-        this.attr.addLineProperties();
-        this.attr.addMarkerAttributes();
+        this.initAttributes();
+        //this.attr.addFillProperties();
+        //this.attr.addLineProperties();
+        //this.attr.addMarkerAttributes();
     }
     
     public DataSetXY(String name){

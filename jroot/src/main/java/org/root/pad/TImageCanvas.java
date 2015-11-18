@@ -6,6 +6,7 @@
 package org.root.pad;
 
 import de.erichseifert.vectorgraphics2d.PDFGraphics2D;
+import de.erichseifert.vectorgraphics2d.SVGGraphics2D;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -84,6 +85,29 @@ public class TImageCanvas {
         
     }
     
+    public void saveSVG(String filename){
+        SVGGraphics2D ig2 = new SVGGraphics2D(0.0, 0.0, this.canvasWidth, this.canvasHeight);
+         int padWidth  = (int) this.canvasWidth/this.nDivisionsX;
+        int padHeight = (int) this.canvasHeight/this.nDivisionsY;
+        
+        int counter = 0;
+        for(int cY = 0; cY < this.nDivisionsY; cY++){
+            for(int cX = 0; cX < this.nDivisionsX; cX++){
+                int offsetX = cX * padWidth;
+                int offsetY = cY * padHeight;
+                this.dataSets.get(counter).drawOnCanvas(ig2, offsetX, offsetY, padWidth,padHeight);
+                counter++;
+            }
+        } 
+        try {
+            FileOutputStream file = new FileOutputStream(filename);
+            
+            file.write(ig2.getBytes());        
+            file.close();
+        } catch(IOException e){
+            
+        }
+    }
     
     public void savePDF(String filename){
         PDFGraphics2D ig2 = new PDFGraphics2D(0.0, 0.0, this.canvasWidth, this.canvasHeight);

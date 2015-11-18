@@ -44,8 +44,9 @@ public class AxisRegion {
     private LatexText         axisTitleY      = new LatexText(" ",0.0,0.5);
     private LatexText         frameTitle      = new LatexText(" ",0.5,1.0);
     
-    private Font              axisTickFont    = new Font("Helvetica",Font.PLAIN,14);
-    private Font              axisTitleFont   = new Font("Helvetica",Font.PLAIN,14);
+    //private Font              axisTickFont    = new Font("Bradley Hand",Font.PLAIN,24);
+    private Font              axisTickFont    = new Font("Chalkduster",Font.PLAIN,14);
+    private Font              axisTitleFont   = new Font("Avenir",Font.PLAIN,12);
     private int               axisFrameFillColor      = 1;
     private int               axisFrameColor          = 0;
     private int               axisFrameTitleColor     = 0;
@@ -70,7 +71,7 @@ public class AxisRegion {
         this.axisAttributes.getProperties().setProperty("line-color", "1");
         this.axisAttributes.getProperties().setProperty("line-width", "2");
         
-        axisTitleX.setFont("Helvetica");
+        axisTitleX.setFont("Arial");
         axisTitleY.setFont("Helvetica");
         frameTitle.setFont("Helvetica");
         
@@ -120,15 +121,45 @@ public class AxisRegion {
         Rectangle2D  boundsY = this.axisTitleY.getBounds(fmt, g2d);
         
         this.axisFrame.x      = fmt.getHeight()*2 + yAxisOffset;
-        this.axisFrame.width  = fw - axisFrame.x - 20 - (xAxisOffset + 20);
+        this.axisFrame.width  = fw - axisFrame.x - 20 - (zAxisOffset + 20);
+        
         this.axisFrame.y      = fmt.getHeight()*2;
         this.axisFrame.height = fh - axisFrame.y - fmt.getHeight()*2 - fma.getHeight()*2;
         this.getAxisX().updateWithFont(fma, this.getFrame().width, false);
         this.getAxisY().updateWithFont(fma, this.getFrame().height, true);
+        this.getAxisZ().updateWithFont(fma, this.getFrame().height, true);
         /*System.out.println("W = " + fw + " H = " + fh +
                 "  XOFF = " + xAxisOffset + "  YOFF = " + 
                 yAxisOffset);
                 */
+    }
+    
+    
+    public void drawOnCanvasGrid(Graphics2D g2d, int w, int h, int xoffset, int yoffset){
+        // Drawing GRID on X-axis
+        List<Double>  xticksC = this.getAxisX().getCoordinates();
+        for(int loop = 0; loop < xticksC.size(); loop++){
+            double x = this.getDataPointX(xticksC.get(loop));
+            g2d.drawLine(
+                        xoffset + (int) x,
+                        yoffset + this.axisFrame.y,
+                        xoffset + (int) x,
+                        yoffset + this.axisFrame.y + this.axisFrame.height
+                );
+        }
+        
+        if(this.getAxisX().getAxisLog()==true){
+            List<Double>  xticksM = this.getAxisX().getMinorTicks();
+            for(int loop = 0; loop < xticksM.size(); loop++){
+            double x = this.getDataPointX(xticksM.get(loop));
+            g2d.drawLine(
+                        xoffset + (int) x,
+                        yoffset + this.axisFrame.y,
+                        xoffset + (int) x,
+                        yoffset + this.axisFrame.y + this.axisFrame.height
+                );
+            }
+        }
     }
     
     public void drawOnCanvas(Graphics2D g2d, int w, int h, int xoffset, int yoffset){
@@ -221,7 +252,7 @@ public class AxisRegion {
                     yoffset + (int) y);
             
             g2d.drawString(
-                    xticksL.get(loop),
+                    yticksL.get(loop),
                     xoffset + (int) axisFrame.x - lw - 5, 
                     yoffset + lh/2 + (int) y );            
         }
@@ -229,15 +260,15 @@ public class AxisRegion {
         //---------------------------------------------------------------------
         // Draging Z axis 
         //---------------------------------------------------------------------
-        List<String>  zticksL = this.getAxisY().getCoordinatesLabels();
-        List<Double>  zticksC = this.getAxisY().getCoordinates();
+        List<String>  zticksL = this.getAxisZ().getCoordinatesLabels();
+        List<Double>  zticksC = this.getAxisZ().getCoordinates();
         ColorPalette  palette = new ColorPalette();
         int ncolors = palette.getColor3DSize();
-        int step    = this.axisFrame.height/ncolors;
-        int ypos = this.axisFrame.y + this.axisFrame.height - step;
+        double   step    = this.axisFrame.height/ncolors;
+        int ypos = (int) (this.axisFrame.y + this.axisFrame.height - step);
         for(int c = 0 ; c < ncolors; c++){
             g2d.setColor(palette.getColor3D(c));
-            g2d.fillRect(axisFrame.x + axisFrame.width,ypos,20,step);
+            g2d.fillRect(axisFrame.x + axisFrame.width,ypos,20,(int) step);
             ypos -= step;
         }
         
@@ -245,7 +276,7 @@ public class AxisRegion {
         g2d.drawRect(axisFrame.x + axisFrame.width, axisFrame.y, 20, axisFrame.height);
         for(int loop = 0 ; loop < zticksC.size(); loop++){ 
             double z = this.getDataPointZ(zticksC.get(loop));
-            System.out.println(loop + "  " + xticksC.get(loop) + "  " + z);
+            System.out.println(loop + "  " + zticksC.get(loop) + "  " + z);
             int    lw = fma.stringWidth(zticksL.get(loop));
             int    lh = fma.getHeight();
             g2d.setColor(Color.BLACK);
@@ -257,10 +288,11 @@ public class AxisRegion {
                     yoffset + (int) z);
             
             g2d.drawString(
-                    xticksL.get(loop),
+                    zticksL.get(loop),
                     xoffset + (int) axisFrame.x + axisFrame.width + 20 + 10,
                     yoffset + lh/2 + (int) z );   
         }
+        
         g2d.drawRect(this.axisFrame.x + xoffset, this.axisFrame.y+yoffset,
                 this.axisFrame.width,this.axisFrame.height);
         
@@ -328,7 +360,7 @@ public class AxisRegion {
     }
     
     public double getDataPointY(double dataY){
-        double dataRelativeY = this.frameDataRegion.fractionX(dataY);
+        double dataRelativeY = this.frameDataRegion.fractionY(dataY);
         return this.getFramePointY(dataRelativeY);
     }
     

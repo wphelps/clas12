@@ -92,6 +92,12 @@ public class ConstantsTablePanel extends JPanel {
         });*/
     }
     
+    public void setTable(ConstantsTable table){
+        this.constantsTable = table;
+        this.guiTable.setModel(table);
+        this.repaint();
+    }
+    
     public void addListener(IConstantsTableListener lt){
         this.listeners.add(lt);
     }

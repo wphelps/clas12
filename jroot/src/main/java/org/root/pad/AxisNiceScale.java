@@ -49,11 +49,21 @@ public class AxisNiceScale {
     }
     
     private void calculateLog(){ 
-        //System.out.println("CALCULATING AXIS IN LOG SCALE");        
-        this.range = Math.floor(Math.log10(this.maxPoint)) - Math.floor(Math.log10(this.minPoint));
+        //System.out.println("CALCULATING AXIS IN LOG SCALE"); 
+        double  minPointLog = this.minPoint;
+        
+        if(minPointLog==0){
+            minPointLog = this.maxPoint*1.0e-9;
+        }
+        
+        
+        this.range = Math.floor(Math.log10(this.maxPoint)) - Math.floor(Math.log10(minPointLog));
         this.tickSpacing = this.range/(this.maxTicks-1);
-        int minlog =  (int) Math.floor(Math.log10(this.minPoint));
+        int minlog =  (int) Math.floor(Math.log10(minPointLog));
         int maxlog =  (int) Math.floor(Math.log10(this.maxPoint));
+        
+        this.tickSpacing = niceNum(range / (maxTicks - 1), true);
+        System.out.println("MINPOINT " + minPointLog + " " + maxPoint + "  spacing = " + this.tickSpacing);
         this.niceCoordinates.clear();
         this.niceCoordinateLabels.clear();
         this.range = maxlog;// - minlog;
@@ -92,14 +102,24 @@ public class AxisNiceScale {
                 Math.floor(minPoint / tickSpacing) * tickSpacing;
         this.niceMax =
                 Math.ceil(maxPoint / tickSpacing) * tickSpacing;
+        
         niceCoordinates.clear();
         this.niceCoordinateLabels.clear();
+        
+        double numberX = niceMin;
+        while(numberX<=this.maxPoint){
+            if(numberX>=this.minPoint&&numberX<=this.maxPoint){
+                niceCoordinates.add(numberX);
+            }
+            numberX += this.tickSpacing;
+        }
+        /*
         for(int loop = 0; loop < maxTicks; loop++){
             double numberX = niceMin + loop*this.tickSpacing;
             if(numberX<=this.maxPoint&&numberX>=this.minPoint)
                 niceCoordinates.add(numberX);
         }
-        
+        */
         int sigfig = this.getSigFig();
         String format = this.getStringFormat(sigfig+1);
         for(int loop = 0; loop < this.niceCoordinates.size();loop++){
@@ -297,15 +317,42 @@ public class AxisNiceScale {
     @Override
     public String toString(){
         StringBuilder str = new StringBuilder();
+        /*
         for(int loop = 0; loop < maxTicks; loop++)
             str.append(String.format("%12.4f", niceMin + loop*this.tickSpacing ));
+        */
+        for(int loop = 0; loop < this.niceCoordinateLabels.size(); loop++){
+            str.append(" ");
+            str.append(this.niceCoordinateLabels.get(loop));
+        }
         str.append("\n");
         return str.toString();    
     }
     
     public static void main(String[] args){
-        AxisNiceScale axis = new AxisNiceScale(0.0,15.0);
-        axis.setMaxTicks(8);
-        System.err.println(axis);
+        AxisNiceScale axis = new AxisNiceScale(5.0,25.0);
+        for(int loop = 10; loop > 1 ; loop--){
+            
+            axis.setMaxTicks(loop);
+            axis.calculate();
+            System.out.println(" AXIS MAX TICKS = " + loop);
+            System.err.println(axis);
+        }
+        
+        double minp = 0.01;
+        double maxp = 120.0;
+        int maxticks = 10;
+        
+        double range = Math.floor(Math.log10(maxp)) - Math.floor(Math.log10(minp));
+        double tickSpacing = range/(maxticks-1);
+        System.out.println("----->>>>> RANGE = " + range +
+                "  tickSpacing = " + tickSpacing);
+        
+        
+        AxisNiceScale  axisLog = new AxisNiceScale(0,50.0);
+        axisLog.setAxisLog(true);
+        System.out.println(axisLog);
+        //int minlog =  (int) Math.floor(Math.log10(this.minPoint));
+        //int maxlog =  (int) Math.floor(Math.log10(this.maxPoint));
     }
 }
