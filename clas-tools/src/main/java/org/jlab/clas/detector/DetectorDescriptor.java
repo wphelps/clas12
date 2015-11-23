@@ -117,6 +117,24 @@ public class DetectorDescriptor {
         return false;
     }
     
+    
+    public static String getName(String base, int... ids){
+        StringBuilder str = new StringBuilder();
+        str.append(base);
+        if(ids.length>0) str.append(String.format("_S_%d", ids[0]));
+        if(ids.length>1) str.append(String.format("_L_%d", ids[1]));
+        if(ids.length>2) str.append(String.format("_C_%d", ids[2]));
+        return str.toString();
+    }
+    
+    public static String getTitle(String base, int... ids){
+        StringBuilder str = new StringBuilder();
+        if(ids.length>0) str.append(String.format(" SECTOR %d", ids[0]));
+        if(ids.length>1) str.append(String.format(" LAYER %d", ids[1]));
+        if(ids.length>2) str.append(String.format(" UNIT %d", ids[2]));
+        return str.toString();
+    }
+    
     @Override
     public String toString(){
         return String.format("D [%6s ] C/S/C [%4d %4d %4d ]  S/L/C [%4d %4d %4d ]  ORDER = %4d", 

@@ -133,6 +133,9 @@ public class AbsDetectorTranslationTable implements IDetectorTranslationTable {
         if(entry.descriptor().getType()==DetectorType.UNDEFINED){
             System.err.println("----> error : detector type unknown");
             return;
+        } else {
+            this.type = entry.descriptor().getType();
+            this.tableName = this.type.getName();
         }
         
         if(this.tableEntries.size()==0){

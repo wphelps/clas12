@@ -3,16 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.jlab.clas12.basic;
-
-import org.jlab.clas.detector.DetectorType;
+package org.jlab.clas12.detector;
 
 /**
  *
  * @author gavalian
  */
-public interface IDetectorModule {
-    String  getName();
-    String  getAuthor();
-    DetectorType getType();
+public interface IFADCFitter {
+    public void fit(DetectorChannel tube);
 }

@@ -9,6 +9,7 @@ package org.jlab.clasrec.main;
 import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.TreeMap;
+import org.jlab.clas.detector.DetectorType;
 import org.jlab.clas12.tools.MimeType;
 import org.jlab.clasrec.utils.DataBaseLoader;
 import org.jlab.clasrec.utils.DatabaseConstantProvider;
@@ -137,7 +138,7 @@ public abstract class DetectorReconstruction implements ICService {
         
         if(geometryPackage.compareTo("DC::Tilted")==0){
             DCFactory factory = new DCFactory();
-            ConstantProvider  data = DataBaseLoader.getConstantsDC(this.geometryRunNumber, this.geometryVariation);
+            ConstantProvider  data = DataBaseLoader.getDetectorConstants(DetectorType.DC);
             Detector geomFTOF = factory.createDetectorTilted(data);
             detectorGeometry.put("DC::Tilted", geomFTOF);
             System.err.println(mainModuleName + "geometry for detector " +
@@ -147,7 +148,7 @@ public abstract class DetectorReconstruction implements ICService {
         
         if(geometryPackage.compareTo("DC")==0){
             DCFactory factory = new DCFactory();
-            ConstantProvider  data = DataBaseLoader.getConstantsDC(this.geometryRunNumber,this.geometryVariation);
+            ConstantProvider  data = DataBaseLoader.getDetectorConstants(DetectorType.DC);
             Detector geomFTOF = factory.createDetectorCLAS(data);
             detectorGeometry.put("DC", geomFTOF);
             System.err.println(mainModuleName + "geometry for detector " +
@@ -157,7 +158,7 @@ public abstract class DetectorReconstruction implements ICService {
         
         if(geometryPackage.compareTo("FTOF")==0){
             FTOFFactory factory = new FTOFFactory();
-            ConstantProvider  data = DataBaseLoader.getTimeOfFlightConstants();
+            ConstantProvider  data = DataBaseLoader.getDetectorConstants(DetectorType.FTOF);
             Detector geomFTOF = factory.createDetectorCLAS(data);
             detectorGeometry.put("FTOF", geomFTOF);
             System.err.println(mainModuleName + "geometry for detector " +
@@ -167,7 +168,7 @@ public abstract class DetectorReconstruction implements ICService {
         
         if(geometryPackage.compareTo("FTCAL")==0){
             FTCALFactory factory = new FTCALFactory();
-            ConstantProvider  data = DataBaseLoader.getConstantsFTCAL();
+            ConstantProvider  data = DataBaseLoader.getDetectorConstants(DetectorType.FTCAL);
             Detector geomFTCAL = factory.createDetectorCLAS(data);
             detectorGeometry.put("FTCAL", geomFTCAL);
             System.err.println(mainModuleName + "geometry for detector " +
@@ -177,7 +178,7 @@ public abstract class DetectorReconstruction implements ICService {
         
         if(geometryPackage.compareTo("EC")==0){
             ECFactory factory = new ECFactory();
-            ConstantProvider  data = DataBaseLoader.getCalorimeterConstants();
+            ConstantProvider  data = DataBaseLoader.getDetectorConstants(DetectorType.EC);
             Detector geomEC = factory.createDetectorCLAS(data);
             detectorGeometry.put("EC", geomEC);
             System.err.println(mainModuleName + "geometry for detector " +

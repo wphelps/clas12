@@ -114,9 +114,9 @@ public class EvioETSource implements DataSource {
             
             myAttachment = sys.attach(station);
             
-            this.loadEvents();
-            sys.detach(myAttachment);
-            System.out.println("[ET-RING] ----> opened a stream with events # = " + this.readerEvents.size());
+            //this.loadEvents();
+            //sys.detach(myAttachment);
+            //System.out.println("[ET-RING] ----> opened a stream with events # = " + this.readerEvents.size());
             
         } catch (EtException ex) {
             this.connectionOK = false;
@@ -135,8 +135,8 @@ public class EvioETSource implements DataSource {
             Logger.getLogger(EvioETSource.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-    private void loadEvents(){
+    
+    public void loadEvents(){
         this.readerEvents.clear();
         this.currentEventPosition = 0;
         if(this.connectionOK == false){

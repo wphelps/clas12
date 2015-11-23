@@ -16,7 +16,13 @@ public class ResourcesUtils {
     
     public static String getResourceDir(String evnName, String relativePath){
         String envDir = System.getenv(evnName);
-        if(envDir==null) return null;
+                        
+        if(envDir==null){
+            envDir = System.getProperty(evnName);
+        }
+        
+        if(envDir ==null) return null;
+        
         StringBuilder str = new StringBuilder();
         str.append(envDir);
         if(envDir.charAt(envDir.length()-1) != '/') str.append("/");

@@ -3,16 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.jlab.clas12.basic;
+package org.jlab.clas12.detector;
 
-import org.jlab.clas.detector.DetectorType;
+import java.util.ArrayList;
 
 /**
  *
  * @author gavalian
  */
-public interface IDetectorModule {
-    String  getName();
-    String  getAuthor();
-    DetectorType getType();
+public class PhotoTubeADC extends ArrayList<Integer>{
+
+    public PhotoTubeADC(){
+        
+    }
+    
 }

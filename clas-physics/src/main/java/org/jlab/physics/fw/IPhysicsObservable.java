@@ -3,16 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.jlab.clas12.basic;
+package org.jlab.physics.fw;
 
-import org.jlab.clas.detector.DetectorType;
+import java.util.Map;
 
 /**
  *
  * @author gavalian
  */
-public interface IDetectorModule {
+public interface IPhysicsObservable {    
+    Map<String,Double>  getVariables();
+    double  getValue();
     String  getName();
-    String  getAuthor();
-    DetectorType getType();
 }
