@@ -100,7 +100,7 @@ public class DetectorEventProcessorDialog extends JDialog implements ActionListe
             } catch (InterruptedException ex) {
                 Logger.getLogger(DetectorEventProcessorDialog.class.getName()).log(Level.SEVERE, null, ex);
             }
-            System.out.println("progress = " + thread.getProgress());
+            //System.out.println("progress = " + thread.getProgress());
             this.progressBar.setValue(thread.getProgress());
         }
         this.buttonClose.setEnabled(true);
@@ -140,12 +140,12 @@ public class DetectorEventProcessorDialog extends JDialog implements ActionListe
         String inputFile = "/Users/gavalian/Work/Software/Release-8.0/COATJAVA/etaPXSection_0_recon.evio";
         IDetectorProcessor processor = new IDetectorProcessor(){
             public void processEvent(DataEvent event){
-                System.out.println("------> processing data ");
+                //System.out.println("------> processing data ");
             }
         };
         
-        DetectorEventProcessorDialog dialog = new DetectorEventProcessorDialog(inputFile,processor);
-        //DetectorEventProcessorDialog dialog = new DetectorEventProcessorDialog(processor);
+        //DetectorEventProcessorDialog dialog = new DetectorEventProcessorDialog(inputFile,processor);
+        DetectorEventProcessorDialog dialog = new DetectorEventProcessorDialog(processor);
         //dialog.setVisible(true);
         
         

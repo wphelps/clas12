@@ -63,25 +63,32 @@ public class JarFileScanner {
 
         System.out.println("---> scanning file : " + jarfile + " for class [" + 
                 superclass + "]");
-        for(String itemClass : classList){
-            try {
-                Class c = Class.forName(itemClass);
-                
-                if(c!=null){
-                    if(c.getSuperclass()!=null){
-                        if(c.getSuperclass().getName().compareTo(superclass)==0){
-                            scanclasses.add(c.getName());
-                            //System.out.println("CLASS : [" + itemClass + "] superclass ["
-                            //        + c.getSuperclass().getName() + "]");
-                            //System.out.println("CLASS " + itemClass);
+        //Class interface = Class.forName(superclass);
+        try {
+            Class ci = Class.forName(superclass);
+            for(String itemClass : classList){
+                try {
+                    Class c = Class.forName(itemClass);
+                    
+                    if(c!=null){
+                        //if(c.isAssignableFrom())
+                        boolean  flag = ci.isAssignableFrom(c);
+                        System.out.println("class : " + itemClass + "  flag = " + flag);
+                        if(flag==true){
+                                scanclasses.add(c.getName());
+                                //System.out.println("CLASS : [" + itemClass + "] superclass ["
+                                //        + c.getSuperclass().getName() + "]");
+                                //System.out.println("CLASS " + itemClass);
                         }
+                    } else {
+                        System.out.println("Warning: unable to process file : " + jarfile);
                     }
-                } else {
-                    System.out.println("Warning: unable to process file : " + jarfile);
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(JarFileScanner.class.getName()).log(Level.SEVERE, null, ex);
                 }
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(JarFileScanner.class.getName()).log(Level.SEVERE, null, ex);
             }
+        } catch (ClassNotFoundException exh){
+            
         }
         return scanclasses;
     }

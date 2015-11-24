@@ -5,6 +5,7 @@
  */
 package org.jlab.clas12.basic;
 
+import javax.swing.JPanel;
 import org.jlab.clas.detector.DetectorType;
 
 /**
@@ -14,5 +15,7 @@ import org.jlab.clas.detector.DetectorType;
 public interface IDetectorModule {
     String  getName();
     String  getAuthor();
+    String  getDescription();
     DetectorType getType();
+    JPanel       getDetectorPanel();
 }

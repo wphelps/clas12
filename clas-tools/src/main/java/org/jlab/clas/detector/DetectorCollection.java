@@ -44,6 +44,10 @@ public class DetectorCollection<T> {
         collection.put(hash, value);
     }
     
+    public void clear(){
+        this.collection.clear();
+    }
+    
     public boolean hasEntry(int sector, int layer, int comp){
         return this.collection.containsKey(DetectorDescriptor.generateHashCode(sector, layer, comp));
     }
