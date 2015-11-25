@@ -78,9 +78,9 @@ public class DataBaseLoader {
         if(type==DetectorType.EC){
             DatabaseConstantProvider provider = new DatabaseConstantProvider(run,variation);
             provider.loadTable("/geometry/pcal/pcal");
-            provider.loadTable("/geometry/pcal/UView");
-            provider.loadTable("/geometry/pcal/VView");
-            provider.loadTable("/geometry/pcal/WView");
+            provider.loadTable("/geometry/pcal/Uview");
+            provider.loadTable("/geometry/pcal/Vview");
+            provider.loadTable("/geometry/pcal/Wview");
             provider.loadTable("/geometry/ec/ec");
             provider.loadTable("/geometry/ec/uview");
             provider.loadTable("/geometry/ec/vview");

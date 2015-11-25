@@ -10,6 +10,7 @@ import java.util.List;
 import org.jlab.clas.tools.benchmark.BenchmarkTimer;
 import org.jlab.clas12.basic.IDetectorProcessor;
 import org.jlab.data.io.DataEvent;
+import org.jlab.evio.clas12.EvioETSource;
 import org.jlab.evio.clas12.EvioSource;
 
 /**
@@ -20,6 +21,9 @@ public class DetectorEventProcessorThread extends Thread {
     private List<IDetectorProcessor>  processors = new ArrayList<IDetectorProcessor>();
     private String                    processFileName = "";
     private double                    progress        = 0.0;
+    private boolean                   runOnEt         = false;
+    private String                    etHostName      = "";
+    private String                    etFileName      = "";
     
     
     public DetectorEventProcessorThread(String filename, IDetectorProcessor proc){
@@ -33,11 +37,42 @@ public class DetectorEventProcessorThread extends Thread {
     }
     
     public final void setFile(String filename){
-        this.processFileName = filename;
+        if(filename.contains(":")==false){
+            this.processFileName = filename;
+            this.runOnEt         = false;
+        } else {
+            String[] tokens = filename.split(":");
+            this.etHostName = tokens[0].trim();
+            this.etFileName = tokens[1].trim();
+            this.runOnEt    = true;
+        }
     }
     
-    @Override
-    public void run(){
+    private void runOnEt(String hostname, String filename){
+        EvioETSource reader = new EvioETSource(this.etHostName);
+        reader.setRemote(true);
+        reader.open(this.etFileName);
+        int nprocessed  = 0;
+        int nexceptions = 0;
+        while(true){
+            reader.loadEvents();
+            
+            while(reader.hasEvent()){
+                DataEvent  event = reader.getNextEvent();
+                nprocessed++;
+                
+                for(IDetectorProcessor proc : this.processors){
+                    try {
+                        proc.processEvent(event);
+                    } catch(Exception e){
+                        nexceptions++;
+                    }
+                }
+            }
+        }
+    }
+    
+    private void runOnFile(String filename){
         
         System.out.println("[thread]---> starting thread with file : " + this.processFileName); 
         EvioSource reader = new EvioSource();
@@ -67,6 +102,18 @@ public class DetectorEventProcessorThread extends Thread {
                 "  exceptions " + nexceptions);
         System.out.println("[thread]---> " + timer.toString());
         this.progress = 100.0;
+    }
+    
+    @Override
+    public void run(){
+        
+        if(this.runOnEt==false){
+            this.runOnFile(this.processFileName);
+        } else {
+            this.runOnEt(this.etHostName, this.etFileName);
+        }
+        
+        
     }
     
     public int getProgress(){

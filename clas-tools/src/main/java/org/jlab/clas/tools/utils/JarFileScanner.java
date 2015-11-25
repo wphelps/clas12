@@ -73,7 +73,7 @@ public class JarFileScanner {
                     if(c!=null){
                         //if(c.isAssignableFrom())
                         boolean  flag = ci.isAssignableFrom(c);
-                        System.out.println("class : " + itemClass + "  flag = " + flag);
+                        //System.out.println("class : " + itemClass + "  flag = " + flag);
                         if(flag==true){
                                 scanclasses.add(c.getName());
                                 //System.out.println("CLASS : [" + itemClass + "] superclass ["

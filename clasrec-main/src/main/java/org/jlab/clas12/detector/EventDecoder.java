@@ -216,7 +216,7 @@ public class EventDecoder {
         System.out.println(counter);
         */
         
-        String input = "/Users/gavalian/Work/Software/Release-8.0/COATJAVA//sector2_000211.evio.0";
+        String input = "/Users/gavalian/Work/Software/Release-8.0/COATJAVA/FC/sector2_000229_mode1.evio.0";
         //String input = "/Users/gavalian/Work/Software/Release-8.0/COATJAVA/sector1_000139.evio";
         EvioSource  reader = new EvioSource();
         reader.open(input);
