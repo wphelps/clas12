@@ -14,7 +14,9 @@ public enum BankType {
     UNDEFINED ( 0, "UNDEFINED"),
     TDC       ( 1, "TDC"),    
     ADC       ( 2, "ADC"),
-    ADCPULSE  ( 3, "ADCPULSE");
+    ADCPULSE  ( 3, "ADCPULSE"),
+    ADCFPGA   ( 4, "ADCFPGA"),
+    SVT       ( 5, "SVT");
 
     
     private final int banktype;

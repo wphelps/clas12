@@ -119,8 +119,19 @@ public class DetectorCounter implements IDetectorUnit {
             }
         }
         
-        this.getChannels().get(channel).getADC().add(adc);
-     
+        this.getChannels().get(channel).getADC().add(adc);     
+    }
+    
+    public void addADCPulse(int channel, short[] adc){
+        
+        int required = 1 + channel - this.photoTubes.size();
+        if(required>0){
+            for(int b = 0; b < required; b++){
+                this.addChannel(new DetectorChannel());
+            }
+        }
+        
+        this.getChannels().get(channel).setPulse(adc);
     }
     
     @Override

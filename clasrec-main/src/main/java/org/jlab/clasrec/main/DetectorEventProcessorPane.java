@@ -100,13 +100,31 @@ public class DetectorEventProcessorPane extends JPanel implements ActionListener
                 //this.progressBar.setValue(100);
             }
         }
-        
+        if(e.getActionCommand().compareTo("<")==0){
+            if(reader.hasEvent()){
+                if(reader.getCurrentIndex()>=2){
+                    EvioDataEvent event = (EvioDataEvent) reader.getPreviousEvent();
+                    Integer current = this.reader.getCurrentIndex();
+                    Integer nevents = this.reader.getSize();
+                    this.statusLabel.setText("EVENTS IN FILE : " + nevents.toString() + "  CURRENT : " + current.toString());
+                    
+                    for(IDetectorProcessor proc : this.processorList){
+                        try {
+                            proc.processEvent(event);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
         if(e.getActionCommand().compareTo(">")==0){
             if(reader.hasEvent()){
+                EvioDataEvent event = (EvioDataEvent) reader.getNextEvent();
                 Integer current = this.reader.getCurrentIndex();
                 Integer nevents = this.reader.getSize();                
                 this.statusLabel.setText("EVENTS IN FILE : " + nevents.toString() + "  CURRENT : " + current.toString());
-                EvioDataEvent event = (EvioDataEvent) reader.getNextEvent();
+
                 for(IDetectorProcessor proc : this.processorList){
                     try {
                         proc.processEvent(event);

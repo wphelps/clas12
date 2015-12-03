@@ -20,6 +20,8 @@ import java.awt.geom.GeneralPath;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JPanel;
+import org.jlab.geom.prim.Line3D;
+import org.jlab.geom.prim.Path3D;
 import org.jlab.geom.prim.Point3D;
 
 /**
@@ -35,6 +37,10 @@ public class DetectorShapeView2D extends JPanel implements MouseListener , Mouse
     private ActionListener          listener = null;
     private List<IDetectorListener> detectorListeners = new ArrayList<IDetectorListener>();
     
+    private List<Point3D>           markerPoints      = new ArrayList<Point3D>(); 
+    private List<Color>             markerColors      = new ArrayList<Color>(); 
+    private List<Path3D>            pathList          = new ArrayList<Path3D>();
+    private List<Color>             pathColors        = new ArrayList<Color>();
     
     public boolean MOUSEOVER_CALLBACK = true;
     
@@ -58,6 +64,31 @@ public class DetectorShapeView2D extends JPanel implements MouseListener , Mouse
         this.updateDrawRegion();
     }
     
+    public void addPath(Path3D path, int r, int g, int b){
+        this.pathList.add(path);
+        this.pathColors.add(new Color(r,g,b));
+    }
+    
+    public void addHit(double x, double y, double z, int r, int g, int b){
+        this.markerPoints.add(new Point3D(x,y,z));
+        this.markerColors.add(new Color(r,g,b));
+    }
+    
+    public void addHit(double x, double y, double z){
+        this.markerPoints.add(new Point3D(x,y,z));
+        this.markerColors.add(Color.red);
+    }
+    
+    public void clearPaths(){
+        this.pathList.clear();
+        this.pathColors.clear();
+    }
+    
+    public void clearHits(){
+        this.markerPoints.clear();
+        this.markerColors.clear();
+    }
+    
     @Override
     public void paintComponent(Graphics g){
         super.paintComponent(g);
@@ -68,7 +99,7 @@ public class DetectorShapeView2D extends JPanel implements MouseListener , Mouse
     }
     
     public void updateDrawRegion(){
-        
+                        
         drawRegion.x = 0;
         drawRegion.y = 0;
         drawRegion.width = 0;
@@ -77,6 +108,11 @@ public class DetectorShapeView2D extends JPanel implements MouseListener , Mouse
         double maxX = 0;
         double minY = 0;
         double maxY = 0;
+        int width  = this.getWidth();
+        int height = this.getHeight();
+        
+        double aspectRatio = ((double) width)/height;
+        System.out.println(" ASPECT RATIO = " + aspectRatio);
         
         for(DetectorShape2D shape : shapes){
             
@@ -107,12 +143,25 @@ public class DetectorShapeView2D extends JPanel implements MouseListener , Mouse
         
         int rw  = (int) ( (double)  drawRegion.width   * 0.1);
         int rh  = (int) ( (double)  drawRegion.height  * 0.1);
-        
+
         drawRegion.x -= rw;
         drawRegion.y -= rh;
         drawRegion.width  = (int) (drawRegion.width + 2.0*rw);
         drawRegion.height = (int) (drawRegion.height + 2.0*rh);
         
+        if(aspectRatio != Double.NaN){
+            double size = drawRegion.width;
+            if(drawRegion.height>drawRegion.width){
+                size = drawRegion.height;
+            }
+            //drawRegion.height = (int) (size*aspectRatio);
+            //drawRegion.width  = (int) (size/aspectRatio);
+        }
+            /*
+        if(drawRegion.height>drawRegion.width){
+            this.drawRegion.width = this.drawRegion.height;
+            this.drawRegion.x     = this.drawRegion.y;
+        }*/
         
         //drawRegion.height = drawRegion.width;
         /*
@@ -141,6 +190,7 @@ public class DetectorShapeView2D extends JPanel implements MouseListener , Mouse
         System.out.println(" AFTER  : DRAWING REGION " + drawRegion.x + " " +
                 drawRegion.y + "  " + drawRegion.width + " x " + drawRegion.height);
         */
+        
     }
     
     public void setColor(int sector, int layer, int component, int r, int g, int b){
@@ -170,8 +220,8 @@ public class DetectorShapeView2D extends JPanel implements MouseListener , Mouse
     public void draw2D(Graphics2D g2d, int xoff, int yoff, int width, int height){
         
         RenderingHints rh = new RenderingHints(
-                RenderingHints.KEY_TEXT_ANTIALIASING,
-                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
         
         //System.out.println("DRAW : " + width + "  " + height);
         this.updateDrawRegion();
@@ -214,6 +264,45 @@ public class DetectorShapeView2D extends JPanel implements MouseListener , Mouse
             
             counter++;
         }
+        
+        
+        
+        // drawing markers on the Canvas
+        g2d.setStroke(new BasicStroke(2));
+
+        int msize = 8;
+        for(int index = 0 ; index <  this.markerPoints.size(); index++){
+            Point3D p3d = this.markerPoints.get(index);
+            Color   p3c = this.markerColors.get(index);
+            
+            int x = this.getX((int) p3d.x(), width);
+            int y = this.getY((int) p3d.y(), height);
+            
+            g2d.setColor(Color.YELLOW);
+            g2d.fillOval(x-msize, y-msize, msize*2, msize*2);
+            
+            g2d.setColor(p3c);
+            g2d.drawOval(x-msize, y-msize, msize*2, msize*2);
+            g2d.drawLine(x , y-msize,  x, y + msize);
+            g2d.drawLine(x-msize, y, x+msize, y );            
+        }
+        
+        g2d.setStroke(new BasicStroke(2));
+        for(int index = 0 ; index <  this.pathList.size(); index++){
+            Path3D p3d = this.pathList.get(index);
+            Color   p3c = this.pathColors.get(index);
+            g2d.setColor(p3c);
+            for(int p = 0; p < p3d.getNumLines(); p++){
+                Line3D line = p3d.getLine(p);
+                g2d.drawLine(
+                        this.getX( (int) line.origin().x(),width),
+                        this.getY( (int) line.origin().y(),height),
+                        this.getX( (int) line.end().x(),width),
+                        this.getY( (int) line.end().y(),height)
+                        );
+            }
+        }
+        
     }
     
     public DetectorShape2D getSelectedShape(){
@@ -240,6 +329,11 @@ public class DetectorShapeView2D extends JPanel implements MouseListener , Mouse
                 index = loop;
                 break;
             }
+        }
+        
+        if(index<0){
+            this.selectedShape = -1;
+            this.repaint();
         }
         
         if(index>=0&&index!=this.selectedShape){

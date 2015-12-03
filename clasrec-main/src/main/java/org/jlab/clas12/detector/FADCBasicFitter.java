@@ -42,7 +42,7 @@ public class FADCBasicFitter implements IFADCFitter {
             }
             int sigCount = 0;
             for(int loop = signalStart; loop <= signalEnd; loop++){
-                pedCount += pulse[loop];
+                sigCount += pulse[loop];
             }
             
             double pedWidth = (double) (pedistalEnd-pedistalStart);
@@ -51,9 +51,6 @@ public class FADCBasicFitter implements IFADCFitter {
             
             tube.getADC().clear();
             tube.getADC().add((int) normalized);
-            
         }
     }
-    
-    
 }

@@ -43,7 +43,8 @@ import org.jlab.io.decode.IDetectorTranslationTable;
 public class RawEventDecoder {
     private TreeMap<String,IDetectorTranslationTable> translationTables
             = new TreeMap<String,IDetectorTranslationTable>();
-        
+    SVTTranslationTable                       trSVT = null;
+    
     public RawEventDecoder(){
         this.init();        
     }
@@ -65,6 +66,7 @@ public class RawEventDecoder {
         } else {
             System.out.println("--------> ERROR no environment is set.....");
         }
+        this.trSVT = new SVTTranslationTable();
     }
     
     public Set<String>  getDetectorList(){
@@ -74,32 +76,35 @@ public class RawEventDecoder {
     public void decode(List<DetectorBankEntry> dataEntries){
         for(DetectorBankEntry data : dataEntries){
             for(Map.Entry<String,IDetectorTranslationTable> tr : this.translationTables.entrySet()){
-                //System.out.println(" TRYNIG WITH MODULE : " + tr.getKey());
-                if(tr.getValue().getSector(data.getDescriptor().getCrate(), 
-                        data.getDescriptor().getSlot(), 
-                        data.getDescriptor().getChannel())>0){
-                    int sector = tr.getValue().getSector(
-                            data.getDescriptor().getCrate(), 
+                if(data.getDescriptor().getType()!=DetectorType.UNDEFINED) break;
+                if(tr.getKey().compareTo("SVT")!=0){
+                    //System.out.println(" TRYNIG WITH MODULE : " + tr.getKey());
+                    if(tr.getValue().getSector(data.getDescriptor().getCrate(), 
                             data.getDescriptor().getSlot(), 
-                            data.getDescriptor().getChannel());
-                    int layer = tr.getValue().getLayer(
-                            data.getDescriptor().getCrate(), 
-                            data.getDescriptor().getSlot(), 
-                            data.getDescriptor().getChannel());
-                    int component = tr.getValue().getComponent(
-                            data.getDescriptor().getCrate(), 
-                            data.getDescriptor().getSlot(), 
-                            data.getDescriptor().getChannel());
-                    
-                    int order = tr.getValue().getOrder( 
-                            data.getDescriptor().getCrate(), 
-                            data.getDescriptor().getSlot(), 
-                            data.getDescriptor().getChannel()
-                    );
-                    data.getDescriptor().setSectorLayerComponent(sector,layer,component);
-                    data.getDescriptor().setType(tr.getValue().getDetectorType());
-                    data.getDescriptor().setOrder(order);
-                    //data.getDescriptor().setType(tr.);
+                            data.getDescriptor().getChannel())>0){
+                        int sector = tr.getValue().getSector(
+                                data.getDescriptor().getCrate(), 
+                                data.getDescriptor().getSlot(), 
+                                data.getDescriptor().getChannel());
+                        int layer = tr.getValue().getLayer(
+                                data.getDescriptor().getCrate(), 
+                                data.getDescriptor().getSlot(), 
+                                data.getDescriptor().getChannel());
+                        int component = tr.getValue().getComponent(
+                                data.getDescriptor().getCrate(), 
+                                data.getDescriptor().getSlot(), 
+                                data.getDescriptor().getChannel());
+                        
+                        int order = tr.getValue().getOrder( 
+                                data.getDescriptor().getCrate(), 
+                                data.getDescriptor().getSlot(), 
+                                data.getDescriptor().getChannel()
+                        );
+                        data.getDescriptor().setSectorLayerComponent(sector,layer,component);
+                        data.getDescriptor().setType(tr.getValue().getDetectorType());
+                        data.getDescriptor().setOrder(order);
+                        //data.getDescriptor().setType(tr.);
+                    }
                 }
             }
         }
@@ -222,12 +227,13 @@ public class RawEventDecoder {
         if(cbranch == null ) return null;
         
         for(EvioNode node : cbranch.getNodes()){ 
-            /*
+            
             if(node.getTag()==57617){
+                //System.out.println(" GETTING DATA FOR SVT");
                 // This MODE is used for SVT
                 return this.getDataEntries_57617(crate, node, event);
                 //return this.getDataEntriesSVT(crate,node, event);                
-            }*/
+            }
             
             if(node.getTag()==57602){
                 //  This is regular integrated pulse mode, used for FTOF
@@ -409,8 +415,8 @@ public class RawEventDecoder {
                 }
 
                 int position = 0;
-                
-                while(position<cdatatypes.size()){                    
+                //System.out.println("N-VALUE = " + cdataitems.get(3).toString());
+                while((position+4)<cdatatypes.size()){                    
                 
                     Byte    slot = (Byte)     cdataitems.get(position+0);
                     Integer trig = (Integer)  cdataitems.get(position+1);
@@ -418,6 +424,7 @@ public class RawEventDecoder {
                     
                     //EvioRawDataBank  dataBank = new EvioRawDataBank(crate,slot.intValue(),trig,time);
                     Integer nchannels = (Integer) cdataitems.get(position+3);
+                    //System.out.println(" N - CHANNELS = " + nchannels + "  position = " + position);
                     //System.out.println("Retrieving the data size = " + cdataitems.size()
                     //+ "  " + cdatatypes.get(3) + " number of channels = " + nchannels);
                     position += 4;
@@ -432,19 +439,21 @@ public class RawEventDecoder {
                         Integer length = (Integer) cdataitems.get(position+1);
                         //dataBank.addChannel(channel.intValue());
                         
+                        //System.out.println(" LENGTH = " + length);
+                        position += 2;
                         for(int loop = 0; loop < length; loop++){
-                            Short tdc    = (Short) cdataitems.get(position+2);
-                            Integer adc  = (Integer) cdataitems.get(position+3);
-                            Short pmin   = (Short) cdataitems.get(position+4);
-                            Short pmax   = (Short) cdataitems.get(position+5);
+                            Short tdc    = (Short) cdataitems.get(position);
+                            Integer adc  = (Integer) cdataitems.get(position+1);
+                            Short pmin   = (Short) cdataitems.get(position+2);
+                            Short pmax   = (Short) cdataitems.get(position+3);
                             DetectorBankEntry  entry = new DetectorBankEntry(crate,slot,channel);
-                            entry.setData(BankType.ADC, new int[]{tdc, adc, pmin, pmax});
+                            entry.setData(BankType.ADCFPGA, new int[]{tdc, adc, pmin, pmax});
                             entries.add(entry);
-                            //position+=4;
+                            position+=4;
                             //dataBank.addData(channel.intValue(), 
                             //       new RawData(tdc,adc,pmin,pmax));
                         }
-                        position += 6;
+                        //position += 6;
                         counter++;
                     }
                 }
@@ -499,8 +508,8 @@ public class RawEventDecoder {
     
     
     
-    public ArrayList<DetectorRawData>  getDataEntries_57617(Integer crate, EvioNode node, EvioDataEvent event){
-        ArrayList<DetectorRawData>  rawdata = new ArrayList<DetectorRawData>();
+    public ArrayList<DetectorBankEntry>  getDataEntries_57617(Integer crate, EvioNode node, EvioDataEvent event){
+        ArrayList<DetectorBankEntry>  rawdata = new ArrayList<DetectorBankEntry>();
         if(node.getTag()==57617){
             try {
                 ByteBuffer     compBuffer = node.getByteData(true);
@@ -524,18 +533,21 @@ public class RawEventDecoder {
                         Byte   half    = (Byte) cdataitems.get(position);
                         Byte   channel = (Byte) cdataitems.get(position+1);
                         Byte   tdc     = (Byte) cdataitems.get(position+2);
+                        int    tdcint  = DataUtils.getIntFromByte(tdc);
                         //Short   adc     = (Short)  cdataitems.get(position+3);
                         Byte   adc     = (Byte)  cdataitems.get(position+3);
                         
-                        Integer channelKey = (half<<8)|channel;
+                        Integer channelKey = (half & 0x00000008)>>3;
                         //System.err.println(" HALF = " + half + "  CHANNEL = " + channel + " KEY = " + channelKey  );
                         //dataBank.addChannel(channelKey);
                         //dataBank.addData(channelKey, new RawData(channelKey,tdc,adc));
                         position += 4;
                         counter++;
-                        DetectorRawData  entry = new DetectorRawData(crate,slot,channelKey);
-                        entry.setBST(half, channel, tdc, adc);
+                        DetectorBankEntry  entry = new DetectorBankEntry(crate,slot,channelKey);
+                        entry.setData(BankType.SVT, new int[] {half, channel, adc, tdcint});
+                        this.trSVT.translate(entry);
                         rawdata.add(entry);
+
                     }
                     //bankArray.add(dataBank);
                 }

@@ -62,11 +62,20 @@ public class DetectorChannel {
     @Override
     public String toString(){
         StringBuilder str = new StringBuilder();
-        str.append(String.format("G/C : (%6.3f/%6.3f)", this.gain,this.conversion));
-        str.append(" ADC : ");
+        str.append(String.format("GAIN/TIMECONST : (%6.3f/%6.3f) \n", this.gain,this.conversion));
+        str.append("\t\t PULSE : SIZE = ");
+        if(this.rawPULSE==null){
+            str.append("0");
+        } else {
+            str.append(rawPULSE.length);
+        }
+        str.append("\n");
+        str.append("\t\t ADC   : ");
         for(Integer adc : this.photoTubeADC) str.append(String.format(" %6d ", adc));
-        str.append(" TDC : ");
+        str.append("\n");
+        str.append("\t\t TDC   : ");
         for(Integer tdc : this.photoTubeTDC) str.append(String.format(" %6d ", tdc));
+        str.append("\n");
         return str.toString();
     }
 }

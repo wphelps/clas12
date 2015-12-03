@@ -31,8 +31,12 @@ public class ErrorFunction {
         else        return -ans;
     }
 
+    public static double erfc(double z){
+        return 1.0-ErrorFunction.erf(z);
+    }
+    
     public static double erf(double p0, double p1, double p2, double p3,double x){
-        return p0 + p1*ErrorFunction.erf((p2-x)*p3);
+        return p0 + p1*ErrorFunction.erfc((x-p2)/(p3*Math.sqrt(2.0)));
     }
     // fractional error less than x.xx * 10 ^ -4.
     // Algorithm 26.2.17 in Abromowitz and Stegun, Handbook of Mathematical.

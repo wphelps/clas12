@@ -37,7 +37,7 @@ public class DetectorBankEntry implements IDetectorUnit {
     public Object  getDataObject(){
         return this.dataObject;
     }
-        
+    
     public void setData(short[] values){        
         this.dataType   = BankType.ADCPULSE;
         this.dataObject = values;
@@ -48,12 +48,25 @@ public class DetectorBankEntry implements IDetectorUnit {
         StringBuilder str = new StringBuilder();
         str.append(this.dataDesc.toString());
         str.append(String.format(" -->>>  TYPE = %8s", this.dataType.getName()));
+        
+        if(this.dataType==BankType.ADCFPGA){
+            int[] fpga = (int[]) this.getDataObject();
+            str.append(String.format(" VALUE = %8d %8d %8d %8d", 
+                    fpga[0],fpga[1],fpga[2],fpga[3]));
+        }
+        
         if(this.dataType==BankType.TDC){
             str.append(String.format("  VALUE = %8d", ((int[]) this.dataObject)[0] ));
         }
         
         if(this.dataType==BankType.ADCPULSE){
             str.append(String.format("   SIZE = %8d", ((short[]) this.dataObject).length ));
+        }
+        
+        if(this.dataType==BankType.SVT){
+            int[] svt = (int[]) this.getDataObject();
+            str.append(String.format("  HALF = %8d  CHANNEL = %8d  ADC = %8d  BCO = %8d", 
+                    svt[0],svt[1],svt[2],svt[3] ));
         }
         return str.toString();
     }

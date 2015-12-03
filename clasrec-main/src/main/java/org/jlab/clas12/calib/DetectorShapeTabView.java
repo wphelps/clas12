@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import org.jlab.clas.detector.DetectorType;
 import org.jlab.clasrec.main.DetectorCalibration;
+import org.jlab.geom.prim.Path3D;
 import org.root.pad.EmbeddedCanvas;
 
 /**
@@ -88,15 +89,18 @@ public class DetectorShapeTabView extends JPanel implements ActionListener {
     }
     
     public static void main(String[] args){
+        
         JFrame frame = new JFrame();
         DetectorShapeTabView  tab = new DetectorShapeTabView();
         //DetectorCalibration calib = new DetectorCalibration("a","b","1.0");
         //tab.initWith(calib);
         DetectorShapeView2D shapeView = new DetectorShapeView2D("FTOF");
-        for(int loop = 0; loop < 10; loop++){
+        for(int loop = 0; loop < 6; loop++){
             DetectorShape2D shape = new DetectorShape2D();
-            shape.createBarXY(18, 50);
-            shape.getShapePath().translateXYZ(20*loop, 0, 0);
+            
+            shape.createArc(80, 120, loop*60-25, loop*60+25);
+            //shape.createBarXY(18, 50);
+            //shape.getShapePath().translateXYZ(20*loop, 0, 0);
             if(loop%2==0){
                 shape.setColor(0, 0, 200);
             } else {
@@ -104,6 +108,13 @@ public class DetectorShapeTabView extends JPanel implements ActionListener {
             }
             shapeView.addShape(shape);
         }
+        
+        shapeView.addHit(0, 0, 0,0,0,0);
+        Path3D  path = new Path3D();
+        path.addPoint(0, 0, 0);
+        path.addPoint(10,10,10);
+        path.addPoint(30,40,10);
+        shapeView.addPath(path, 255,0,0);
         
         DetectorShapeView2D shapeView2 = new DetectorShapeView2D("EC");
         
