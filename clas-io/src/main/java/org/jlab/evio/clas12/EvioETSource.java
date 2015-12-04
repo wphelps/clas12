@@ -136,6 +136,11 @@ public class EvioETSource implements DataSource {
         }
     }
     
+    public void clearEvents(){
+        this.readerEvents.clear();
+        this.currentEventPosition = 0;
+    }
+    
     public void loadEvents(){
         this.readerEvents.clear();
         this.currentEventPosition = 0;
@@ -220,7 +225,7 @@ public class EvioETSource implements DataSource {
 
     public int getSize() {
         if(sys.alive()==true){
-            
+            return this.readerEvents.size();
         }
         return 0;
     }
@@ -260,7 +265,7 @@ public class EvioETSource implements DataSource {
     }
 
     public int getCurrentIndex() {
-        return 0;
+        return this.currentEventPosition;
     }
     
     public static void main(String[] args){

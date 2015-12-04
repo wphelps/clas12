@@ -21,6 +21,7 @@ public class DetectorShape2D {
     int                 colorRed    = 20;
     int                 colorGreen  = 20;
     int                 colorBlue   = 20;
+    String              shapeTitle  = "";
     
     public DetectorShape2D(){
         
@@ -29,6 +30,8 @@ public class DetectorShape2D {
     public DetectorShape2D(DetectorType type, int sector, int layer, int component){
         this.desc.setType(type);
         this.desc.setSectorLayerComponent(sector, layer, component);
+        this.shapeTitle = String.format("DETECTOR %s SECTOR %4d LAYER %4d  UNIT %4d",
+                type.getName(),sector,layer,component);
     }
     
     

@@ -7,6 +7,7 @@ package org.jlab.clas12.calib;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -47,6 +48,7 @@ public class DetectorShapeView2D extends JPanel implements MouseListener , Mouse
     public DetectorShapeView2D(String name){
         canvasName = name;
         addMouseListener(this);
+        this.addMouseMotionListener(this);
     }
     
     public void setActionListener(ActionListener al){
@@ -77,6 +79,10 @@ public class DetectorShapeView2D extends JPanel implements MouseListener , Mouse
     public void addHit(double x, double y, double z){
         this.markerPoints.add(new Point3D(x,y,z));
         this.markerColors.add(Color.red);
+    }
+    
+    public void clear(){
+        this.shapes.clear();
     }
     
     public void clearPaths(){
@@ -112,7 +118,7 @@ public class DetectorShapeView2D extends JPanel implements MouseListener , Mouse
         int height = this.getHeight();
         
         double aspectRatio = ((double) width)/height;
-        System.out.println(" ASPECT RATIO = " + aspectRatio);
+        //System.out.println(" ASPECT RATIO = " + aspectRatio);
         
         for(DetectorShape2D shape : shapes){
             
@@ -255,13 +261,19 @@ public class DetectorShapeView2D extends JPanel implements MouseListener , Mouse
             g2d.setColor(shape.getSwingColor());
             
             if(counter==this.selectedShape){
-                g2d.setColor(Color.red);
+                g2d.setColor(Color.red);                
             }
+            
             g2d.fill(path);
             g2d.setStroke(new BasicStroke(1));
             g2d.setColor(Color.BLACK);
             g2d.draw(path);
             
+            if(counter==this.selectedShape){
+                Font font = new Font(Font.SANS_SERIF,Font.PLAIN,24);
+                g2d.setFont(font);
+                
+            }
             counter++;
         }
         
@@ -360,23 +372,25 @@ public class DetectorShapeView2D extends JPanel implements MouseListener , Mouse
 
     public void mouseDragged(MouseEvent e) {    }
 
-    public void mouseMoved(MouseEvent e) {
-        System.out.println("MOUSE MOVED");
-        if(this.MOUSEOVER_CALLBACK==true){
-            /*
-            DetectorComponentUI cui = this.layerUI.getClickedComponent(e.getX(),e.getY(),
-            this.getSize().width, this.getSize().height);
-            this.repaint();
-            if(cui!=null){
-            //System.out.println("FOUND A HIT " + cui.COMPONENT);
-            if(this.selectionListener!=null){
-            this.selectionListener.detectorSelected(cui.SECTOR,cui.LAYER,cui.COMPONENT);
-            }
-            }*/
-            for(DetectorShape2D shape : shapes){
-                //if(shape.isContained(
-            }
-            System.out.println("Mouse moved " + e.getX() + " x " + e.getY());
+    
+    private void callbackMouseCoordinates(double mX, double mY){
+        int index = -1;
+        for(int loop = 0; loop < this.shapes.size(); loop++){
+                if(this.shapes.get(loop).isContained(mX, mY)==true){
+                    //System.out.println(" SELECTED SHAPE = " + loop);
+                    index = loop;
+                    break;
+                }
         }
+        if(index<0) this.selectedShape = -1;
+        
+    }
+    
+    public void mouseMoved(MouseEvent e) {
+        if(this.MOUSEOVER_CALLBACK==true){
+            double coordinateX = (((double)e.getX())/this.getWidth())*this.drawRegion.width + this.drawRegion.x;
+            double coordinateY = (((double) e.getY())/this.getHeight())*this.drawRegion.height + this.drawRegion.y;
+            this.callbackMouseCoordinates(coordinateX, coordinateY);
+        }           
     }
 }
