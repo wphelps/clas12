@@ -21,6 +21,7 @@ public class DetectorShape2D {
     int                 colorRed    = 20;
     int                 colorGreen  = 20;
     int                 colorBlue   = 20;
+    int                 colorAlpha  = 255;
     String              shapeTitle  = "";
     
     public DetectorShape2D(){
@@ -42,10 +43,18 @@ public class DetectorShape2D {
         this.colorRed = r;
         this.colorGreen = g;
         this.colorBlue  = b;
+        this.colorAlpha = 255;
+    }
+    
+    public void setColor(int r, int g, int b, int alpha){
+        this.colorRed = r;
+        this.colorGreen = g;
+        this.colorBlue  = b;
+        this.colorAlpha = alpha;
     }
     
     public Color getSwingColor(){
-        return new Color(this.colorRed,this.colorGreen,this.colorBlue);
+        return new Color(this.colorRed,this.colorGreen,this.colorBlue,this.colorAlpha);
     }
     
     public void createBarXY(double width, double height){

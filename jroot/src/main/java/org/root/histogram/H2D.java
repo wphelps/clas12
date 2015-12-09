@@ -541,7 +541,15 @@ public class H2D implements EvioWritableTree,IDataSet {
 	public double[] offset() {
 		return hBuffer;
 	}
-
+        /**
+         * Resets the content of the histogram, sets all bin contents to 0
+         */
+        public void reset(){
+            for(int bin = 0; bin < this.hBuffer.length; bin++){
+                this.hBuffer[bin] = 0.0;
+            }
+        }
+        
     @Override
     public TreeMap<Integer, Object> toTreeMap() {
         TreeMap<Integer, Object> hcontainer = new TreeMap<Integer, Object>();

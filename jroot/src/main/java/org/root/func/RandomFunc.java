@@ -20,6 +20,10 @@ public class RandomFunc {
         dataFunc  = xy.getDataSetRieman();
     }
     
+    public RandomFunc(DataSetXY  ds){
+        this.dataFunc = ds.getDataSetRieman();
+    }
+    
     public double random(){
         double number = Math.random();
         int bin  = dataFunc.getDataY().findBin(number);

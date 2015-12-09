@@ -459,7 +459,8 @@ public class AbsDataSetDraw {
          for(int Lx = 0; Lx < dataSizeX; Lx++){
              for(int Ly = 0; Ly < dataSizeY; Ly++){
                  double xc = startX + axis.getFrame().x + xr;
-                 double yc = startY + axis.getFrame().y + yr;
+                 //double yc = startY + axis.getFrame().y + yr;
+                 double yc = startY + (axis.getFrame().y + axis.getFrame().height - yr - hr);
                  double value = ds.getData(Lx, Ly);
                  //Paint  color = TStyle.getColorMap(value, maxValue, true);
                  //gc.setFill(color);
