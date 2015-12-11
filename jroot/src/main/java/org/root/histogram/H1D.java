@@ -733,9 +733,20 @@ public class H1D implements EvioWritableTree,IDataSet {
         region.MINIMUM_X = this.getXaxis().getBinCenter(0) - this.getXaxis().getBinWidth(0)/2.0;
         region.MAXIMUM_X = this.getXaxis().getBinCenter(this.getDataSize()-1) + 
                 this.getXaxis().getBinWidth(this.getDataSize()-1)/2.0;
-        
+
         region.MINIMUM_Y = 0.0;
+        for(int bin = 0; bin < this.getXaxis().getNBins(); bin++){
+            if(this.getBinContent(bin)<region.MINIMUM_Y){
+                region.MINIMUM_Y = this.getBinContent(bin);
+            }
+        }
+
         region.MAXIMUM_Y = this.getBinContent(this.getMaximumBin())*1.2;
+        
+        if(region.MINIMUM_Y < 0){
+            region.MINIMUM_Y = region.MINIMUM_Y*1.2;
+        }
+        
         if(region.MAXIMUM_Y==0) region.MAXIMUM_Y = 1.0;
         return region;
     }

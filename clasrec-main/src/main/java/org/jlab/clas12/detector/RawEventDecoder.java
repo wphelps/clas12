@@ -242,10 +242,18 @@ public class RawEventDecoder {
                 return this.getDataEntries_57602(crate, node, event);
                 //return this.getDataEntriesMode_7(crate,node, event);
             }
+            
             if(node.getTag()==57601){
                 //  This is regular integrated pulse mode, used for FTOF
                 // FTCAL and EC/PCAL
                 return this.getDataEntries_57601(crate, node, event);
+                //return this.getDataEntriesMode_7(crate,node, event);
+            }
+            
+            if(node.getTag()==57627){
+                //  This is regular integrated pulse mode, used for FTOF
+                // FTCAL and EC/PCAL
+                return this.getDataEntries_57627(crate, node, event);
                 //return this.getDataEntriesMode_7(crate,node, event);
             }
             /*
@@ -315,7 +323,6 @@ public class RawEventDecoder {
         }
         return entries;
     }
-    
     public ArrayList<DetectorBankEntry>  getDataEntries_57601(Integer crate, EvioNode node, EvioDataEvent event){
         
         ArrayList<DetectorBankEntry>  entries = new ArrayList<DetectorBankEntry>();
@@ -351,6 +358,69 @@ public class RawEventDecoder {
                         //System.err.println("Position = " + position + " type =  "
                         //+ cdatatypes.get(position));
                         Byte channel   = (Byte) cdataitems.get(position);
+                        Integer length = (Integer) cdataitems.get(position+1);
+                        DetectorBankEntry bank = new DetectorBankEntry(crate,slot.intValue(),channel.intValue());
+                        //dataBank.addChannel(channel.intValue());
+                        short[] shortbuffer = new short[length];
+                        for(int loop = 0; loop < length; loop++){
+                            Short sample    = (Short) cdataitems.get(position+2+loop);
+                            shortbuffer[loop] = sample;
+                            //dataBank.addData(channel.intValue(), 
+                            //        new RawData(tdc,adc,pmin,pmax));
+                        }
+                        
+                        bank.setData(shortbuffer);
+                        //dataBank.addData(channel.intValue(), 
+                        //            new RawData(shortbuffer));
+                        entries.add(bank);
+                        position += 2+length;
+                        counter++;
+                    }
+                }
+                return entries;
+                
+            } catch (EvioException ex) {
+                Logger.getLogger(EvioRawEventDecoder.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return entries;
+    }
+    
+    public ArrayList<DetectorBankEntry>  getDataEntries_57627(Integer crate, EvioNode node, EvioDataEvent event){
+        
+        ArrayList<DetectorBankEntry>  entries = new ArrayList<DetectorBankEntry>();
+        if(node.getTag()==57601){
+            try {
+                
+                ByteBuffer     compBuffer = node.getByteData(true);
+                CompositeData  compData = new CompositeData(compBuffer.array(),event.getByteOrder());
+                
+                List<DataType> cdatatypes = compData.getTypes();
+                List<Object>   cdataitems = compData.getItems();
+
+                if(cdatatypes.get(3) != DataType.NVALUE){
+                    System.err.println("[EvioRawDataSource] ** error ** corrupted "
+                    + " bank. tag = " + node.getTag() + " num = " + node.getNum());
+                    return null;
+                }
+                
+                int position = 0;
+                
+                while(position<cdatatypes.size()-4){                     
+                    Byte    slot = (Byte)     cdataitems.get(position+0);
+                    Integer trig = (Integer)  cdataitems.get(position+1);
+                    Long    time = (Long)     cdataitems.get(position+2);
+                    //EvioRawDataBank  dataBank = new EvioRawDataBank(crate, slot.intValue(),trig,time);
+                    
+                    Integer nchannels = (Integer) cdataitems.get(position+3);
+                    //System.out.println("Retrieving the data size = " + cdataitems.size()
+                    //+ "  " + cdatatypes.get(3) + " number of channels = " + nchannels);
+                    position += 4;
+                    int counter  = 0;
+                    while(counter<nchannels){
+                        //System.err.println("Position = " + position + " type =  "
+                        //+ cdatatypes.get(position));
+                        Short  channel   = (Short) cdataitems.get(position);
                         Integer length = (Integer) cdataitems.get(position+1);
                         DetectorBankEntry bank = new DetectorBankEntry(crate,slot.intValue(),channel.intValue());
                         //dataBank.addChannel(channel.intValue());

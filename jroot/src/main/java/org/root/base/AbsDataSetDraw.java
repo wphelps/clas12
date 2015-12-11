@@ -292,9 +292,21 @@ public class AbsDataSetDraw {
                 
                 double xr = axis.getDataRegion().fractionX(ds.getDataX(loop),axis.getAxisX().getAxisLog());
                 double yr = axis.getDataRegion().fractionY(ds.getDataY(loop),axis.getAxisY().getAxisLog());
+
+                double xrel = axis.getDataRegion().fractionX(ds.getDataX(loop) - ds.getErrorX(loop),axis.getAxisX().getAxisLog());
+                double yrel = axis.getDataRegion().fractionY(ds.getDataY(loop) - ds.getErrorY(loop),axis.getAxisY().getAxisLog());
+                
+                double xreh = axis.getDataRegion().fractionX(ds.getDataX(loop) + ds.getErrorX(loop),axis.getAxisX().getAxisLog());
+                double yreh = axis.getDataRegion().fractionY(ds.getDataY(loop) + ds.getErrorY(loop),axis.getAxisY().getAxisLog());
                 
                 double xf = axis.getFramePointX(xr);
                 double yf = axis.getFramePointY(yr);
+                
+                double xfel = axis.getFramePointX(xrel);
+                double yfel = axis.getFramePointY(yrel);
+                
+                double xfeh = axis.getFramePointX(xreh);
+                double yfeh = axis.getFramePointY(yreh);
                 //System.out.println(" POINT = " + loop + "  " + xr + "  " + yr
                 //+ " " + xf + " " + yf);
                 double xer = axis.getDataRegion().fractionX(ds.getErrorX(loop),axis.getAxisX().getAxisLog());
@@ -309,12 +321,16 @@ public class AbsDataSetDraw {
                 g2d.setColor(lineColor);
                 
                 if(ds.getErrorX(loop)>0){
-                    g2d.drawLine((int) (xf-xerLen), (int) yf, (int) (xf+xerLen) , (int) yf);
+                    g2d.drawLine((int) (xfel), (int) yf, (int) (xfeh) , (int) yf);
+                    //g2d.drawLine((int) (xf-xerLen), (int) yf, (int) (xf+xerLen) , (int) yf);
                 }
                 
                 if(ds.getErrorY(loop)>0){
-                    g2d.drawLine((int) xf, (int) (yf-yerLen), (int) xf , (int) (yf+yerLen));
+                    //g2d.drawLine((int) xf, (int) (yf-yerLen), (int) xf , (int) (yf+yerLen));
+                    
+                    g2d.drawLine((int) xf, (int) (yfel), (int) xf , (int) (yfeh));
                 }
+                
                 mPainter.drawMarkerBasic(g2d, (int) xf, (int) yf, markerStyle,
                         markerSize,
                         markerLineWidth,markerColor,markerFillColor);
@@ -448,7 +464,9 @@ public class AbsDataSetDraw {
          double yr = 0.0;
          double wr = fractionX;         
          double hr = fractionY;
-         double maxValue = region.MAXIMUM_Z;
+         
+         double maxValue = region.MAXIMUM_Z - region.MINIMUM_Z;
+         
          boolean isLogZ = axis.getAxisZ().getAxisLog();
          
          H2D  h2d = (H2D) ds;
@@ -461,7 +479,8 @@ public class AbsDataSetDraw {
                  double xc = startX + axis.getFrame().x + xr;
                  //double yc = startY + axis.getFrame().y + yr;
                  double yc = startY + (axis.getFrame().y + axis.getFrame().height - yr - hr);
-                 double value = ds.getData(Lx, Ly);
+                 
+                 double value = ds.getData(Lx, Ly) - region.MINIMUM_Z;
                  //Paint  color = TStyle.getColorMap(value, maxValue, true);
                  //gc.setFill(color);
                  //System.out.println(" COLOR " + color);

@@ -591,8 +591,17 @@ public class H2D implements EvioWritableTree,IDataSet {
         region.MINIMUM_Y = this.yAxis.getBinCenter(0)-this.yAxis.getBinWidth(0)/2.0;
         region.MAXIMUM_Y = this.yAxis.getBinCenter(this.yAxis.getNBins()-1)-
                 this.yAxis.getBinWidth(this.yAxis.getNBins()-1)/2.0;
+        
         region.MINIMUM_Z = 0;
-        region.MAXIMUM_Z = this.maximumBinValue;
+        region.MAXIMUM_Z = 0;
+        for(int bin = 0; bin < this.hBuffer.length;bin++){
+            //region.MAXIMUM_Z = this.maximumBinValue;
+            if(this.hBuffer[bin]>region.MAXIMUM_Z) region.MAXIMUM_Z = this.hBuffer[bin];
+            if(this.hBuffer[bin]<region.MINIMUM_Z) region.MINIMUM_Z = this.hBuffer[bin];
+        }
+        if(region.MINIMUM_Z==region.MAXIMUM_Z){
+            region.MAXIMUM_Z = region.MINIMUM_Z + 1;
+        }
         return region;
     }
 

@@ -243,7 +243,8 @@ public class DataSetXY implements EvioWritableTree,IDataSet {
         System.err.println("****** DATA SET *****  LENGTH = " 
                 + dataX.getSize() + "  ******");
         for(int loop = 0; loop < dataX.getSize(); loop++){
-            System.err.printf("\t%12.5f \t%12.5f\n",dataX.getValue(loop),dataY.getValue(loop));
+            System.err.printf("\t%12.5f \t%12.5f \t%12.5f \t%12.5f\n",dataX.getValue(loop),dataY.getValue(loop),
+                   dataEX.getValue(loop),dataEY.getValue(loop));
         }
     }
 
@@ -355,6 +356,7 @@ public class DataSetXY implements EvioWritableTree,IDataSet {
         region.MAXIMUM_X = this.dataX.getMax();
         region.MINIMUM_Y = this.dataY.getMin();
         region.MAXIMUM_Y = this.dataY.getMax();
+        
         for(int loop = 0; loop < this.getDataSize(); loop++){
             double xl = this.getDataX(loop) - this.getErrorX(loop);
             double xh = this.getDataX(loop) + this.getErrorX(loop);
@@ -379,8 +381,8 @@ public class DataSetXY implements EvioWritableTree,IDataSet {
                 region.MAXIMUM_Y = region.MAXIMUM_Y + 1;
             }
         }
-        region.growX(0.1, 0.1);
-        region.growY(0.1, 0.1);
+        region.growX(0.2, 0.2);
+        region.growY(0.2, 0.2);
         return region;
     }
 

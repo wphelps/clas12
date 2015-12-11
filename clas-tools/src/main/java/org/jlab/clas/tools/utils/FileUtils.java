@@ -20,16 +20,46 @@ public class FileUtils {
         File[] files = new File(directory).listFiles();
         for (File file : files) {
             if (file.isFile()) {
-                fileList.add(file.getAbsolutePath());
+                if(file.getName().startsWith(".")==true||
+                        file.getName().endsWith("~")){
+                    System.out.println("[FileUtils] ----> skipping file : " + file.getName());
+                } else {
+                    fileList.add(file.getAbsolutePath());
+                }
             }
         }
         return fileList;
     }
     
+    public static List<String> getFilesInDir(String directory,String extension){
+        ArrayList<String> fileList = new ArrayList<String>();
+        File[] files = new File(directory).listFiles();
+        for (File file : files) {
+            if (file.isFile()) {
+                if(file.getName().startsWith(".")==true||
+                        file.getName().endsWith("~")){
+                    System.out.println("[FileUtils] ----> skipping file : " + file.getName());
+                } else {
+                    if(file.getName().endsWith(extension)==true){
+                        fileList.add(file.getAbsolutePath());
+                    }
+                }
+            }
+        }
+        return fileList;
+    }
     public static List<String> getFilesFromJar(String jarname){
         ArrayList<String> files = new ArrayList<String>();
         //JarFile jarFile = new JarFile(pathToJar);
         //TreeMap<String,String> a = null;
         return files;
     }
+    
+    public static void main(String[] args){
+        List<String> fileList = FileUtils.getFilesInDir("/Users/gavalian/Work/Software/Release-8.0/COATJAVA/coatjava/etc/bankdefs/translation");
+        for(String file : fileList){
+            System.out.println("file -> " + file);
+        }
+    }
+    
 }
