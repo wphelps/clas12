@@ -209,7 +209,7 @@ public class RawEventDecoder {
         ArrayList<DetectorBankEntry>  rawEntries = new ArrayList<DetectorBankEntry>();
         List<EvioTreeBranch> branches = this.getEventBranches(event);
         for(EvioTreeBranch branch : branches){
-            ArrayList<DetectorBankEntry>  list = this.getDataEntries(event,branch.getTag());
+            List<DetectorBankEntry>  list = this.getDataEntries(event,branch.getTag());
             if(list != null){
                 rawEntries.addAll(list);
             }
@@ -219,15 +219,16 @@ public class RawEventDecoder {
         return rawEntries;
     }
     
-    public ArrayList<DetectorBankEntry> getDataEntries(EvioDataEvent event, Integer crate){
+    public List<DetectorBankEntry> getDataEntries(EvioDataEvent event, Integer crate){
         
         ArrayList<EvioTreeBranch> branches = this.getEventBranches(event);
+        List<DetectorBankEntry>   bankEntries = new ArrayList<DetectorBankEntry>();
         
         EvioTreeBranch cbranch = this.getEventBranch(branches, crate);
         if(cbranch == null ) return null;
         
         for(EvioNode node : cbranch.getNodes()){ 
-            
+            //System.out.println(" analyzing tag = " + node.getTag());
             if(node.getTag()==57617){
                 //System.out.println(" GETTING DATA FOR SVT");
                 // This MODE is used for SVT
@@ -253,7 +254,10 @@ public class RawEventDecoder {
             if(node.getTag()==57627){
                 //  This is regular integrated pulse mode, used for FTOF
                 // FTCAL and EC/PCAL
-                return this.getDataEntries_57627(crate, node, event);
+                //System.out.println(" Micromega = " + node.getTag());
+                List<DetectorBankEntry>  entries = this.getDataEntries_57627(crate, node, event);
+                bankEntries.addAll(entries);
+                //return this.getDataEntries_57627(crate, node, event);
                 //return this.getDataEntriesMode_7(crate,node, event);
             }
             /*
@@ -262,8 +266,9 @@ public class RawEventDecoder {
                 return this.getDataEntries_57622(crate, node, event);
             }*/
         }
+        return bankEntries;
         //EvioRawDataBank dataBank = new EvioRawDataBank();
-        return null;
+        //return null;
     }
     
     public int[]  getRawBuffer(EvioDataEvent event, int crate){
@@ -389,7 +394,7 @@ public class RawEventDecoder {
     public ArrayList<DetectorBankEntry>  getDataEntries_57627(Integer crate, EvioNode node, EvioDataEvent event){
         
         ArrayList<DetectorBankEntry>  entries = new ArrayList<DetectorBankEntry>();
-        if(node.getTag()==57601){
+        if(node.getTag()==57627){
             try {
                 
                 ByteBuffer     compBuffer = node.getByteData(true);

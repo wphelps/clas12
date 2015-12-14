@@ -314,6 +314,17 @@ public class H1D implements EvioWritableTree,IDataSet {
     	initDataStore(bins);
     }
     
+    public double integral(){
+        return this.integral(0, this.histogramData.length-1);
+    }
+    
+    public double integral(int start_bin, int end_bin){
+        double integral = 0.0;
+        for(int loop = start_bin; loop <= end_bin; loop++){
+            integral += this.histogramData[loop];
+        }
+        return integral;
+    }
     /**
      * Initializes the double arrays for the histogram data and data errors.
      * 

@@ -88,7 +88,7 @@ public class DetectorCollection<T> {
             int sect = DetectorDescriptor.getSectorFromHash(item);
             if(sect==sector){
                 int lay = DetectorDescriptor.getLayerFromHash(item);
-                layers.add(sect);
+                layers.add(lay);
             }
         }
         return layers;
