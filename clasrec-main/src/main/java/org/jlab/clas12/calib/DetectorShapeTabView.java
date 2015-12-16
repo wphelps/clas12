@@ -46,6 +46,13 @@ public class DetectorShapeTabView extends JPanel implements ActionListener {
         this.initComponents();
     }
     
+    public DetectorShapeTabView(int sizeX, int sizeY){
+        super();
+        this.setPreferredSize(new Dimension(sizeX,sizeY));
+        this.setLayout(new BorderLayout());
+        this.initComponents();
+    }
+    
     private void initComponents(){
         tabbedPane = new JTabbedPane();        
         this.add(tabbedPane,BorderLayout.CENTER);

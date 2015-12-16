@@ -15,6 +15,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javafx.beans.value.ObservableValue;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -22,6 +24,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerModel;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import org.jlab.clas.tools.utils.FileUtils;
 import org.jlab.clas12.basic.IDetectorProcessor;
 import org.jlab.coda.et.exception.EtException;
@@ -33,7 +40,7 @@ import org.jlab.evio.clas12.EvioSource;
  *
  * @author gavalian
  */
-public class DetectorEventProcessorPane extends JPanel implements ActionListener {
+public class DetectorEventProcessorPane extends JPanel implements ActionListener,ChangeListener {
     
     List<IDetectorProcessor>  processorList = new ArrayList<IDetectorProcessor>();
     EvioSource                reader        = new EvioSource();
@@ -47,6 +54,8 @@ public class DetectorEventProcessorPane extends JPanel implements ActionListener
     JLabel                    statusLabel   = null;
     Timer                     processTimer  = null;
     private  Integer          threadDelay   = 200;
+    JSpinner                  spinnerDelay  = null;
+    
     
     public DetectorEventProcessorPane(){
         super();
@@ -84,6 +93,16 @@ public class DetectorEventProcessorPane extends JPanel implements ActionListener
         
         statusLabel = new JLabel("No Opened File");
         this.add(statusLabel);
+        SpinnerModel model =
+        new SpinnerNumberModel(2, //initial value
+                               0, //min
+                               10, //max
+                               1); //step
+        this.spinnerDelay = new JSpinner(model);
+        this.spinnerDelay.addChangeListener(this);
+        this.add(Box.createHorizontalStrut(30));
+        this.add(new JLabel("Delay (sec)"));
+        this.add(this.spinnerDelay);
     }
     
     public void addProcessor(IDetectorProcessor proc){
@@ -221,7 +240,7 @@ public class DetectorEventProcessorPane extends JPanel implements ActionListener
 		}
             }
             processTimer = new Timer();
-            processTimer.schedule(new CrunchifyReminder(), 2000,2000 );
+            processTimer.schedule(new CrunchifyReminder(), 100 ,10 );
             this.buttonStop.setEnabled(true);
             this.buttonNext.setEnabled(false);
             this.buttonPrev.setEnabled(false);
@@ -250,9 +269,10 @@ public class DetectorEventProcessorPane extends JPanel implements ActionListener
                 int trycount = 0;
                 this.etReader.clearEvents();
                 while(trycount<maxTries&&this.etReader.getSize()<=0){
+                    
                     System.out.println("[Et-Ring::Thread] ---> reloading the data....");
                     try {
-                        Thread.sleep(200);
+                        Thread.sleep(this.threadDelay);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(DetectorEventProcessorPane.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -274,7 +294,8 @@ public class DetectorEventProcessorPane extends JPanel implements ActionListener
                 
                 this.statusLabel.setText("EVENTS IN FILE : " + nevents.toString() + "  CURRENT : " + current.toString());
                 
-                for(IDetectorProcessor proc : this.processorList){
+                for(IDetectorProcessor proc : this.processorList){                                        
+                     
                     try {
                         proc.processEvent(event);
                     } catch (Exception ex) {
@@ -291,7 +312,11 @@ public class DetectorEventProcessorPane extends JPanel implements ActionListener
             Integer current = this.reader.getCurrentIndex();
             Integer nevents = this.reader.getSize();                
             this.statusLabel.setText("EVENTS IN FILE : " + nevents.toString() + "  CURRENT : " + current.toString());
-            
+            try {
+                Thread.sleep(this.threadDelay);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(DetectorEventProcessorPane.class.getName()).log(Level.SEVERE, null, ex);
+            }
             for(IDetectorProcessor proc : this.processorList){
                 try {
                     proc.processEvent(event);
@@ -299,6 +324,11 @@ public class DetectorEventProcessorPane extends JPanel implements ActionListener
                     ex.printStackTrace();
                 }
             }
+        } else {
+            this.buttonNext.setEnabled(false);
+            this.buttonPrev.setEnabled(false);
+            this.buttonStop.setEnabled(false);
+            this.buttonNextFFW.setEnabled(false);
         }
     }
     
@@ -308,5 +338,12 @@ public class DetectorEventProcessorPane extends JPanel implements ActionListener
         fr.add(pane);
         fr.pack();
         fr.setVisible(true);
+    }
+
+
+    public void stateChanged(ChangeEvent e) {
+        Integer value = (Integer) this.spinnerDelay.getValue();
+        //System.out.println(" VALUE = " + value);
+        this.threadDelay = value*1000;      
     }
 }

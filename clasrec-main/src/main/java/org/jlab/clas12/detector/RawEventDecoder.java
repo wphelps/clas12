@@ -180,7 +180,7 @@ public class RawEventDecoder {
                     for(int loop = 0; loop < intData.length; loop++){
                         int  dataEntry = intData[loop];
                         int  slot      = DataUtils.getInteger(dataEntry, 27, 31 );
-                        int  chan      = DataUtils.getInteger(dataEntry, 19, 24);
+                        int  chan      = DataUtils.getInteger(dataEntry, 19, 25);
                         int  value     = DataUtils.getInteger(dataEntry,  0, 18);
                         
                         DetectorBankEntry  tdc = new DetectorBankEntry(crate,slot,chan);                        

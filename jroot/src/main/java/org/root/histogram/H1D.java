@@ -412,6 +412,14 @@ public class H1D implements EvioWritableTree,IDataSet {
             System.out.println("[warning] ---> histograms have different bin number. not added.");
         }
     }
+    
+    
+    public void divide(double number){
+        for(int i = 0; i < this.getAxis().getNBins(); i++)
+        {
+            this.histogramData[i] = this.histogramData[i]/number;
+        }
+    }
     /**
      * Divides the current histogram object by the parameter 1-D histogram. 
      * Requires that both histograms have the same number of bins.
