@@ -80,26 +80,26 @@ public class DetectorDescriptor {
     
     
     public static int generateHashCode(int s, int l, int c){
-        return  ((s<<16)&0x00FF0000)|
-                ((l<<8)&0x0000FF00)|(c&0x000000FF);
+        return  ((s<<24)&0xFF000000)|
+                ((l<<16)&0x00FF0000)|(c&0x0000FFFF);
     }
     
     public int getHashCode(){
-        int hash = ((this.dt_SECTOR<<16)&0x00FF0000)|
-                ((this.dt_LAYER<<8)&0x0000FF00)|(this.dt_COMPONENT&0x000000FF);
+        int hash = ((this.dt_SECTOR<<24)&0xFF000000)|
+                ((this.dt_LAYER<<16)&0x00FF0000)|(this.dt_COMPONENT&0x0000FFFF);
         return hash;
     }
     
     public static int getSectorFromHash(int hash){
-        return DataUtils.getInteger(hash, 16, 23);
+        return DataUtils.getInteger(hash, 24, 31);
     }
     
     public static int getLayerFromHash(int hash){
-        return DataUtils.getInteger(hash, 8, 15);
+        return DataUtils.getInteger(hash, 16, 23);
     }
     
     public static int getComponentFromHash(int hash){
-        return DataUtils.getInteger(hash, 0, 7);
+        return DataUtils.getInteger(hash, 0, 15);
     }
     
     public void copy(DetectorDescriptor desc){

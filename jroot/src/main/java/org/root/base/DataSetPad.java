@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import org.root.attr.TStyle;
 import org.root.data.DataSetXY;
 import org.root.func.F1D;
+import org.root.histogram.DataBox;
 import org.root.histogram.H1D;
 import org.root.histogram.H2D;
 
@@ -64,6 +65,11 @@ public class DataSetPad {
             
             if(ds instanceof F1D){
                 AbsDataSetDraw.drawDataSetAsFunction(padAxisFrame, g2d, 
+                        collection.getDataSet(loop), xoffset , yoffset, w, h);
+            }
+            
+            if(ds instanceof DataBox){
+                AbsDataSetDraw.drawDataSetAsBox(padAxisFrame, g2d, 
                         collection.getDataSet(loop), xoffset , yoffset, w, h);
             }
             

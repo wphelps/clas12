@@ -16,18 +16,34 @@ public class ResourcesUtils {
     
     public static String getResourceDir(String evnName, String relativePath){
         String envDir = System.getenv(evnName);
-                        
-        if(envDir==null){
-            envDir = System.getProperty(evnName);
+        
+        if(System.getProperty("file.separator").compareTo("/")==0){                    
+                
+            if(envDir==null){
+                envDir = System.getProperty(evnName);
+            }
+            
+            if(envDir ==null) return null;
+            
+            StringBuilder str = new StringBuilder();
+            str.append(envDir);
+            if(envDir.charAt(envDir.length()-1) != '/') str.append("/");
+            str.append(relativePath);
+            return str.toString();
+        } else {
+            String rvPath = relativePath.replace("/", "\\");
+            if(envDir==null){
+                envDir = System.getProperty(evnName);
+            }
+            
+            if(envDir ==null) return null;
+            
+            StringBuilder str = new StringBuilder();
+            str.append(envDir);
+            if(envDir.charAt(envDir.length()-1) != '/') str.append("\\");
+            str.append(rvPath);
+            return str.toString();
         }
-        
-        if(envDir ==null) return null;
-        
-        StringBuilder str = new StringBuilder();
-        str.append(envDir);
-        if(envDir.charAt(envDir.length()-1) != '/') str.append("/");
-        str.append(relativePath);
-        return str.toString();
     }
     
 

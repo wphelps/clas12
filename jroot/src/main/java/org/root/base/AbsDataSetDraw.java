@@ -269,6 +269,27 @@ public class AbsDataSetDraw {
         
     }
     
+    
+    public static void drawDataSetAsBox(AxisRegion axis, Graphics2D g2d, IDataSet ds,
+            int startX, int startY, int gWidth, int gHeight){
+        int npoints = ds.getDataSize();
+        double xr_s = axis.getDataRegion().fractionX(ds.getDataX(0),axis.getAxisX().getAxisLog());
+        double xr_e = axis.getDataRegion().fractionX(ds.getDataX(1),axis.getAxisX().getAxisLog());
+        double yr_s = axis.getDataRegion().fractionY(ds.getDataY(0),axis.getAxisY().getAxisLog());
+        double yr_e = axis.getDataRegion().fractionY(ds.getDataY(1),axis.getAxisY().getAxisLog());
+        
+        double xf_s = axis.getFramePointX(xr_s);
+        double xf_e = axis.getFramePointX(xr_e);
+        
+        double yf_s = axis.getFramePointY(yr_s);
+        double yf_e = axis.getFramePointY(yr_e);
+        //System.out.println(ds);
+        //System.out.println("  DRAWING A BOX " + xf_s + " " + xf_e + " " + yf_s + " " + yf_e );
+        g2d.setColor(Color.black);
+        g2d.setStroke(new BasicStroke(1));
+        g2d.drawRect((int) (xf_s), (int) (yf_e), (int) Math.abs(xf_e-xf_s), (int) Math.abs(yf_e-yf_s));     
+    }
+    
     public static void drawDataSetAsGraph(AxisRegion axis, Graphics2D g2d, IDataSet ds,
             int startX, int startY, int gWidth, int gHeight){
         

@@ -8,6 +8,7 @@ package org.root.pad;
 import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import org.root.base.IDataSet;
+import org.root.histogram.DataBox;
 
 /**
  *
@@ -72,5 +73,14 @@ public class TGCanvas extends JFrame {
     
     public void save(String filename){
         this.embCanvas.save(filename);
+    }
+    
+    public static void main(String[] args){
+        TGCanvas c1 = new TGCanvas();
+        DataBox box  = new DataBox(0.1,0.1,0.4,0.4);
+        DataBox box2 = new DataBox(0.0,0.0,0.4,0.5);
+        c1.cd(0);
+        c1.draw(box);
+        c1.draw(box2,"same");
     }
 }

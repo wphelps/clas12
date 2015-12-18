@@ -53,7 +53,7 @@ public class DetectorEventProcessorPane extends JPanel implements ActionListener
     JButton                   buttonStop    = null;
     JLabel                    statusLabel   = null;
     Timer                     processTimer  = null;
-    private  Integer          threadDelay   = 200;
+    private  Integer          threadDelay   = 2000;
     JSpinner                  spinnerDelay  = null;
     
     
@@ -301,6 +301,12 @@ public class DetectorEventProcessorPane extends JPanel implements ActionListener
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
+                }
+                
+                try {
+                    Thread.sleep(this.threadDelay);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(DetectorEventProcessorPane.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
             return;
