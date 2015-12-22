@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import org.jlab.clas.detector.DetectorType;
+import org.jlab.clas12.calib.DetectorShape2D;
 import org.jlab.geom.DetectorHit;
 import org.jlab.geom.DetectorId;
 import org.jlab.geom.base.ConstantProvider;
@@ -23,6 +24,8 @@ import org.jlab.geom.detector.dc.DCDetector;
 import org.jlab.geom.detector.dc.DCFactory;
 import org.jlab.geom.detector.ec.ECDetector;
 import org.jlab.geom.detector.ec.ECFactory;
+import org.jlab.geom.detector.ec.ECLayer;
+import org.jlab.geom.detector.ec.ECSector;
 import org.jlab.geom.detector.ftof.FTOFDetector;
 import org.jlab.geom.detector.ftof.FTOFFactory;
 import org.jlab.geom.gui.DetectorComponentUI;
@@ -48,6 +51,18 @@ public class CLASGeometryLoader {
         
     }
     
+    public static Detector createDetector(DetectorType type, int run, String variation, String option){
+        
+        if(type==DetectorType.EC){
+            ConstantProvider  cp = DataBaseLoader.getGeometryConstants(DetectorType.EC, run, variation);
+            ECFactory      factory = new ECFactory();
+            ECDetector     ecdet   = factory.createDetectorCLAS(cp);
+            return ecdet;
+        }
+        
+        System.out.println("[Geometry-Loader] --> error loading geometry for detector " + type.getName());
+        return null;
+    }
     
     public void loadGeometry(String name, int run, String variation){
         
@@ -252,4 +267,70 @@ public class CLASGeometryLoader {
         DetectorHit hit = new DetectorHit(DetectorId.BST,sector,region,layer,cid,ip);
         return hit;
     }        
+    
+    
+    
+    public static List<DetectorShape2D> getDetectorShape2D(DetectorType type){
+        List<DetectorShape2D>  shapes = new ArrayList<DetectorShape2D>();
+        if(type==DetectorType.BST){
+            int[] sectors = new int[]{10,14,18,24};
+            double[] distances = new double[]{120.0,160.0,200.0,240.0};
+            for(int region = 0; region < 4; region++){
+                for(int sector = 0; sector < sectors[region]; sector++){
+                    for(int layer = 0; layer < 2; layer++){
+                        for(int chip = 0; chip < 2; chip++){
+                            double rotation = sector*360.0/sectors[region];
+                            DetectorShape2D  shape = new DetectorShape2D(DetectorType.BST,
+                                    sector + 1, (region*2+layer+1) * 10 + (chip + 1),0);
+                            shape.createBarXY(30.0, 8.0);
+                            double displace = -15.0;
+                            if(chip>0) displace = 15.0;
+                            shape.getShapePath().translateXYZ(displace, 0.0, 0.0);
+                            shape.getShapePath().translateXYZ(0, distances[region] + 10*layer, 0.0);
+                            shape.getShapePath().rotateZ(Math.toRadians(rotation));
+                            if(layer==0){
+                                if(chip==0){
+                                    shape.setColor(180,255, 180, 180);
+                                } else {
+                                    shape.setColor(140,200,140, 180);
+                                }
+                            } else {
+                                if(chip==0){
+                                    shape.setColor(140,140,200, 180);
+                                } else {
+                                    shape.setColor(180,180,255, 180);
+                                }
+                            }
+                            shapes.add(shape);
+                        }
+                    }
+                }
+            }
+        }
+                
+        return shapes;
+    }
+    
+    public static List<DetectorShape2D> getDetectorShape2D(DetectorType type, int sector, int superlayer){
+        List<DetectorShape2D>  shapes = new ArrayList<DetectorShape2D>();
+        if(type == DetectorType.EC){
+            ECDetector detector  = (ECDetector) CLASGeometryLoader.createDetector(type, 10, "default", "local");
+            //ECSector   ecSectore = (ECLayer) detector.getSector(sector).getSuperlayer(layer);
+
+            for(int l = 0; l < 3; l++){
+                ECLayer  ecLayer = detector.getSector(sector).getSuperlayer(superlayer).getLayer(l);
+                for(ScintillatorPaddle paddle : ecLayer.getAllComponents()){
+                    DetectorShape2D  shape = new DetectorShape2D(DetectorType.EC,sector,(superlayer)*3 + (l+1),paddle.getComponentId()+1);
+                    shape.getShapePath().addPoint(paddle.getVolumePoint(0));
+                    shape.getShapePath().addPoint(paddle.getVolumePoint(1));
+                    shape.getShapePath().addPoint(paddle.getVolumePoint(5));
+                    shape.getShapePath().addPoint(paddle.getVolumePoint(4));
+                    shape.setColor(180, 180, 245, 100);
+                    shapes.add(shape);
+                }
+            }            
+             
+        }
+        return shapes;
+    }
 }

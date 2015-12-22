@@ -99,6 +99,10 @@ public class DetectorParticle {
         return true;
     }
     
+    public List<DetectorResponse>  getDetectorResponses(){
+        return this.responseStore;
+    }
+    
     public DetectorResponse getHit(DetectorType type){
         for(DetectorResponse res : this.responseStore){
             if(res.getDescriptor().getType()==type) return res;

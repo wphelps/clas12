@@ -56,6 +56,7 @@ public class EventDecoderViewer extends JPanel implements IDetectorProcessor,Mou
         for(DetectorBankEntry entry : counters){
             if(entry.getType()==BankType.ADCPULSE){
                 H1D h1 = EventDecoder.getADCPulse(entry);
+                
                 this.adcCollection.add(
                         entry.getDescriptor().getCrate(),
                         entry.getDescriptor().getSlot(),
