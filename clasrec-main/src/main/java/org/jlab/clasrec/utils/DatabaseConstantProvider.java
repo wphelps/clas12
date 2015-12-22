@@ -30,6 +30,7 @@ public class DatabaseConstantProvider implements ConstantProvider {
     private String variation  = "default";
     private Integer runNumber = 10;
     private Integer loadTimeErrors = 0;
+    private Boolean PRINTOUT_FLAG  = false;
     
     private JDBCProvider provider;
     
@@ -67,6 +68,7 @@ public class DatabaseConstantProvider implements ConstantProvider {
         this.variation = var;
         this.initialize(address);
     }
+    public void setPrintout(Boolean flag){ this.PRINTOUT_FLAG = flag;}
     
     private String getEnvironment(){
         

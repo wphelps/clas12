@@ -37,7 +37,8 @@ public class EventDecoder {
     Map<DetectorType,List<DetectorCounter> >  counters = new TreeMap<DetectorType,List<DetectorCounter>>();
     Benchmark                                benchMark = new Benchmark();
     Map<DetectorType,IFADCFitter>             pulseFitters = new TreeMap<DetectorType,IFADCFitter>();
-
+    FADCConfigLoader                          fadcLoader   = new FADCConfigLoader();
+    
     public EventDecoder(){
         
         
@@ -46,6 +47,7 @@ public class EventDecoder {
         benchMark.addTimer("RAW-DECODER");
         benchMark.addTimer("RAW-TR");
         benchMark.addTimer("OBJ-CREATE");
+        fadcLoader.load("/test/fc/fadc",10,"default");
         /*
         for(String detector : detectors){
             pulseFitters.put(DetectorType.getType(detector), new FADCBasicFitter(0,30,35,70));
@@ -169,6 +171,14 @@ public class EventDecoder {
             }
             if(entry.getType()==BankType.ADCFPGA){
                 int[] adc = (int[]) entry.getDataObject();
+                int ped = adc[2];
+                FADCConfig  config = fadcLoader.getMap().get(
+                        entry.getDescriptor().getCrate(),
+                        entry.getDescriptor().getSlot(),
+                        entry.getDescriptor().getChannel());
+                int nsab = config.getNSA()+config.getNSB();
+                //System.out.println("NSAB = " + nsab);
+                int adcc = adc[1]-nsab*ped;
                 counter.addADC(channel, adc[1]);
             }
             
@@ -268,10 +278,10 @@ public class EventDecoder {
         System.out.println(counter);
         */
         
-        //String input = "/Users/gavalian/Work/Software/Release-8.0/COATJAVA/FC/sector2_000233_mode7.evio.0";
+        String input = "/Users/gavalian/Work/Software/Release-8.0/COATJAVA/FC/sector2_000233_mode7.evio.0";
         //String input = "/Users/gavalian/Work/Software/Release-8.0/COATJAVA/FC/sector2_000229_mode1.evio.0";
         //String input = "/Users/gavalian/Work/Software/Release-8.0/COATJAVA/sector1_000139.evio";
-        String input = "/Users/gavalian/Work/Software/Release-8.0/COATJAVA/SVT/svt257er_000017.evio.0";
+        //String input = "/Users/gavalian/Work/Software/Release-8.0/COATJAVA/SVT/svt257er_000017.evio.0";
         EvioSource  reader = new EvioSource();
         reader.open(input);
         EventDecoder decoder = new EventDecoder();
