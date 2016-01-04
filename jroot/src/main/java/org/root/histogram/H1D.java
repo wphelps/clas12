@@ -421,6 +421,29 @@ public class H1D implements EvioWritableTree,IDataSet {
         }
     }
     /**
+     * Static method for H1D to divide two histograms, the resulting
+     * histogram is created, and arguments are untouched.
+     * @param h1
+     * @param h2
+     * @return 
+     */
+    public static H1D divide(H1D h1, H1D h2){
+        if(h1.getXaxis().getNBins()!=h2.getXaxis().getNBins()){
+            System.out.println("[H1D::divide] error : histograms have inconsistent bins");
+            return null;
+        }
+        H1D h1div = new H1D(h1.getName()+"_DIV",
+                h1.getXaxis().getNBins(),
+                h1.getXaxis().min(),h1.getXaxis().max());
+        for(int bin = 0; bin < h1.getXaxis().getNBins(); bin++){
+            double bc = 0;
+            if(h1.getBinContent(bin)!=0){
+                h1div.setBinContent(bin, h1.getBinContent(bin)/h2.getBinContent(bin));
+            }
+        }
+        return h1div;
+    }
+    /**
      * Divides the current histogram object by the parameter 1-D histogram. 
      * Requires that both histograms have the same number of bins.
      * 

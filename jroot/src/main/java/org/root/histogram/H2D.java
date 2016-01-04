@@ -337,6 +337,30 @@ public class H2D implements EvioWritableTree,IDataSet {
             }
         }
         
+        
+        public static H2D  divide(H2D h1, H2D h2){
+            if((h1.getXAxis().getNBins()!=h2.getXAxis().getNBins())||
+                    (h1.getYAxis().getNBins()!=h2.getYAxis().getNBins())
+                    ){
+                System.out.println("[H2D::divide] error : histograms have inconsistent bins");
+                return null;
+            }
+            
+            H2D h2div = new H2D(h1.getName()+"_DIV",
+                    h1.getXAxis().getNBins(),h1.getXAxis().min(),h1.getXAxis().max(),
+                    h1.getYAxis().getNBins(),h1.getYAxis().min(),h1.getYAxis().max()                    
+            );
+            for(int bx = 0; bx < h1.getXAxis().getNBins();bx++){
+                for(int by = 0; by < h1.getYAxis().getNBins();by++){
+                    double bc = 0;
+                    if(h2.getBinContent(bx, by)!=0){
+                        h2div.setBinContent(bx, by, h1.getBinContent(bx, by)/h2.getBinContent(bx, by));
+                    }
+                }    
+            }
+            return h2div;
+        }
+        
         public void divide(H2D h){
             if(h.getXAxis().getNBins()==this.getXAxis().getNBins()&&
                     h.getYAxis().getNBins()==this.getYAxis().getNBins()){
