@@ -78,8 +78,8 @@ public class F1D extends Function1D implements EvioWritableTree,IDataSet {
             }
             
             if(f.compareTo("exp")==0){
-                pars.add("p0");
-                pars.add("p1");
+                pars.add("exp0");
+                pars.add("exp1");
             }
             
             if(f.compareTo("p0")==0){
