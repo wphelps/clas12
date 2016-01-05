@@ -88,6 +88,13 @@ public class EvioDescriptor implements DataDescriptor {
         table.show();
     }
 
+    public int getType(String name){
+        if(this.types.containsKey(name)==true){
+            return this.types.get(name);
+        }
+        return -1;
+    }
+    
     @Override
     public String getXML() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.

@@ -432,14 +432,19 @@ public class H1D implements EvioWritableTree,IDataSet {
             System.out.println("[H1D::divide] error : histograms have inconsistent bins");
             return null;
         }
+        
         H1D h1div = new H1D(h1.getName()+"_DIV",
                 h1.getXaxis().getNBins(),
                 h1.getXaxis().min(),h1.getXaxis().max());
+        StatNumber   result = new StatNumber();
+        StatNumber   denom  = new StatNumber();
         for(int bin = 0; bin < h1.getXaxis().getNBins(); bin++){
             double bc = 0;
-            if(h1.getBinContent(bin)!=0){
-                h1div.setBinContent(bin, h1.getBinContent(bin)/h2.getBinContent(bin));
-            }
+            result.set(h1.getBinContent(bin), h1.getBinError(bin));
+            denom.set(h2.getBinContent(bin), h2.getBinError(bin));
+            result.divide(denom);
+            h1div.setBinContent(bin, result.number());
+            h1div.setBinError(bin, result.error());
         }
         return h1div;
     }
