@@ -198,6 +198,16 @@ public abstract class DetectorReconstruction implements ICService {
         this.calibrationConstants.put(calibPackage, provider);
     }
     
+    public void requireCalibration(String system,String... vars){
+        DatabaseConstantProvider  provider = new DatabaseConstantProvider(
+                this.calibrationRunNumber,this.calibrationVariation);
+        for(String var : vars){
+            provider.loadTable(var);
+        }
+        this.calibrationConstants.put(system, provider);
+        provider.disconnect();
+    }
+    
     public DetectorReconstruction(String name, String author,String version){
         serviceName = name;
         serviceAuthor = author;

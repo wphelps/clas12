@@ -125,7 +125,7 @@ public class CLASReconstruction {
                         + detectorRec.getName() );
                 detectorRec.setDebugLevel(this.debugLevel);
                 detectorRec.configure(serviceConfig);
-                detectorRec.init();
+
                 if(this.serviceConfig.hasItem("CCDB", "GEOMRUN")==true){
                     detectorRec.setGeometryRun(
                             Integer.parseInt(this.serviceConfig.asString("CCDB", "GEOMRUN")));
@@ -142,7 +142,7 @@ public class CLASReconstruction {
                 if(this.serviceConfig.hasItem("CCDB", "CALIBVAR")==true){
                     detectorRec.setGeometryVariation(this.serviceConfig.asString("CCDB", "CALIBVAR"));
                 }
-                
+                detectorRec.init();                
                 System.err.println("[DET-INIT] ---> detector initialization "
                         + detectorRec.getName() + " ......... success");
             } catch (Exception e) {
