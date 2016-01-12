@@ -48,4 +48,8 @@ public class TCanvas {
     public void draw(IDataSet ds){
         //this.app.canvasCanvas.draw(ds);
     }
+    
+    public static void main(String[] args){
+        TCanvas canvas = new TCanvas();
+    }
 }

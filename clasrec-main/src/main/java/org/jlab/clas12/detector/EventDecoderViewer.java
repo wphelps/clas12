@@ -68,6 +68,11 @@ public class EventDecoderViewer extends JPanel implements IDetectorProcessor,Mou
         
         this.dataTree.setModel(this.adcCollection.getTreeModel());
         //this.adcCollection.show();
+        List<DetectorBankEntry> cntALL =  decoder.getDataEntries();
+        for(DetectorBankEntry cnt : cntALL){
+            System.out.println(cnt);
+        }
+
     }
     
     public static void main(String[] args){

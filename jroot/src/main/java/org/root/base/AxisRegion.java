@@ -44,9 +44,31 @@ public class AxisRegion {
     private LatexText         axisTitleY      = new LatexText("",0.0,0.5);
     private LatexText         frameTitle      = new LatexText("",0.5,1.0);
     
+    
+    private String            axisTicksFontName = "Chalkduster";
+    private int               axisTicksFontSize = 14;
+    
+    private String            axisTitleFontName = "Avenir";
+    private int               axisTitleFontSize = 14;
+    
+    private String            frameTitleFontName = "Avenir";
+    private int               frameTitleFontSize = 18;
+    
     //private Font              axisTickFont    = new Font("Bradley Hand",Font.PLAIN,24);
-    private Font              axisTickFont    = new Font("Chalkduster",Font.PLAIN,24);
-    private Font              axisTitleFont   = new Font("Avenir",Font.PLAIN,12);
+    
+    private Font              axisTickFont     = new Font("Chalkduster", Font.PLAIN , 14);
+    private Font              axisTitleFont    = new Font("Avenir"     , Font.PLAIN , 14);
+    private Font              frameTitleFont   = new Font("Avenir"     , Font.PLAIN , 18);
+    
+    
+    //*************************************************************** 
+    //  MARGINs FOR THE MINIMUM DISTANCE FROM EDGES
+    //*************************************************************** 
+    private int               minMarginY = 5;
+    private int               maxMarginY = 5;
+    private int               minMarginX = 5;
+    private int               maxMarginX = 5;
+    
     private int               axisFrameFillColor      = 1;
     private int               axisFrameColor          = 0;
     private int               axisFrameTitleColor     = 0;
@@ -179,6 +201,35 @@ public class AxisRegion {
                 */
     }
     
+    public void setAxisFont(String fontname){
+        this.axisTicksFontName = fontname;
+        this.axisTickFont = new Font(this.axisTicksFontName,Font.PLAIN, this.axisTicksFontSize);
+    }
+    
+    public void setAxisFontSize(int size){
+        this.axisTicksFontSize = size;
+        this.axisTickFont = new Font(this.axisTicksFontName,Font.PLAIN, this.axisTicksFontSize);
+    }
+    
+    public void setAxisTitleFont(String fontname){
+        this.axisTitleFontName = fontname;
+        this.axisTickFont = new Font(this.axisTitleFontName,Font.PLAIN,this.axisTitleFontSize);
+    }
+    
+    public void setAxisTitleFont(int size){
+        this.axisTitleFontSize = size;
+        this.axisTickFont = new Font(this.axisTitleFontName,Font.PLAIN,this.axisTitleFontSize);
+    }
+    
+    public void setTitleFont(String fontname){
+        this.frameTitleFontName = fontname;
+        this.frameTitleFont     = new Font(this.frameTitleFontName,Font.PLAIN,this.frameTitleFontSize);
+    }
+    
+    public void setTitleFont(int size){
+        this.frameTitleFontSize = size;
+        this.frameTitleFont     = new Font(this.frameTitleFontName,Font.PLAIN,this.frameTitleFontSize);
+    }
     
     public void drawOnCanvasGrid(Graphics2D g2d, int w, int h, int xoffset, int yoffset){
         // Drawing GRID on X-axis

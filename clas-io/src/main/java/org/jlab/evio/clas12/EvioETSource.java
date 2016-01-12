@@ -104,8 +104,8 @@ public class EvioETSource implements DataSource {
             sys.open();
             
             EtStationConfig statConfig = new EtStationConfig();
-            statConfig.setBlockMode(EtConstants.stationBlocking);
-            //statConfig.setBlockMode(EtConstants.stationNonBlocking);
+            //statConfig.setBlockMode(EtConstants.stationBlocking);
+            statConfig.setBlockMode(EtConstants.stationNonBlocking);
             
             statConfig.setUserMode(EtConstants.stationUserMulti);
             statConfig.setRestoreMode(EtConstants.stationRestoreOut);
