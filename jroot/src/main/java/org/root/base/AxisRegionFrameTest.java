@@ -55,6 +55,9 @@ public class AxisRegionFrameTest extends JPanel {
         axis.setDataRegion(new DataRegion(5.0,650.0,0.0,250.0,0.0,2400.0));
         //axis.getAxisX().setAxisLog(true);
         //axis.getAxisY().setAxisLog(true);
+        axis.setAxisFontSize(8);
+        axis.setTitleFont(8);
+        
         axis.update(g2d,w,h);        
         axis.drawOnCanvas(g2d, w, h, 0, 0);
 

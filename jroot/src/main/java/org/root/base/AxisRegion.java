@@ -58,16 +58,17 @@ public class AxisRegion {
     
     private Font              axisTickFont     = new Font("Chalkduster", Font.PLAIN , 14);
     private Font              axisTitleFont    = new Font("Avenir"     , Font.PLAIN , 14);
-    private Font              frameTitleFont   = new Font("Avenir"     , Font.PLAIN , 18);
+    private Font              frameTitleFont   = new Font("Avenir"     , Font.PLAIN , 14);
     
     
     //*************************************************************** 
     //  MARGINs FOR THE MINIMUM DISTANCE FROM EDGES
     //*************************************************************** 
-    private int               minMarginY = 5;
-    private int               maxMarginY = 5;
-    private int               minMarginX = 5;
-    private int               maxMarginX = 5;
+    private int               minMarginY = 0;
+    private int               maxMarginY = 0;
+    
+    private int               minMarginX = 15;
+    private int               maxMarginX = 20;
     
     private int               axisFrameFillColor      = 1;
     private int               axisFrameColor          = 0;
@@ -149,29 +150,6 @@ public class AxisRegion {
 
         //System.out.println("UPDATING SIZE = " + w + "  " + h);
         
-        if(w<200||h<200){
-            axisTickFont    = new Font("Chalkduster",Font.PLAIN,8);
-            axisTitleFont   = new Font("Avenir",Font.PLAIN,8);
-        } 
-        if((w>200||h>200)&&(w<400||h<400)){
-            axisTickFont    = new Font("Chalkduster",Font.PLAIN,10);
-            axisTitleFont   = new Font("Avenir",Font.PLAIN,10);
-        }
-        
-        if((w>400||h>400)&&(w<600||h<600)){
-            axisTickFont    = new Font("Chalkduster",Font.PLAIN,12);
-            axisTitleFont   = new Font("Avenir",Font.PLAIN,12);
-        }
-        if((w>600||h>600)&&(w<800||h<800)){
-            axisTickFont    = new Font("Chalkduster",Font.PLAIN,14);
-            axisTitleFont   = new Font("Avenir",Font.PLAIN,14);
-        }
-        
-        if(w>800||h>800){
-            axisTickFont    = new Font("Chalkduster",Font.PLAIN,18);
-            axisTitleFont   = new Font("Avenir",Font.PLAIN,18);
-        }
-        
         FontMetrics fma = g2d.getFontMetrics(axisTickFont);
         FontMetrics fmt = g2d.getFontMetrics(axisTitleFont);
         
@@ -188,10 +166,11 @@ public class AxisRegion {
         Rectangle2D  boundsY = this.axisTitleY.getBounds(fmt, g2d);
         
         this.axisFrame.x      = fmt.getHeight()*2 + yAxisOffset;
-        this.axisFrame.width  = fw - axisFrame.x - 20 - (zAxisOffset + 10);
+        this.axisFrame.width  = fw - axisFrame.x - this.minMarginX - (zAxisOffset + this.maxMarginX);
         
-        this.axisFrame.y      = fmt.getHeight()*2;
-        this.axisFrame.height = fh - axisFrame.y - fmt.getHeight()*2 - fma.getHeight()*2;
+        this.axisFrame.y      = fmt.getHeight()*2 + this.minMarginY;
+        this.axisFrame.height = fh - axisFrame.y - ((int) (fmt.getHeight()*1.5)) - fma.getHeight() - this.maxMarginY;
+        
         this.getAxisX().updateWithFont(fma, this.getFrame().width, false);
         this.getAxisY().updateWithFont(fma, this.getFrame().height, true);
         this.getAxisZ().updateWithFont(fma, this.getFrame().height, true);
@@ -229,6 +208,17 @@ public class AxisRegion {
     public void setTitleFont(int size){
         this.frameTitleFontSize = size;
         this.frameTitleFont     = new Font(this.frameTitleFontName,Font.PLAIN,this.frameTitleFontSize);
+    }
+    
+    
+    public void setMarginsX(int min, int max){
+        this.minMarginX = min;
+        this.maxMarginX = max;
+    }
+    
+    public void setMarginsY(int min, int max){
+        this.minMarginY = min;
+        this.maxMarginY = max;
     }
     
     public void drawOnCanvasGrid(Graphics2D g2d, int w, int h, int xoffset, int yoffset){
