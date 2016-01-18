@@ -139,15 +139,33 @@ public class Function1D  {
         return npoints-this.getNParams();
     }
     
+    
     public double getChiSquare(IDataSet ds){
-        double errorSumm = 0.0;
+        return this.getChiSquare(ds,"*");
+    }
+    
+    public double getChiSquare(IDataSet ds, String options){
+        double   errorSumm = 0.0;
+        boolean  funcRangeCheck   = false;
+        boolean  useDatasetErrors = false;
+        
+        if(options.contains("E")==true) useDatasetErrors = true;        
+        if(options.contains("R")==true) funcRangeCheck = true;
+        
         for(int b = 0; b < ds.getDataSize();b++){
             errorSumm += ds.getErrorY(b);
         }
+        
         boolean ignoreErrors = false;
+        
         if(errorSumm==0){
             ignoreErrors = true;
         }
+        
+        if(useDatasetErrors==false){
+            ignoreErrors = true;
+        }
+        
         double chiSquare = 0.0;
         int    ndfPoints = 0;
         
@@ -157,15 +175,30 @@ public class Function1D  {
                 double xv = ds.getDataX(bin);
                 double yv = ds.getDataY(bin);
                 double fv = this.eval(xv);                
-                chiSquare += (yv-fv)*(yv-fv);
-                ndfPoints++;
+                if(funcRangeCheck==true){
+                    if(xv>=this.getMin()&&xv<this.getMax()){
+                        chiSquare += (yv-fv)*(yv-fv);
+                        ndfPoints++;
+                    }
+                } else {
+                    chiSquare += (yv-fv)*(yv-fv);
+                    ndfPoints++;
+                }
+
             } else {
                 double xv = ds.getDataX(bin);
                 double yv = ds.getDataY(bin);
                 double fv = this.eval(xv);
                 if(yerror!=0){
-                    chiSquare += (yv-fv)*(yv-fv)/(yerror*yerror);
-                    ndfPoints++;
+                    if(funcRangeCheck==true){
+                        if(xv>=this.getMin()&&xv<this.getMax()){
+                            chiSquare += (yv-fv)*(yv-fv)/(yerror*yerror);                        
+                            ndfPoints++;
+                        }
+                    } else {
+                        chiSquare += (yv-fv)*(yv-fv)/(yerror*yerror);                        
+                        ndfPoints++;
+                    }
                 }
             }
         }

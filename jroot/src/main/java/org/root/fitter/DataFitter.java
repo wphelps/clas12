@@ -31,8 +31,10 @@ public class DataFitter {
         
     }
     
-        
     public static void fit(IDataSet ds, Function1D func){
+        DataFitter.fit(ds, func, "*");
+    }
+    public static void fit(IDataSet ds, Function1D func, String options){
         
         FitterFunction funcFitter = new FitterFunction(ds,func);
                 
@@ -40,6 +42,13 @@ public class DataFitter {
         ByteArrayOutputStream pipeOut = new ByteArrayOutputStream();
         PrintStream  outStream = System.out;
         PrintStream  errStream = System.err;
+        
+        
+        if(options.contains("Q")==true){
+            DataFitter.FITPRINTOUT = false;
+        } else {
+            DataFitter.FITPRINTOUT = true;
+        }
         
         if(DataFitter.FITPRINTOUT==false){
             PrintStream pipeStream = new PrintStream(pipeOut);
