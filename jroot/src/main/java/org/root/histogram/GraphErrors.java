@@ -52,6 +52,10 @@ public class GraphErrors extends DataSetXY {
         DataFitter.fit(this, func);
     }
      
+    public void fit(F1D func,String options){
+        DataFitter.fit(this, func,options);
+    }
+    
     @Override
     public String toString(){
         StringBuilder str = new StringBuilder();

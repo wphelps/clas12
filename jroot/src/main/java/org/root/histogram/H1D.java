@@ -342,7 +342,7 @@ public class H1D implements EvioWritableTree,IDataSet {
     
     public void fit(F1D func, String options){                      
         
-        DataFitter.fit(this.getDataSet(), func);
+        DataFitter.fit(this.getDataSet(), func, options);
         if(options.contains("Q")==false){
             func.show();
         }
