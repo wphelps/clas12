@@ -403,6 +403,11 @@ public class EvioDataEvent implements DataEvent {
                 String[] tokens = new String[3];
                 tokens[0] = bank;
                 DataBank dbank = this.getBank(bank);
+                if(dbank==null){
+                    System.err.println("[EvioDataEvent::show] ERROR : bank "
+                    + bank + " does not exist");
+                    continue;
+                }
                 Integer ncols  = dbank.columns();
                 Integer nrows  = dbank.rows();
                 tokens[1] = nrows.toString(); 

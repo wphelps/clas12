@@ -128,7 +128,7 @@ public class DataSetXY implements EvioWritableTree,IDataSet {
     }
     
     public void add(double x, double y, double ex, double ey){
-        if(x!=Double.NaN&&y!=Double.NaN&&
+        if(Double.isNaN(x)!=true&&Double.isNaN(y)!=true&&
                 x!=Double.NEGATIVE_INFINITY&&y!=Double.NEGATIVE_INFINITY
                 &&x!=Double.POSITIVE_INFINITY&&y!=Double.POSITIVE_INFINITY){
             dataX.add(x);
