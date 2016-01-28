@@ -36,7 +36,7 @@ public class DataFitter {
     }
     public static void fit(IDataSet ds, Function1D func, String options){
         
-        FitterFunction funcFitter = new FitterFunction(ds,func);
+        FitterFunction funcFitter = new FitterFunction(ds,func,options);
                 
         int npars = funcFitter.getFunction().getNParams();
         ByteArrayOutputStream pipeOut = new ByteArrayOutputStream();

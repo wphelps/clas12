@@ -148,17 +148,23 @@ public class Function1D  {
         double   errorSumm = 0.0;
         boolean  funcRangeCheck   = false;
         boolean  useDatasetErrors = false;
-        
+        System.out.println("===========>  OPTIONS FOR FITTING = " + options);
         if(options.contains("E")==true) useDatasetErrors = true;        
         if(options.contains("R")==true) funcRangeCheck = true;
         
         for(int b = 0; b < ds.getDataSize();b++){
-            errorSumm += ds.getErrorY(b);
+            if(funcRangeCheck==true){
+                if(ds.getDataX(b)>=this.getMin()&&ds.getDataX(b)<=this.getMax()){
+                    errorSumm += ds.getErrorY(b);
+                }
+            } else {
+                errorSumm += ds.getErrorY(b);
+            }
         }
         
         boolean ignoreErrors = false;
         
-        if(errorSumm==0){
+        if(errorSumm<0.0000001){
             ignoreErrors = true;
         }
         
