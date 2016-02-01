@@ -18,6 +18,7 @@ public enum DetectorType {
     CTOF      ( 4, "CTOF"),
     FMT       ( 5,"FMT"),
     HTCC      ( 6,"HTCC"),
+    FTHODO    (8,"FTHODO"),
     FTCAL     ( 9, "FTCAL"),
     FTOF1A    (10, "FTOF1A"),
     FTOF1B    (11, "FTOF1B"),
