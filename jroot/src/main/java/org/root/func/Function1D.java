@@ -148,7 +148,7 @@ public class Function1D  {
         double   errorSumm = 0.0;
         boolean  funcRangeCheck   = false;
         boolean  useDatasetErrors = false;
-        System.out.println("===========>  OPTIONS FOR FITTING = " + options);
+        //System.out.println("===========>  OPTIONS FOR FITTING = " + options);
         if(options.contains("E")==true) useDatasetErrors = true;        
         if(options.contains("R")==true) funcRangeCheck = true;
         

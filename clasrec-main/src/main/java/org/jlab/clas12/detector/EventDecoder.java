@@ -179,7 +179,7 @@ public class EventDecoder {
                 int nsab = config.getNSA()+config.getNSB();
                 //System.out.println("NSAB = " + nsab);
                 int adcc = adc[1]-nsab*ped;
-                counter.addADC(channel, adc[1]);
+                counter.addADC(channel, adcc);
             }
             
             if(entry.getType()==BankType.SVT){
