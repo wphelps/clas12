@@ -74,7 +74,7 @@ public class AbsDataSetDraw {
         Font  axisFont = new Font(TStyle.getStatBoxFontName(),Font.PLAIN,TStyle.getStatBoxFontSize());
         FontMetrics  fm = g2d.getFontMetrics(axisFont);
         
-        text.setFont(TStyle.getStatBoxFontName(),TStyle.getStatBoxFontSize());
+        //text.setFont(TStyle.getStatBoxFontName(),TStyle.getStatBoxFontSize());
         
         Rectangle2D  bounds = text.getBounds(fm, g2d);
         /*
@@ -99,7 +99,7 @@ public class AbsDataSetDraw {
         double originXbox = startX + axis.getFrame().width + axis.getFrame().x - w;
         double originYbox = startY + axis.getFrame().y ;
         double originX =  originXbox + xoffset;
-        double originY =  originYbox + + TStyle.getStatBoxTextGap()*TStyle.getStatBoxFontSize();
+        double originY =  originYbox + TStyle.getStatBoxTextGap()*TStyle.getStatBoxFontSize();
         
         g2d.setColor(TStyle.getAxisColor());
         g2d.setStroke(new BasicStroke(1));

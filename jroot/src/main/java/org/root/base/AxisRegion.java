@@ -45,7 +45,7 @@ public class AxisRegion {
     private LatexText         frameTitle      = new LatexText("",0.5,1.0);
     
     
-    private String            axisTicksFontName = "Chalkduster";
+    private String            axisTicksFontName = "Avenir";
     private int               axisTicksFontSize = 14;
     
     private String            axisTitleFontName = "Avenir";
@@ -110,7 +110,7 @@ public class AxisRegion {
     
     public  AxisRegion(){
         
-        this.axisFrame.setBounds(10, 10, 40, 40);
+        this.axisFrame.setBounds(10, 10, 20, 20);
         this.axisAttributes.getProperties().setProperty("background-color", "0");
         this.axisAttributes.getProperties().setProperty("line-color", "1");
         this.axisAttributes.getProperties().setProperty("line-width", "2");
@@ -165,11 +165,11 @@ public class AxisRegion {
         Rectangle2D  boundsX = this.axisTitleX.getBounds(fmt, g2d);
         Rectangle2D  boundsY = this.axisTitleY.getBounds(fmt, g2d);
         
-        this.axisFrame.x      = fmt.getHeight()*2 + yAxisOffset;
+        this.axisFrame.x      = fmt.getHeight() + yAxisOffset;
         this.axisFrame.width  = fw - axisFrame.x - this.minMarginX - (zAxisOffset + this.maxMarginX);
         
-        this.axisFrame.y      = fmt.getHeight()*2 + this.minMarginY;
-        this.axisFrame.height = fh - axisFrame.y - ((int) (fmt.getHeight()*1.5)) - fma.getHeight() - this.maxMarginY;
+        this.axisFrame.y      = fmt.getHeight() + this.minMarginY;
+        this.axisFrame.height = fh - axisFrame.y - ((int) (fmt.getHeight())) - fma.getHeight() - this.maxMarginY;
         
         this.getAxisX().updateWithFont(fma, this.getFrame().width, false);
         this.getAxisY().updateWithFont(fma, this.getFrame().height, true);

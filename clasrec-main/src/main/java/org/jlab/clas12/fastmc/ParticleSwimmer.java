@@ -161,4 +161,19 @@ public class ParticleSwimmer {
         }
         return null;
     }
+    
+    public CompositeField  getField(){
+        return this.compositeField;
+    }
+    
+    public static void main(String[] args){
+        ParticleSwimmer swimmer = new ParticleSwimmer(0.0,0.2);
+        float[] result = new float[3];
+        
+        for(int loop = 0;loop<100; loop++){
+            float z = (float) (loop*0.5);
+            swimmer.getField().field(0, 0, z, result);
+            System.out.println(z + " = " + result[2]);
+        }
+    }
 }

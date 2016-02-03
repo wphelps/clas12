@@ -50,7 +50,8 @@ public class DataSetPad {
         DataRegion  region = this.collection.getDataRegion();
         this.padAxisFrame.setDataRegion(region);
         //System.out.println(region);
-        AbsDataSetDraw.drawAxisBackGround(padAxisFrame, g2d,xoffset,yoffset,w,h);
+        padAxisFrame.update(g2d, w, h);
+        //AbsDataSetDraw.drawAxisBackGround(padAxisFrame, g2d,xoffset,yoffset,w,h);
         g2d.setClip(this.padAxisFrame.getFrame().x + xoffset, 
                 this.padAxisFrame.getFrame().y + yoffset,
                 this.padAxisFrame.getFrame().width,
@@ -84,8 +85,8 @@ public class DataSetPad {
             }
         }
         g2d.setClip(null);
-        AbsDataSetDraw.drawAxisFrame(padAxisFrame, g2d,xoffset,yoffset,w,h);
-        
+        //AbsDataSetDraw.drawAxisFrame(padAxisFrame, g2d,xoffset,yoffset,w,h);
+        this.padAxisFrame.drawOnCanvas(g2d, w, h, xoffset, yoffset);
         for(LatexText txt : this.textCollection){
             AbsDataSetDraw.drawText(padAxisFrame, g2d, txt, xoffset, yoffset,w,h);
         }
@@ -156,6 +157,20 @@ public class DataSetPad {
         }
     }
     
+    
+    public void setTitleFontSize(int size){
+        this.padAxisFrame.setAxisTitleFont(size);
+    }
+    
+    public void setAxisFontSize(int size){
+        this.padAxisFrame.setAxisFontSize(size);
+    }
+    
+    public void setStatBoxFontSize(int size){
+        this.statBox.setFont("Courier", size);
+        TStyle.setStatBoxFont("Courier", size);
+    }
+    
     public void setAutoScale(Boolean flag){
         this.collection.setAutoScale(flag);
     }
@@ -187,4 +202,5 @@ public class DataSetPad {
     public void setLogY(boolean islog){
         this.padAxisFrame.getAxisY().setAxisLog(islog);
     }
+    
 }

@@ -74,6 +74,25 @@ public class Particle {
         }
     }
     
+    
+    /**
+     * Change the particle momenta from it's original value to new value
+     * @param mom new particle momenta
+     */
+    public void setP(double mom){
+        double mag    = this.vector().p();
+        double factor = mom/mag;
+        this.vector().setPxPyPzM(
+                this.vector().vect().x()*factor, 
+                this.vector().vect().y()*factor, 
+                this.vector().vect().z()*factor,
+                this.mass());
+    }
+    
+    public void setTheta(double theta){
+        this.vector().vect().setMagThetaPhi(this.vector().p(), theta, this.vector().phi());
+    }
+    
     public void changePid(int pid)
     {
         PDGParticle  part = PDGDatabase.getParticleById(pid);

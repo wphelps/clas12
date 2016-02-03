@@ -32,6 +32,7 @@ import org.jlab.evio.clas12.EvioSource;
  */
 public class CLASReconstruction {
     
+    private RunConditions  runCondition = new RunConditions();
     
     private final ArrayList<DetectorReconstruction>  detectorFactory =
             new ArrayList<DetectorReconstruction>();
@@ -258,6 +259,9 @@ public class CLASReconstruction {
     public void run(String filename, String output){
         reader.open(filename);
         //this.initDetectors();
+        
+        
+        
         EvioDataSync writer = new EvioDataSync();
         writer.open(output);
         
@@ -265,11 +269,36 @@ public class CLASReconstruction {
         bench.addTimer("WRITER");
         bench.addTimer("TOTAL");
         
+       
+        
+        Long  processTime = System.currentTimeMillis();
+        
+        while(reader.hasEvent()&&this.runCondition.isValid()==false){
+            EvioDataEvent event  = (EvioDataEvent) reader.getNextEvent();
+            String[]      header = event.getString(5, 1);
+            this.runCondition.parse(header);
+        }
+        
+        
+        this.runCondition.show();
+        if(runCondition.hasItem("TORUS_FIELD_SCALE")==true&&this.serviceConfig.hasItem("MAG", "torus")==false){
+            this.serviceConfig.addItem("MAG", "torus", runCondition.getDouble("TORUS_FIELD_SCALE"));            
+        }
+        
+        if(runCondition.hasItem("SOLENOID_FIELD_SCALE")==true&&this.serviceConfig.hasItem("MAG", "solenoid")==false){
+            this.serviceConfig.addItem("MAG", "solenoid", runCondition.getDouble("SOLENOID_FIELD_SCALE"));            
+        }
+        
+        
+        
+        this.initDetectors();
+        this.init();
+        
+        
         for(DetectorReconstruction rec : this.detectorFactory){
             bench.addTimer(rec.getName());
         }
-        
-        Long  processTime = System.currentTimeMillis();
+        this.serviceConfig.show();
         int iEventCounter = 0;
         while(reader.hasEvent()){
             iEventCounter++;
@@ -391,8 +420,12 @@ public class CLASReconstruction {
         clasRec.initServiceConfiguration(cmdParser.getConfigItems());
         clasRec.setMaxEvents(nEventsToRun);
         clasRec.setDetectors(serviceList);
+        
+        /*
         clasRec.initDetectors();
         clasRec.init();
+        */
+        
         //clasRec.initPlugins();
         
         if(cmdParser.hasOption("-l")==true){

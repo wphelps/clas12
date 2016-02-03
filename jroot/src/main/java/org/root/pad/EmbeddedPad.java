@@ -37,7 +37,7 @@ import org.root.utils.DataFactory;
  */
 public class EmbeddedPad extends JPanel implements MouseMotionListener, MouseListener {
     
-    private  DataSetPad   dPad = new DataSetPad();
+    private  final DataSetPad   dPad = new DataSetPad();
     private  int dragMove_startX   = 0;
     private  int dragMove_startY   = 0;
     
@@ -49,10 +49,13 @@ public class EmbeddedPad extends JPanel implements MouseMotionListener, MouseLis
     public EmbeddedPad(int xsize, int ysize){
         super();
         this.setPreferredSize(new Dimension(xsize,ysize));
+        this.getPad().setStatBoxFontSize(12);
+        this.getPad().setAxisFontSize(12);
+        this.getPad().setTitleFontSize(12);
     }
     
     
-    public DataSetPad getPad(){ return this.dPad;}
+    public final DataSetPad getPad(){ return this.dPad;}
     
     public void drawOnCanvas(Graphics2D g2d, int xoffset, int yoffset, int w, int h){
         dPad.drawOnCanvas(g2d, xoffset, yoffset, w, h);
@@ -172,6 +175,9 @@ public class EmbeddedPad extends JPanel implements MouseMotionListener, MouseLis
         GraphErrors sinGraph = new GraphErrors();
         
         EmbeddedPad pad  = new EmbeddedPad(600,400);
+        pad.getPad().setAxisFontSize(12);
+        pad.getPad().setStatBoxFontSize(10);
+        
         h3.setLineColor(1);
         h3.setFillColor(2);
         h4.setFillColor(33);
@@ -188,7 +194,7 @@ public class EmbeddedPad extends JPanel implements MouseMotionListener, MouseLis
         //pad.add(gr);
         //pad.add(h1);
         //pad.add(h2);
-        pad.setLog("Y", true);
+        //pad.setLog("Y", true);
         LatexText tex = new LatexText("M^x(ep#rarrow e^'p #pi^+ #pi^- (#gamma) (e^#uarrow^#darrow) )",0.05,0.1);
         tex.setColor(1);
         tex.setFontSize(24);

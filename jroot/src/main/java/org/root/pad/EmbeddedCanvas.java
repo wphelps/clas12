@@ -89,6 +89,17 @@ public class EmbeddedCanvas extends JPanel {
          this.canvasPads.get(this.currentPad).setLog("Z", logFlag);
      }
      
+     public void setAxisFontSize(int size){
+         for(EmbeddedPad pad : this.canvasPads){
+             pad.getPad().setAxisFontSize(size);
+         }
+     }
+     
+     public void setStatBoxFontSize(int size){
+         for(EmbeddedPad pad : this.canvasPads){
+             pad.getPad().setStatBoxFontSize(size);
+         }
+     }
      
      public void setDivisionsX(int div){
          this.getPad().setDivisionsX(div);

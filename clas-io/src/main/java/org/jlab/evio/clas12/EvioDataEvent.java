@@ -209,12 +209,26 @@ public class EvioDataEvent implements DataEvent {
         }
     }
     
+    public String[]  getString(int tag, int num){
+        EvioNode node = this.getNodeFromTree(tag, num, DataType.CHARSTAR8);
+        if(node!=null){
+            try {
+                ByteBuffer buffer = this.eventHandler.getStructure().getData(node);
+                String[] nodedata = ByteDataTransformer.toStringArray(buffer);
+                return nodedata;
+            } catch (EvioException ex) {
+                Logger.getLogger(EvioDataEvent.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return null;
+    }
+    
     public int[] getInt(int tag, int num) {
         EvioNode node = this.getNodeFromTree(tag, num, DataType.INT32);
         if(node!=null){
             try {
                 ByteBuffer buffer = this.eventHandler.getStructure().getData(node);
-                int[] nodedata = ByteDataTransformer.toIntArray(buffer);
+                int[] nodedata = ByteDataTransformer.toIntArray(buffer);                
                 return nodedata;
             } catch (EvioException ex) {
                 Logger.getLogger(EvioDataEvent.class.getName()).log(Level.SEVERE, null, ex);
