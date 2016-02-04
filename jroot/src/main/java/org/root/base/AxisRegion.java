@@ -395,7 +395,7 @@ public class AxisRegion {
                 (int) (h - rectX.getHeight()/2 + rectX.getHeight()*0.2));
         
         
-        System.out.println("TITLE = " + this.getTitle());
+        //System.out.println("TITLE = " + this.getTitle());
     }
     
     public Font getAxisFont(){return this.axisTickFont;}

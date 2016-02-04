@@ -72,8 +72,8 @@ public class AbsDataSetDraw {
         
         
         Font  axisFont = new Font(TStyle.getStatBoxFontName(),Font.PLAIN,TStyle.getStatBoxFontSize());
-        System.out.println(" CHANGING FONT " + TStyle.getStatBoxFontName()
-        + " " + TStyle.getStatBoxFontSize());
+        //System.out.println(" CHANGING FONT " + TStyle.getStatBoxFontName()
+        //+ " " + TStyle.getStatBoxFontSize());
         FontMetrics  fm = g2d.getFontMetrics(axisFont);
         
         //text.setFont(TStyle.getStatBoxFontName(),TStyle.getStatBoxFontSize());

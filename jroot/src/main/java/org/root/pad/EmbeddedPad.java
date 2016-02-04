@@ -190,7 +190,7 @@ public class EmbeddedPad extends JPanel implements MouseMotionListener, MouseLis
         System.out.println(gr);
         pad.add(h3);
         pad.add(h4);
-        pad.add(f3);
+        //pad.add(f3);
         gr.setMarkerColor(2);
         gr.setMarkerStyle(2);
         gr.setMarkerSize(12);
@@ -198,7 +198,7 @@ public class EmbeddedPad extends JPanel implements MouseMotionListener, MouseLis
         //pad.add(h1);
         //pad.add(h2);
         //pad.setLog("Y", true);
-        LatexText tex = new LatexText("M^x(ep#rarrow e^'p #pi^+ #pi^- (#gamma) (e^#uarrow^#darrow) )",0.05,0.1);
+        LatexText tex = new LatexText("M^x(ep#rarrow e^'p #phi #eps #pi^+ #pi^- (#gamma) (e^#uarrow^#darrow) )",0.05,0.1);
         tex.setColor(1);
         tex.setFontSize(24);
         pad.addText(tex);
