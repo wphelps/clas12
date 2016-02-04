@@ -95,6 +95,12 @@ public class EmbeddedCanvas extends JPanel {
          }
      }
      
+     public void setTitleFontSize(int size){
+         for(EmbeddedPad pad : this.canvasPads){
+             pad.getPad().setTitleFontSize(size);
+         }
+     }
+     
      public void setStatBoxFontSize(int size){
          for(EmbeddedPad pad : this.canvasPads){
              pad.getPad().setStatBoxFontSize(size);
@@ -174,7 +180,8 @@ public class EmbeddedCanvas extends JPanel {
         
         EmbeddedCanvas canvas = new EmbeddedCanvas(500,500,2,3);
         frame.setSize(800, 600);
-        
+        canvas.setTitleFontSize(2);
+        canvas.setAxisFontSize(12);
         frame.add(canvas);
         frame.pack();
         frame.setVisible(true);

@@ -268,9 +268,9 @@ public class H1D implements EvioWritableTree,IDataSet {
     public String[] getStatText(){
         String[] lines = new String[4];
         lines[0] = this.histName;
-        lines[1] = String.format("%-10s %9d", "Entries",this.getEntries());
-        lines[2] = String.format("%-10s %9.2f", "Mean",this.getMean());
-        lines[3] = String.format("%-10s %9.2f", "RMS",this.getRMS());        
+        lines[1] = String.format("%-14s %9d", "Entries",this.getEntries());
+        lines[2] = String.format("%-14s %9.4f", "Mean",this.getMean());
+        lines[3] = String.format("%-14s %9.4f", "RMS",this.getRMS());        
         //lines[1] =;
         return lines;
     }

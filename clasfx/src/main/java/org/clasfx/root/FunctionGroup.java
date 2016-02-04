@@ -100,6 +100,7 @@ public class FunctionGroup extends StackPane {
     }
     
     public Spinner createSpinner(){
+        //Spinner<Double> sp = new Spinner<Double>(0.2,0.5,0.2,0.01);
         Spinner spinner = new Spinner();
         spinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(
                 -Double.MAX_VALUE,Double.MAX_VALUE));

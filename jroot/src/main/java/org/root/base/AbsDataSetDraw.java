@@ -72,6 +72,8 @@ public class AbsDataSetDraw {
         
         
         Font  axisFont = new Font(TStyle.getStatBoxFontName(),Font.PLAIN,TStyle.getStatBoxFontSize());
+        System.out.println(" CHANGING FONT " + TStyle.getStatBoxFontName()
+        + " " + TStyle.getStatBoxFontSize());
         FontMetrics  fm = g2d.getFontMetrics(axisFont);
         
         //text.setFont(TStyle.getStatBoxFontName(),TStyle.getStatBoxFontSize());
@@ -92,7 +94,7 @@ public class AbsDataSetDraw {
         */
         
         double w = bounds.getWidth()*1.2;
-        double h = bounds.getHeight()*1.0;
+        double h = bounds.getHeight()*0.9;
         double xoffset = bounds.getWidth()*0.1;
         double yoffset = bounds.getHeight()*0.1;
         
@@ -109,9 +111,11 @@ public class AbsDataSetDraw {
 
         //g2d.setFont(axisFont);
         List<LatexText> texts = text.getTexts();
-        
+        g2d.setFont(axisFont);
         int counter = 0;
         for(LatexText t : texts){
+            t.setFont(TStyle.getStatBoxFontName());
+            t.setFontSize(TStyle.getStatBoxFontSize());
             int ypos = (int) (originY + counter*TStyle.getStatBoxTextGap()*TStyle.getStatBoxFontSize());
             counter++;
             g2d.drawString(t.getText().getIterator(), (int) originX, ypos);

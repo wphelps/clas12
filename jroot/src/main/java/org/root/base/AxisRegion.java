@@ -67,8 +67,8 @@ public class AxisRegion {
     private int               minMarginY = 0;
     private int               maxMarginY = 0;
     
-    private int               minMarginX = 15;
-    private int               maxMarginX = 20;
+    private int               minMarginX = 10;
+    private int               maxMarginX = 5;
     
     private int               axisFrameFillColor      = 1;
     private int               axisFrameColor          = 0;
@@ -187,6 +187,7 @@ public class AxisRegion {
     
     public void setAxisFontSize(int size){
         this.axisTicksFontSize = size;
+        this.maxMarginX = size;
         this.axisTickFont = new Font(this.axisTicksFontName,Font.PLAIN, this.axisTicksFontSize);
     }
     
@@ -197,7 +198,7 @@ public class AxisRegion {
     
     public void setAxisTitleFont(int size){
         this.axisTitleFontSize = size;
-        this.axisTickFont = new Font(this.axisTitleFontName,Font.PLAIN,this.axisTitleFontSize);
+        this.axisTitleFont = new Font(this.axisTitleFontName,Font.PLAIN,this.axisTitleFontSize);
     }
     
     public void setTitleFont(String fontname){
@@ -385,12 +386,16 @@ public class AxisRegion {
                 this.axisFrame.width,this.axisFrame.height);
         
         this.axisTitleX.setFont("Helvetica");
-        this.axisTitleX.setFontSize(14);
+        this.axisTitleX.setFontSize(this.axisTitleFontSize);
+        
         Rectangle2D rectX = axisTitleX.getBounds(fmt, g2d);
         int th = fmt.getHeight();
         g2d.drawString(this.axisTitleX.getText().getIterator(), 
-                axisFrame.x, 
-                h - th/2);
+                (int) (axisFrame.x + axisFrame.width/2 - rectX.getWidth()/2), 
+                (int) (h - rectX.getHeight()/2 + rectX.getHeight()*0.2));
+        
+        
+        System.out.println("TITLE = " + this.getTitle());
     }
     
     public Font getAxisFont(){return this.axisTickFont;}

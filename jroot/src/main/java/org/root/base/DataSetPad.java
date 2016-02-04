@@ -48,6 +48,9 @@ public class DataSetPad {
         
         
         DataRegion  region = this.collection.getDataRegion();
+        if(this.collection.getCount()>0){
+            //this.padAxisFrame.setTitle(this.collection.getDataSet(0));
+        }
         this.padAxisFrame.setDataRegion(region);
         //System.out.println(region);
         padAxisFrame.update(g2d, w, h);
@@ -139,9 +142,9 @@ public class DataSetPad {
                 H1D h1 = (H1D) ds;
                 this.statBox.setFont(TStyle.getStatBoxFontName(), TStyle.getStatBoxFontSize());
                 this.statBox.addText( String.format("%s", h1.getName()));
-                this.statBox.addText(String.format("Entries %8d", h1.getEntries()));
-                this.statBox.addText(String.format("Mean    %8.4f", h1.getMean()));
-                this.statBox.addText(String.format("RMS     %8.4f", h1.getRMS()));
+                this.statBox.addText(String.format("%-11s %8d","Entries:", h1.getEntries()));
+                this.statBox.addText(String.format("%-11s %8.4f","Mean:", h1.getMean()));
+                this.statBox.addText(String.format("%-11s %8.4f", "RMS:",h1.getRMS()));
             }
         }
         
@@ -167,8 +170,8 @@ public class DataSetPad {
     }
     
     public void setStatBoxFontSize(int size){
-        this.statBox.setFont("Courier", size);
-        TStyle.setStatBoxFont("Courier", size);
+        this.statBox.setFont("Monospaced", size);
+        TStyle.setStatBoxFont("Monospaced", size);
     }
     
     public void setAutoScale(Boolean flag){

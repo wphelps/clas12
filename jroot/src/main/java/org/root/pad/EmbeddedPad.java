@@ -44,14 +44,17 @@ public class EmbeddedPad extends JPanel implements MouseMotionListener, MouseLis
     public EmbeddedPad(){
         super();
         this.setPreferredSize(new Dimension(500,500));
+        this.getPad().setStatBoxFontSize(12);
+        this.getPad().setAxisFontSize(14);
+        this.getPad().setTitleFontSize(14);
     }
     
     public EmbeddedPad(int xsize, int ysize){
         super();
         this.setPreferredSize(new Dimension(xsize,ysize));
         this.getPad().setStatBoxFontSize(12);
-        this.getPad().setAxisFontSize(12);
-        this.getPad().setTitleFontSize(12);
+        this.getPad().setAxisFontSize(14);
+        this.getPad().setTitleFontSize(14);
     }
     
     
@@ -175,9 +178,9 @@ public class EmbeddedPad extends JPanel implements MouseMotionListener, MouseLis
         GraphErrors sinGraph = new GraphErrors();
         
         EmbeddedPad pad  = new EmbeddedPad(600,400);
-        pad.getPad().setAxisFontSize(12);
-        pad.getPad().setStatBoxFontSize(10);
-        
+        pad.getPad().setAxisFontSize(18);
+        pad.getPad().setStatBoxFontSize(14);
+        pad.getPad().setTitleFontSize(14);
         h3.setLineColor(1);
         h3.setFillColor(2);
         h4.setFillColor(33);
