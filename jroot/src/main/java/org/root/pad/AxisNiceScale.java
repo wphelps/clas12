@@ -63,7 +63,7 @@ public class AxisNiceScale {
         int maxlog =  (int) Math.floor(Math.log10(this.maxPoint));
         
         this.tickSpacing = niceNum(range / (maxTicks - 1), true);
-        System.out.println("MINPOINT " + minPointLog + " " + maxPoint + "  spacing = " + this.tickSpacing);
+        //System.out.println("MINPOINT " + minPointLog + " " + maxPoint + "  spacing = " + this.tickSpacing);
         this.niceCoordinates.clear();
         this.niceCoordinateLabels.clear();
         this.range = maxlog;// - minlog;

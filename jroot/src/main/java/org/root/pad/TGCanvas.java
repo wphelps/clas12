@@ -79,6 +79,10 @@ public class TGCanvas extends JFrame {
         this.embCanvas.setAxisFontSize(size);
     }
     
+    public void setTitleFontSize(int size){
+        this.embCanvas.setTitleFontSize(size);
+    }
+    
     public void setStatBoxFontSize(int size){
         this.embCanvas.setStatBoxFontSize(size);
     }
