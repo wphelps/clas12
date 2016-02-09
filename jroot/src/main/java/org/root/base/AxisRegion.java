@@ -249,6 +249,11 @@ public class AxisRegion {
         }
     }
     
+    public void drawOnCanvasBackground(Graphics2D g2d, int w, int h, int xoffset, int yoffset){
+        g2d.setColor(Color.white);
+        g2d.drawRect(xoffset, yoffset, w, h);
+    }
+    
     public void drawOnCanvas(Graphics2D g2d, int w, int h, int xoffset, int yoffset){
         
         g2d.setColor(Color.BLACK);
@@ -391,10 +396,9 @@ public class AxisRegion {
         Rectangle2D rectX = axisTitleX.getBounds(fmt, g2d);
         int th = fmt.getHeight();
         g2d.drawString(this.axisTitleX.getText().getIterator(), 
-                (int) (axisFrame.x + axisFrame.width/2 - rectX.getWidth()/2), 
-                (int) (h - rectX.getHeight()/2 + rectX.getHeight()*0.2));
-        
-        
+                xoffset + (int) (axisFrame.x + axisFrame.width/2 - rectX.getWidth()/2), 
+                yoffset + (int) (h - rectX.getHeight()/2 + rectX.getHeight()*0.2));
+                
         //System.out.println("TITLE = " + this.getTitle());
     }
     

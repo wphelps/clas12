@@ -14,7 +14,9 @@ import org.jlab.clasrec.utils.DatabaseConstantProvider;
  * @author gavalian
  */
 public class FADCConfigLoader {
+    
     DetectorCollection<FADCConfig>  configStore = new DetectorCollection<FADCConfig>();
+    
     
     public FADCConfigLoader(){
         
