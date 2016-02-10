@@ -346,17 +346,19 @@ public class AbsDataSetDraw {
                 g2d.setColor(lineColor);
                 
                 if(ds.getErrorX(loop)>0){
-                    g2d.drawLine((int) (xfel), (int) yf, (int) (xfeh) , (int) yf);
+                    g2d.drawLine( startX + (int) (xfel), startY + (int) yf, 
+                            startX + (int) (xfeh) , startY + (int) yf);
                     //g2d.drawLine((int) (xf-xerLen), (int) yf, (int) (xf+xerLen) , (int) yf);
                 }
                 
                 if(ds.getErrorY(loop)>0){
                     //g2d.drawLine((int) xf, (int) (yf-yerLen), (int) xf , (int) (yf+yerLen));
                     
-                    g2d.drawLine((int) xf, (int) (yfel), (int) xf , (int) (yfeh));
+                    g2d.drawLine(startX + (int) xf, startY + (int) (yfel), 
+                            startX + (int) xf , startY + (int) (yfeh));
                 }
                 
-                mPainter.drawMarkerBasic(g2d, (int) xf, (int) yf, markerStyle,
+                mPainter.drawMarkerBasic(g2d, startX + (int) xf, startY + (int) yf, markerStyle,
                         markerSize,
                         markerLineWidth,markerColor,markerFillColor);
                 //mPainter.drawMarker(g2d, (int) xf, (int) yf, markerStyle, 
