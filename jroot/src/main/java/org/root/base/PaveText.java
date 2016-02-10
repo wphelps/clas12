@@ -63,5 +63,4 @@ public class PaveText {
         return this.latexTexts;
     }
     
-    
 }
