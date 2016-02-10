@@ -71,6 +71,9 @@ public class NewGraphicsTest extends JPanel implements MouseMotionListener {
                 RenderingHints.VALUE_ANTIALIAS_ON);
         PaveText pave = new PaveText();
         pave.addText("ep#rarrowe'pX");
+        pave.addText("ep#rarrowe'pX");
+        pave.drawOnCanvas(g2d, 200, 200);
+        /*
         LatexText text = pave.getTexts().get(0);
         text.setFont("Avenir");
         text.setFontSize(28);
@@ -79,6 +82,7 @@ public class NewGraphicsTest extends JPanel implements MouseMotionListener {
         g2d.drawRect(100 + (int) bounds.getX(), 100 + (int) bounds.getY(),
                 (int) bounds.getWidth(), (int) bounds.getHeight());
         g2d.drawString(text.getText().getIterator(), 100, 100);
+        */
     }
     
     @Override
