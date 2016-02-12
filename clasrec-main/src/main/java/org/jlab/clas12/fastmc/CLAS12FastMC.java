@@ -35,8 +35,14 @@ public class CLAS12FastMC {
     private final TreeMap<String,Detector>  detectors = new TreeMap<String,Detector>();
     private final TreeMap<String,Integer>   detectorMinHits = new TreeMap<String,Integer>();
     private final TreeMap<Integer,IParticleResolution>  pResolutions = new TreeMap<Integer,IParticleResolution>();
-            
+    
+    private double torusScale = 0.0;
+    private double solenoidScale = 0.0;
+    
     public CLAS12FastMC(double torus, double solenoid){
+        this.torusScale = torus;
+        this.solenoidScale = solenoid;
+        
         particleSwimmer = new ParticleSwimmer(torus,solenoid);
         this.initDetectors();
         this.initDetectosHits();
@@ -183,7 +189,7 @@ public class CLAS12FastMC {
         for(int p = 0; p < recEvent.count(); p++){
             int pid = recEvent.getParticle(p).pid();
             if(this.pResolutions.containsKey(pid)==true){
-                this.pResolutions.get(pid).apply(recEvent.getParticle(p));
+                this.pResolutions.get(pid).apply(recEvent.getParticle(p),this.torusScale,this.solenoidScale);
             }
         }
         return recEvent;

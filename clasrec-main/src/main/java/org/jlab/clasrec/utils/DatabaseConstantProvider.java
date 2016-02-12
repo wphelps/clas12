@@ -7,7 +7,9 @@
 package org.jlab.clasrec.utils;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 import org.jlab.ccdb.Assignment;
 import org.jlab.ccdb.CcdbPackage;
@@ -68,7 +70,16 @@ public class DatabaseConstantProvider implements ConstantProvider {
         this.variation = var;
         this.initialize(address);
     }
+    
     public void setPrintout(Boolean flag){ this.PRINTOUT_FLAG = flag;}
+    
+    public Set<String> getEntrySet(){
+        Set<String> entries = new HashSet<String>();
+        for(Map.Entry<String,String[]> entry: this.constantContainer.entrySet()){
+            entries.add(entry.getKey());
+        }
+        return entries;
+    }
     
     private String getEnvironment(){
         
@@ -248,8 +259,21 @@ public class DatabaseConstantProvider implements ConstantProvider {
         return str.toString();
     }
     
+    
+    public void clear(){
+        this.constantContainer.clear();
+    }
+    
     public int getSize(){
         return this.constantContainer.size();
+    }
+    
+    public int getSize(String name){
+        if(this.hasConstant(name)==true){
+            String[] array = this.constantContainer.get(name);
+            return array.length;
+        }
+        return 0;
     }
     
     public GraphErrors getGraph(String constant){

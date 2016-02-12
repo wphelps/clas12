@@ -94,10 +94,9 @@ public class GraphicsAxis {
     }
     
     public double getPosition( double value){
-        
-            double range = (this.axisMaximum-this.axisMinimum);
-            double pos   =  this.axisLength*(value-this.axisMinimum)/range;
-            return pos;                        
+        double range = (this.axisMaximum-this.axisMinimum);
+        double pos   =  this.axisLength*(value-this.axisMinimum)/range;
+        return pos;                        
     }
     
     public void drawOnCanvas(Graphics2D g2d, int x, int y){
