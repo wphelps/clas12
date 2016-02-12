@@ -39,13 +39,8 @@
 
   <dependency>
     <groupId>org.jlab.coda</groupId>
-    <artifactId>clara</artifactId>
-    <version>2.2</version>
-  </dependency>
-  <dependency>
-    <groupId>org.jlab.coda</groupId>
-    <artifactId>jtools</artifactId>
-    <version>2.2</version>
+    <artifactId>jclara</artifactId>
+    <version>4.3-SNAPSHOT</version>
   </dependency>
 
 <!--
@@ -70,12 +65,6 @@
     <groupId>org.jlab.plugins</groupId>
     <artifactId>jMath</artifactId>
     <version>1.0</version>
-  </dependency>
-
-  <dependency>
-    <groupId>org.jlab.coda</groupId>
-    <artifactId>cMsg</artifactId>
-    <version>3.3</version>
   </dependency>
 
   <dependency>
@@ -218,8 +207,7 @@
             <exclude>cnuphys:jogl-all</exclude>
             <exclude>cnuphys:jogl</exclude>
             <exclude>cnuphys:gluegen</exclude>
-            <exclude>org.jlab.coda:clara</exclude>
-            <exclude>org.jlab.coda:jtools</exclude>
+            <exclude>org.jlab.coda:jclara</exclude>
 
 	    <!--            <exclude>org.jlab.coda:jevio</exclude> -->
           </excludes>
@@ -237,8 +225,7 @@
 	<!--
 	    <artifactSet>
               <excludes>
-		<exclude>org.jlab.coda:clara</exclude>
-		<exclude>org.jlab.coda:jtools</exclude>
+		<exclude>org.jlab.coda:jclara</exclude>
               </excludes>
             </artifactSet>
 	    -->
