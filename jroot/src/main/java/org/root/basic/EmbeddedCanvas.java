@@ -11,10 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import org.root.base.DataSetPad;
 import org.root.base.IDataSet;
 import org.root.histogram.H1D;
-import org.root.pad.TImageCanvas;
 import org.root.utils.DataFactory;
 
 /**
@@ -32,19 +30,32 @@ public class EmbeddedCanvas extends JPanel {
      this.setPreferredSize(new Dimension(500,500));
      this.divide(1, 1);
     }
-    
+    /**
+     * Constructor with initial canvas size with one pad division
+     * @param xsize
+     * @param ysize 
+     */
     public EmbeddedCanvas(int xsize, int ysize){
         super();
         this.setPreferredSize(new Dimension(xsize,ysize));
         this.divide(1, 1);
     }
-    
+    /**
+     * Constructor with initial size and divisions
+     * @param xsize
+     * @param ysize
+     * @param rows
+     * @param cols 
+     */
     public EmbeddedCanvas(int xsize, int ysize, int rows, int cols){
         super();
         this.setPreferredSize(new Dimension(xsize,ysize));
         this.divide(rows,cols);
     }
-     
+    /**
+     * Change active pad on the canvas
+     * @param pad 
+     */
     public void cd(int pad){
         if(pad<0){
              this.currentPad = 0;
@@ -56,37 +67,73 @@ public class EmbeddedCanvas extends JPanel {
          }
          this.currentPad = pad;
     }
-    
+    /**
+     * Draw data set on current canvas
+     * @param ds 
+     */
     public void draw(IDataSet ds){
         this.canvasPads.get(this.currentPad).draw(ds);
     }
-    
+    /**
+     * Draw data set on current canvas with a options
+     * @param ds
+     * @param options 
+     */
     public void draw(IDataSet ds, String options){
         this.canvasPads.get(this.currentPad).draw(ds,options);
     }
-    
+    /**
+     * Draw Data set on given pad
+     * @param pad
+     * @param ds
+     * @param options 
+     */
+    public void draw(int pad, IDataSet ds, String options){
+        if(pad>=0&&pad<this.canvasPads.size()){
+            this.canvasPads.get(pad).draw(ds,options);
+        }
+    }
+    /**
+     * Change Axis font size for all pads
+     * @param size 
+     */
     public void setAxisFontSize(int size){
         for(EmbeddedPad pad : this.canvasPads){
             pad.setAxisSize(size);
         }
     }
-    
+    /**
+     * Change axis title string font size
+     * @param size 
+     */
     public void setAxisTitleFontSize(int size){
         for(EmbeddedPad pad : this.canvasPads){
             pad.setAxisTitleSize(size);
         }
     }
-    
+    /**
+     * Change pad title font size
+     * @param size 
+     */
     public void setTitleFontSize(int size){
         for(EmbeddedPad pad : this.canvasPads){
             pad.setTitleSize(size);
         }
     }
+    /**
+     * Change font size for start box fonts
+     * @param size 
+     */
     public void setStatBoxFontSize(int size){
          for(EmbeddedPad pad : this.canvasPads){
              //pad.getPad().setStatBoxFontSize(size);
          }
      }
+    /**
+     * Divide canvas into given number of column and rows
+     * @param rows
+     * @param cols 
+     */
     public final void divide(int rows, int cols){
         this.canvasPads.clear();
         this.removeAll();
@@ -106,6 +153,42 @@ public class EmbeddedCanvas extends JPanel {
         this.repaint();
     }
     
+    public void setDivisionsX(int div){
+        //this.getPad().setDivisionsX(div);
+     }
+     
+    public void setDivisionsY(int div){
+        //this.getPad().setDivisionsY(div);
+    }
+    
+    public void setAxisRange(double xmin, double xmax, double ymin, double ymax){
+        
+    }
+    
+    public int getCurrentPad(){
+        return this.currentPad;
+    }
+    
+    public void setLogZ(){
+        this.setLogZ(true);
+    }
+    
+    
+    public void setLogX(boolean logFlag){
+        this.canvasPads.get(this.currentPad).dataSetFrame.getAxisFrame().getAxisX().setLog(logFlag);
+    }
+    
+    public void setLogY(boolean logFlag){
+        this.canvasPads.get(this.currentPad).dataSetFrame.getAxisFrame().getAxisX().setLog(logFlag);
+    }
+    
+    public void setLogZ(boolean logFlag){
+        this.canvasPads.get(this.currentPad).dataSetFrame.getAxisFrame().getAxisX().setLog(logFlag);
+    }
+    
+    public void update(){
+        this.repaint();
+    }
     
     public void save(String filename){
         int w = this.getSize().width;
