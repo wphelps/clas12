@@ -22,9 +22,10 @@ public class GraphicsAxisFrame {
     
     private GraphicsAxis  axisX = new GraphicsAxisNumber(0.0,5.0);
     private GraphicsAxis  axisY = new GraphicsAxisNumber(450.0,500.0);
+    private GraphicsAxis  axisZ = new GraphicsAxisNumber(0.0,1.0);
     
     private Rectangle     frameMargins = new Rectangle();
-    private LatexText     frameTitle   = new LatexText("Demo Frame Title");
+    private LatexText     frameTitle   = new LatexText("");
     private Boolean       axisGridX    = true;
     private Boolean       axisGridY    = true;
     
@@ -34,12 +35,12 @@ public class GraphicsAxisFrame {
     
     public GraphicsAxisFrame(){
         this.axisY.setVertical(true);
-        this.axisX.setTitleSize(14);        
+        this.axisX.setTitleSize(12);        
         this.axisX.setAxisFontSize(12);
         this.axisY.setAxisFontSize(12);
-        this.axisY.setTitleSize(14);
+        //this.axisY.setTitleSize(14);
         //this.frameTitle.setFont("Avenir");
-        this.frameTitle.setFontSize(18);
+        //this.frameTitle.setFontSize(18);
     }
     
     public GraphicsAxis  getAxisX(){
@@ -50,6 +51,9 @@ public class GraphicsAxisFrame {
         return this.axisY;
     }
     
+    public GraphicsAxis getAxisZ(){
+        return this.axisZ;
+    }
     
     public Rectangle  getMargins(){
         return this.frameMargins;
@@ -92,6 +96,8 @@ public class GraphicsAxisFrame {
         g2d.fillRect(startX, startY, width, height);
         
         this.updateFrameMargins(g2d, width, height);
+        this.axisX.setLength(this.frameMargins.width);
+        this.axisY.setLength(this.frameMargins.height);
         
         this.axisX.update(g2d, width, height);
         this.axisY.update(g2d, width, height);
@@ -122,7 +128,7 @@ public class GraphicsAxisFrame {
         BasicStroke   gridStroke = new BasicStroke(1, BasicStroke.CAP_BUTT,
                 BasicStroke.JOIN_MITER, 20.0f, dashPattern1, 0.0f);
         g2d.setStroke(gridStroke);
-        g2d.setColor(new Color(220,220,220));
+        g2d.setColor(new Color(180,180,180));
         for(Double xl : this.axisX.getAxisMarks()){
             double xp = this.getFrameX(xl);
             g2d.drawLine(startX + (int) xp, startY + frameMargins.y,
@@ -136,7 +142,7 @@ public class GraphicsAxisFrame {
         BasicStroke   gridStroke = new BasicStroke(1, BasicStroke.CAP_BUTT,
                 BasicStroke.JOIN_MITER, 20.0f, dashPattern1, 0.0f);
         g2d.setStroke(gridStroke);
-        g2d.setColor(new Color(220,220,220));
+        g2d.setColor(new Color(180,180,180));
         for(Double yl : this.axisY.getAxisMarks()){
             double yp = this.getFrameY(yl);
             g2d.drawLine(startX + frameMargins.x,
@@ -149,5 +155,13 @@ public class GraphicsAxisFrame {
     
     public void setTitle(String title){
         this.frameTitle.setText(title);
+    }
+    
+    public void setTitleFont(String font){
+        this.frameTitle.setFont(font);
+    }
+    
+    public void setTitleSize(int size){
+        this.frameTitle.setFontSize(size);
     }
 }

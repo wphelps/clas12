@@ -28,7 +28,7 @@ public class GraphicsAxis {
     private List<String>  axisMarksString = new ArrayList<String>();
     private int           axisLength      = 100;
     private LatexText     axisTitle       = new LatexText("",0.5,0.0);
-    private Font          axisFont        = new Font("Avenir",Font.PLAIN,14);
+    private Font          axisFont        = new Font("Avenir",Font.PLAIN,10);
     private double        axisMinimum     = 0.0;
     private double        axisMaximum     = 1.0;
     private boolean       isAxisVertical  = false;
@@ -42,6 +42,9 @@ public class GraphicsAxis {
         
     }
     
+    public void setLog(boolean flag){
+        this.isLogarithmic = flag;
+    }
     public void setVertical(boolean flag){
         this.isAxisVertical = flag;
     }
@@ -90,6 +93,7 @@ public class GraphicsAxis {
     public void setTitleSize(int size){
         this.axisTitle.setFontSize(size);
     }
+    
     public void setTitle(String title){
         this.axisTitle.setText(title);
     }
@@ -126,7 +130,8 @@ public class GraphicsAxis {
                 //System.out.println("drawing tick mark on " + (int) pos);
             }
             int titleOffset = fm.getHeight();
-            Rectangle2D  rect = this.axisTitle.getBounds(fm, g2d);
+            Rectangle2D  rect = this.axisTitle.getBounds(g2d);
+            //this.axisTitle.setFontSize(24);
             g2d.drawString(this.axisTitle.getText().getIterator(), 
                     (int) (x + this.axisLength*0.5 - rect.getWidth()*0.5),
                     y + titleOffset + fm.getHeight());
@@ -149,7 +154,7 @@ public class GraphicsAxis {
 //            g2d.rotate(-Math.PI/2);
             g2d.rotate(-Math.PI/2);
             //int  yoffset = 
-            Rectangle2D  rect = this.axisTitle.getBounds(fm, g2d);
+            Rectangle2D  rect = this.axisTitle.getBounds( g2d);
             int xt = (int) -(y-this.axisLength*0.5+rect.getWidth()*0.5);
             
             //System.out.println("Drawing Y - title ");            
@@ -164,6 +169,10 @@ public class GraphicsAxis {
     
     public boolean isVertical(){
         return this.isAxisVertical;
+    }
+    
+    public boolean isLog(){
+        return this.isLogarithmic;
     }
     
     public int  getLength(){

@@ -43,6 +43,8 @@ public class LatexText {
     public final void setText(String text){
         String ltx  = LatexTextTools.convertUnicode(text);
         latexString = LatexTextTools.converSuperScript(ltx);
+        this.setFont(this.textFamily);
+        this.setFontSize(this.textFontSize);
     }
     
     public final void setLocation(double xr, double yr){
@@ -66,8 +68,8 @@ public class LatexText {
     }
     
     public void setFontSize(int size){
+        this.textFontSize = size;
         if(this.latexString.getIterator().getEndIndex()>0){
-            this.textFontSize = size;
             latexString.addAttribute(TextAttribute.SIZE, (float) size);
         }
     }

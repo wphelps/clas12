@@ -16,22 +16,38 @@ import org.root.base.IDataSet;
 import org.root.func.F1D;
 import org.root.histogram.GraphErrors;
 import org.root.histogram.H1D;
+import org.root.histogram.H2D;
 import org.root.utils.DataFactory;
 
 /**
  *
  * @author gavalian
  */
-public class GraphicsPad extends JPanel {
+public class EmbeddedPad extends JPanel {
     
     DataSetFrame  dataSetFrame = new DataSetFrame();
     
-    public GraphicsPad(){
+    public EmbeddedPad(){
         super();
         this.setPreferredSize(new Dimension(500,500));
+        this.dataSetFrame.getAxisFrame().setTitleSize(12);
+        this.dataSetFrame.getAxisFrame().getAxisX().setTitleSize(12);
+        this.dataSetFrame.getAxisFrame().getAxisX().setAxisFontSize(12);
+        this.dataSetFrame.getAxisFrame().getAxisY().setTitleSize(12);
+        this.dataSetFrame.getAxisFrame().getAxisY().setAxisFontSize(12);
         //this.setSize(500, 500);
     }
     
+    public EmbeddedPad(int xsize, int ysize){
+        super();
+        this.setPreferredSize(new Dimension(xsize,ysize));
+        //this.setSize(500, 500);
+        this.dataSetFrame.getAxisFrame().setTitleSize(12);
+        this.dataSetFrame.getAxisFrame().getAxisX().setTitleSize(10);
+        this.dataSetFrame.getAxisFrame().getAxisX().setAxisFontSize(10);
+        this.dataSetFrame.getAxisFrame().getAxisY().setTitleSize(10);
+        this.dataSetFrame.getAxisFrame().getAxisY().setAxisFontSize(10);
+    }
     @Override
     public void paint(Graphics g){        
         Graphics2D g2d = (Graphics2D) g;
@@ -40,6 +56,14 @@ public class GraphicsPad extends JPanel {
         int w = this.getSize().width;
         int h = this.getSize().height;
         this.dataSetFrame.drawOnCanvas(g2d, 0,0, w, h);
+    }
+    
+    public void draw(IDataSet ds){
+        this.dataSetFrame.add(ds);
+    }
+    
+    public DataSetFrame  getPad(){
+        return this.dataSetFrame;
     }
     
     public void draw(IDataSet ds, String options){
@@ -56,24 +80,30 @@ public class GraphicsPad extends JPanel {
         this.dataSetFrame.getAxisFrame().getAxisY().setTitleSize(size);
     }
     
+    public void setLogZ(boolean flag){
+        this.dataSetFrame.getAxisFrame().getAxisZ().setLog(flag);
+    }
+    
+    public void setTitleSize(int size){
+        this.dataSetFrame.getAxisFrame().setTitleSize(size);
+    }
+    
     public static void main(String[] args){
         JFrame frame = new JFrame();
         frame.setSize(600,600);
-        GraphicsPad pad = new GraphicsPad();
+        EmbeddedPad pad = new EmbeddedPad();
         
-        pad.setAxisSize(18);
-        pad.setAxisTitleSize(18);
-        
-        
-        
+        pad.setAxisSize(12);
+        pad.setAxisTitleSize(12);
+        pad.setTitleSize(12);
+                        
         H1D  h1 = new H1D("h1",100,0.0,2.5);
         h1.setTitle("Sample Histogram");
         h1.setXTitle("M^2 (#phi)");
         h1.setYTitle("counts");
         h1.setFillColor(22);
         F1D f1 = new F1D("gaus",0.0,2.5);
-        
-        
+                
         f1.setParameter(0, 150);
         f1.setParameter(1, 1.5);
         f1.setParameter(2, 0.5);
@@ -87,7 +117,15 @@ public class GraphicsPad extends JPanel {
         f1.setLineWidth(4);
         f1.setLineStyle(2);
         pad.draw(h1,"EP");
-        pad.draw(f1, "same");
+        //pad.draw(f1, "same");
+        
+        H2D  h2 = new H2D("h2",60,0.0,12.0,60,0.0,12.0);
+        h2.setTitle("H2D RANDOM GAUSSIAN");
+        h2.setXTitle("Random");
+        h2.setYTitle("Random");
+        DataFactory.createSampleH2D(h2, 864000);
+        //pad.setLogZ(true);
+        //pad.draw(h2, "");
         
         frame.add(pad,BorderLayout.CENTER);
         frame.pack();

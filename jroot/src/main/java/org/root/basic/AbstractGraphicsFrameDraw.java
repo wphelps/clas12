@@ -11,12 +11,14 @@ import java.awt.Graphics2D;
 import java.awt.geom.GeneralPath;
 import org.root.attr.ColorPalette;
 import org.root.attr.MarkerPainter;
+import org.root.base.DataRegion;
 
 import org.root.base.IDataSet;
 import org.root.basic.GraphicsAxisFrame;
 import org.root.func.F1D;
 import org.root.histogram.GraphErrors;
 import org.root.histogram.H1D;
+import org.root.histogram.H2D;
 
 /**
  *
@@ -86,7 +88,39 @@ public class AbstractGraphicsFrameDraw {
         GraphErrors graph = h1.getGraph();
         AbstractGraphicsFrameDraw.drawOnCanvasGraph(g2d, frame, graph, startX, startY, width, height);
     }
-    
+    public static void drawOnCanvasHistogram2D(Graphics2D g2d, GraphicsAxisFrame frame,
+            IDataSet ds,
+            int startX, int startY, int width, int height){
+        int dataSizeX = ds.getDataSize(0);
+        int dataSizeY = ds.getDataSize(1);
+        DataRegion  region = ds.getDataRegion();
+        double maxValue = region.MAXIMUM_Z - region.MINIMUM_Z;
+        boolean isLog = frame.getAxisZ().isLog();
+        H2D  h2d = (H2D) ds;
+         //System.out.println("HISTOGRAM MAXIMUM = " + h2d.getMaximum()
+         //+ " FRACTION X = " + fractionX + "  Y = " + fractionY);
+         ColorPalette map = new ColorPalette();
+         double fractionX   = ( (double) frame.getMargins().width)/dataSizeX;;
+         double fractionY   = ((double) frame.getMargins().height)/( (double) dataSizeY);
+         double xr = 0.0;
+         double yr = 0.0;
+         double wr = fractionX;         
+         double hr = fractionY;
+         for(int Lx = 0; Lx < dataSizeX; Lx++){
+             for(int Ly = 0; Ly < dataSizeY; Ly++){
+                 double xc = startX + frame.getMargins().x + xr;
+                 //double yc = startY + axis.getFrame().y + yr;
+                 double yc = startY + (frame.getMargins().y + frame.getMargins().height - yr - hr);                 
+                 double value = ds.getData(Lx, Ly) - region.MINIMUM_Z;
+                 Color  color = map.getColor3D(value, maxValue, isLog);                 
+                 g2d.setColor(color);
+                 g2d.fillRect( (int) xc, (int) yc, (int) wr+1, (int) hr+1);                
+                 yr = yr + hr;
+             }
+             yr = 0.0;
+             xr = xr + wr;
+         }
+    }
     public static void drawOnCanvasHistogram1D(Graphics2D g2d, GraphicsAxisFrame frame,
             IDataSet ds,
             int startX, int startY, int width, int height){

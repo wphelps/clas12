@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import org.root.base.DataSetPad;
 import org.root.base.IDataSet;
+import org.root.basic.DataSetFrame;
 
 /**
  *
@@ -158,7 +159,7 @@ public class TImageCanvas {
             Logger.getLogger(TImageCanvas.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+   
     public static byte[]  getCanvasImage(int xsize, int ysize, int columns, int rows, List<DataSetPad>  pads) throws IOException{
         BufferedImage bi = new BufferedImage(xsize, ysize, BufferedImage.TYPE_INT_ARGB);
         Graphics2D ig2 = bi.createGraphics();

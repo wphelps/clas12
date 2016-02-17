@@ -25,7 +25,8 @@ import org.root.base.PaveText;
  * @author gavalian
  */
 public class NewGraphicsTest extends JPanel implements MouseMotionListener {
-    GraphicsAxis axisX = new GraphicsAxisNumber(0.0,5.0);
+//    GraphicsAxis axisX = new GraphicsAxisNumber(0.0,5.0);
+    GraphicsAxis axisX = new GraphicsAxis();
     GraphicsAxis axisY = new GraphicsAxisNumber(0.0,5.0);
     GraphicsAxisFrame  frame = new GraphicsAxisFrame();
     
@@ -49,19 +50,23 @@ public class NewGraphicsTest extends JPanel implements MouseMotionListener {
         int h = this.getSize().height;
         //System.err.println("PAINTING");
         axisX.setLength(w-100);
+
         axisX.setTitleFont("Avenir");
-        axisX.setTitleSize(12);
-        //axisX.setAxis(new double[]{0.0,0.1,0.3,0.5,0.7,0.9,1.0}, 
-        //        new String[]{"0.0","0.1","0.3","0.5","0.7","0.9","1.0"});
+        axisX.setTitleSize(14);
+        axisX.setAxisFontSize(14);
+        axisX.setTitle("X-Title");
+        axisX.setAxis(new double[]{0.0,0.1,0.3,0.5,0.7,0.9,1.0}, 
+                new String[]{"0.0","0.1","0.3","0.5","0.7","0.9","1.0"});
 
         axisY.setVertical(true);
         axisY.setLength(h-100);
         axisY.setTitleFont("Avenir");
-        axisY.setTitleSize(12);
+        axisY.setTitle("Y-Title");
+        axisY.setTitleSize(32);
         //axisY.setAxis(new double[]{0.0,0.1,0.3,0.5,0.7,0.9,1.0}, 
         //        new String[]{"0.0","0.1","0.3","0.5","0.7","0.9","1.0"});
         
-        int y = h - 50;
+        int y = h - 100;
         axisX.update(g2d, 100,100);
         axisY.update(g2d, 100,100);
         axisX.drawOnCanvas(g2d, 50, y);
@@ -98,11 +103,18 @@ public class NewGraphicsTest extends JPanel implements MouseMotionListener {
         (( GraphicsAxisNumber) this.frame.getAxisX()).setRange(3.0, 10.0);
         (( GraphicsAxisNumber) this.frame.getAxisY()).setRange(3.0, 10.0);
         
-        this.frame.getAxisX().setAxisFontSize(18);
-        this.frame.getAxisX().setTitleSize(18);
-        this.frame.getAxisY().setTitleSize(18);
+        this.frame.getAxisX().setAxisFontSize(12);
+        this.frame.getAxisY().setAxisFontSize(12);
+        this.frame.getAxisX().setTitleSize(12);
+        this.frame.getAxisY().setTitleSize(12);
+        this.frame.getAxisX().setTitle("X-Title Normalized");
+        this.frame.getAxisY().setTitle("Y-Title");
+        this.frame.setTitleSize(12);
+        this.frame.setTitleFont("Avenir");
+        this.frame.setTitleSize(12);
+        this.frame.setTitle("Axis Test Program");
         this.frame.drawOnCanvas(g2d,0,0, w, h);
-        int x = this.frame.getFrameX(2.0);
+        int x = this.frame.getFrameX(6.0);
         int y = this.frame.getFrameY(4.0);
         g2d.drawOval(x-5, y-5, 10, 10);
     }

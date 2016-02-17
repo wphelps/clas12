@@ -47,8 +47,12 @@ public class GraphicsAxisNumber extends GraphicsAxis {
         this.axisMaxTicks = 10;
         this.updateTicks();
         double fraction = this.axisLabelFraction(fm);
-        //System.out.println(" FRACTION = " + fraction);
-        while(fraction>0.7&&this.axisMaxTicks>2){
+        double fractionLimit = 0.7;
+        if(this.isVertical()==true){
+            fractionLimit = 0.95;
+        }
+        //System.out.println(" FRACTION =  " + this.isVertical() + "  " + fraction);
+        while(fraction>fractionLimit&&this.axisMaxTicks>2){
             this.axisMaxTicks--;
             fraction = this.axisLabelFraction(fm);
             //System.out.println(" FRACTION INSIDE = " + fraction + "  MAX TICKS = " + this.axisMaxTicks);
