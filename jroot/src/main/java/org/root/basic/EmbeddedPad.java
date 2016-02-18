@@ -60,6 +60,7 @@ public class EmbeddedPad extends JPanel {
     
     public void draw(IDataSet ds){
         this.dataSetFrame.add(ds);
+        this.repaint();
     }
     
     public DataSetFrame  getPad(){
@@ -68,6 +69,7 @@ public class EmbeddedPad extends JPanel {
     
     public void draw(IDataSet ds, String options){
         this.dataSetFrame.add(ds, options);
+        this.repaint();
     }
     
     public void setAxisSize(int size){
