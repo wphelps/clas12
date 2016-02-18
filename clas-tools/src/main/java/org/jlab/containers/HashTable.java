@@ -5,10 +5,21 @@
  */
 package org.jlab.containers;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -19,6 +30,10 @@ public class HashTable extends DefaultTableModel {
     
     private HashCollection<TableRow>  hashCollection = null;
     private List<String>              columns        = new ArrayList<String>();
+    private List<String>              types          = new ArrayList<String>();
+    private Map<Integer,HashTableRowConstrain>  constrains = new TreeMap<Integer,HashTableRowConstrain>();              
+    private String                              htName     = "HashTable";
+     
     
     public HashTable(){
         this.hashCollection = new HashCollection(3);
@@ -28,11 +43,59 @@ public class HashTable extends DefaultTableModel {
         this.hashCollection = new HashCollection(nindex);
     }
     
+    public HashTable(String name, int index){
+        
+    }
+    
+    public void setName(String name){
+        this.htName = name;        
+    }
+    
+    public String getName(){return this.htName;}
+    
     public HashTable(int nindex, String... list){
         this.hashCollection = new HashCollection(nindex);
+        this.initDataFormat(list);
+    }
+    
+    private void initDataFormat(String... list){
         for(String item : list){
-            columns.add(item);
+            if(item.contains(":")==true){
+                String[] tokens = item.trim().split(":");
+                this.columns.add(tokens[0]);
+                this.types.add(tokens[1]);
+            } else {
+                this.columns.add(item);
+                this.types.add("i");
+            }
         }
+        for(int loop = 0; loop < this.columns.size(); loop++){
+            System.out.println(loop + " " + this.columns.get(loop) + "  " + this.types.get(loop));
+        }
+    }
+    
+    public void addConstrain(int column, double min, double max){
+        this.constrains.put(column, new HashTableRowConstrain(column,min,max));
+    }
+    
+    public void addRow(String[] values){
+        int ic = this.hashCollection.getIndexCount();
+        int[]    index = new int[ic];
+        for(int i = 0 ; i < ic; i++) index[i] = Integer.parseInt(values[i]);
+        Long hashCode = HashGenerator.hashCode(index);
+        TableRow  row = new TableRow();
+        
+        for(int i = ic ; i < values.length; i++){
+            //for(int i = ic; i < values.length; i++) array[i-ic] = Integer.parseInt(values[i]);
+            //System.out.println("parsing " + values[i] + "  for " + this.columns.get(i-ic) + "  type = " + this.types.get(i-ic));
+            if(this.types.get(i-ic).compareTo("d")==0){
+                row.add(Double.parseDouble(values[i]));
+            } else {
+                row.add(Integer.parseInt(values[i]));
+            }
+        }
+        this.hashCollection.add(row, index);
+        //this.addRow(array, index);
     }
     
     public void addRowAsInt(String[] values){
@@ -42,6 +105,20 @@ public class HashTable extends DefaultTableModel {
         for(int i = 0 ; i < ic; i++) index[i] = Integer.parseInt(values[i]);
         for(int i = ic; i < values.length; i++) array[i-ic] = Integer.parseInt(values[i]);
         this.addRow(array, index);
+    }
+    
+    public void setValueAtAsDouble(int column, double value, int... index){        
+        if(this.hashCollection.hasItem(index)==true){
+            TableRow  row = this.getRow(index);
+            row.setAt(column, value);
+        }
+    }
+    
+    public void setValueAtAsInt(int column, int value, int... index){        
+        if(this.hashCollection.hasItem(index)==true){
+            TableRow  row = this.getRow(index);
+            row.setAt(column, value);
+        }
     }
     
     public void addRowAsDouble(String[] values){
@@ -132,6 +209,30 @@ public class HashTable extends DefaultTableModel {
         return nrows;
     }
     
+    public void readFile(String filename){
+        BufferedReader in = null;        
+        try {
+            in = new BufferedReader(new FileReader(filename));
+            while (in.ready()) {
+                String s = in.readLine();
+                if(s.startsWith("#")==false){
+                    String[] tokens = s.trim().split("\\s+");
+                    this.addRowAsInt(tokens);                    
+                }
+            } 
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(HashTable.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(HashTable.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                in.close();
+            } catch (IOException ex) {
+                Logger.getLogger(HashTable.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
     @Override
     public Object getValueAt(int row, int column) { 
         Set<Long>  keys = this.hashCollection.getMap().keySet();
@@ -150,12 +251,37 @@ public class HashTable extends DefaultTableModel {
         return trow.get(column-ic).toString();
     }
     
+    public boolean isValid(int row, int column){
+        if(this.constrains.containsKey(column)==false) return true;
+        String value = (String) this.getValueAt(row, column);
+        return this.constrains.get(column).isValid(Double.parseDouble(value)) != false;            
+    }
+    
+    public class HashTableRowConstrain{
+        
+        public int COLUMN = 0;
+        public double MIN = 0.0;
+        public double MAX;
+        
+        public HashTableRowConstrain( int column, double min, double max){
+            this.COLUMN = column;
+            this.MIN    = min;
+            this.MAX    = max;
+        }
+        
+        public boolean isValid(double value){ return (value>=this.MIN&&value<=this.MAX);}
+    }
+    
     public static void main(String[] args){
-        HashTable  table = new HashTable(3,"a","b","c");
+        HashTable  table = new HashTable(3,"a","b","c","d");
+        table.readFile("/Users/gavalian/Work/Software/Release-8.0/COATJAVA/coatjava/EC.table");
+        /*
         table.addRowAsDouble(new String[]{"21","7","1","0.5","0.1","0.6"});
         table.addRowAsDouble(new String[]{"22","8","2","0.6","0.2","0.7"});
         table.addRowAsDouble(new String[]{"23","9","3","0.7","0.3","0.8"});
         table.addRowAsDouble(new String[]{"24","10","4","0.8","0.4","0.9"});
+        */
+        
         table.show();
     }
 }

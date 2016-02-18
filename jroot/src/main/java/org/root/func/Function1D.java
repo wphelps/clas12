@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import org.root.attr.Attributes;
 import org.root.base.IDataSet;
 import org.root.data.DataSetXY;
+import org.root.histogram.H1D;
 
 
 /**
@@ -144,7 +145,58 @@ public class Function1D  {
         return this.getChiSquare(ds,"*");
     }
     
+    private double getChiSquareH1D(IDataSet ds, String options){
+        double   errorSumm = 0.0;
+        double   chiSquare = 0.0;
+        int      ndfPoints = 0;
+        
+        boolean  funcRangeCheck   = false;
+        int      mode             = 4; // mode 1 is Neyman, 2 - Pearson, 3 - include Error
+        // 4 - all bins equal
+        
+        if(options.contains("E")==true) mode = 3;
+        if(options.contains("N")==true) mode = 1;
+        if(options.contains("P")==true) mode = 2;
+            
+        if(options.contains("R")==true) funcRangeCheck = true;
+        System.out.println(" FITTING MODE = " + mode);
+        for(int b = 0; b < ds.getDataSize();b++){
+            
+            double xv = ds.getDataX(b);
+            double yv = ds.getDataY(b);
+            double ye = ds.getErrorY(b);
+            double fv = this.eval(xv);
+            double denom = 1.0;
+            
+            switch(mode){
+                case 1:  denom = yv; break;
+                case 2:  denom = fv; break;
+                case 3:  denom = ye*ye; break;
+                default: denom = 1.0; break;                    
+            }
+            if(yv!=0.0&&denom!=0.0){
+                if(funcRangeCheck==true){
+                    if(xv>=this.getMin()&&xv<this.getMax()){
+                        chiSquare += (yv-fv)*(yv-fv)/denom;                        
+                        ndfPoints++;
+                    }
+                } else {
+                    chiSquare += (yv-fv)*(yv-fv)/denom;
+                    ndfPoints++;
+                }
+            }
+        } 
+        System.out.println("CHI2/ NDF = " +  chiSquare +" / " +ndfPoints);
+        return chiSquare;        
+    }
+    
     public double getChiSquare(IDataSet ds, String options){
+        
+        
+        if(ds instanceof H1D){
+            return this.getChiSquareH1D(ds, options);
+        }
+        
         double   errorSumm = 0.0;
         boolean  funcRangeCheck   = false;
         boolean  useDatasetErrors = false;

@@ -40,6 +40,14 @@ public class TableRow {
         }
     }
     
+    public void setAt(int index, Number value){
+        this.entries.set(index, value);
+    }
+    
+    public void add(Number num){
+        this.entries.add(num);
+    }
+    
     public void show(){
         for(Number num : this.entries){
             System.out.println(num + "  " + num.getClass().getName());

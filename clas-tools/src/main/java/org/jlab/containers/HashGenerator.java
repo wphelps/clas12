@@ -14,7 +14,7 @@ public class HashGenerator {
     
     static int[] byteShits = new int[]{48,32,16,0};
     
-    public static long hasCode(int... indecies){
+    public static long hashCode(int... indecies){
         long result = (long) 0;
         
         for(int loop = 0; loop < indecies.length; loop++){
@@ -39,7 +39,7 @@ public class HashGenerator {
     
     public static void main(String[] args){
         
-        long code = HashGenerator.hasCode(1,1,1,10);
+        long code = HashGenerator.hashCode(1,1,1,10);
         
         System.out.println(code);
         System.out.println(HashGenerator.getString(code));

@@ -33,7 +33,7 @@ public class HashCollection<T> {
             System.out.println("HashCollection:: error can not add item, inconsistency of index count.");
             return;
         }
-        long code = HashGenerator.hasCode(index);
+        long code = HashGenerator.hashCode(index);
         this.collection.put(code, item);
     }
     
@@ -41,13 +41,13 @@ public class HashCollection<T> {
     
     public boolean hasItem(int... index){
         if(index.length!=this.indexCount) return false;
-        long code = HashGenerator.hasCode(index);
+        long code = HashGenerator.hashCode(index);
         return this.collection.containsKey(code);
     }
     
     public T getItem(int... index){
         if(index.length!=this.indexCount) return null;
-        long code = HashGenerator.hasCode(index);
+        long code = HashGenerator.hashCode(index);
         return this.collection.get(code);
     }
     
