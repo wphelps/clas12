@@ -88,11 +88,29 @@ public class EmbeddedPad extends JPanel {
         this.dataSetFrame.getAxisFrame().setTitleSize(size);
     }
     
+    public void setAxisRange(double xmin, double xmax, double ymin, double ymax){
+        this.setAxisRange("X", xmin, xmax);
+        this.setAxisRange("Y", ymin, ymax);
+    }
+    
+    public void setAxisRange(String axis, double min, double max){
+        if(axis.compareTo("X")==0){
+            ((GraphicsAxisNumber) this.dataSetFrame.getAxisFrame().getAxisX()).setRange(min, max);
+            this.dataSetFrame.getAxisFrame().getAxisX().rangeFixed(true);
+        }
+        if(axis.compareTo("Y")==0){
+            ((GraphicsAxisNumber) this.dataSetFrame.getAxisFrame().getAxisY()).setRange(min, max);
+            this.dataSetFrame.getAxisFrame().getAxisY().rangeFixed(true);
+        }
+    }
+    
+    
     public static void main(String[] args){
         JFrame frame = new JFrame();
         frame.setSize(600,600);
         EmbeddedPad pad = new EmbeddedPad();
-        
+        //pad.setAxisRange("Y", 0.0, 600.0);
+        pad.setAxisRange(0.5,2.0, 0.0, 600.0);
         pad.setAxisSize(12);
         pad.setAxisTitleSize(12);
         pad.setTitleSize(12);

@@ -39,14 +39,17 @@ public class DataSetFrame {
             g2d.fillRect(xoffset, yoffset, w, h);
             return;
         }
-        
         DataRegion  region = this.collection.getDataRegion();
-        ( (GraphicsAxisNumber) this.axisFrame.getAxisX()).setRange(
-                region.MINIMUM_X,region.MAXIMUM_X);
         
-        ( (GraphicsAxisNumber) this.axisFrame.getAxisY()).setRange(
-                region.MINIMUM_Y,this.collection.getDataRegion().MAXIMUM_Y);
-        
+        if(this.axisFrame.getAxisX().rangeFixed()==false){
+
+            ( (GraphicsAxisNumber) this.axisFrame.getAxisX()).setRange(
+                    region.MINIMUM_X,region.MAXIMUM_X);
+        }
+        if(this.axisFrame.getAxisY().rangeFixed()==false){
+            ( (GraphicsAxisNumber) this.axisFrame.getAxisY()).setRange(
+                    region.MINIMUM_Y,this.collection.getDataRegion().MAXIMUM_Y);
+        }
         //System.out.println(region);
         
         this.axisFrame.drawOnCanvas(g2d, xoffset, yoffset, w, h);

@@ -37,6 +37,7 @@ public class GraphicsAxis {
     private double        axisZoomedMax      = 1.0;
     private boolean       colorBand          = true;
     private boolean       isLogarithmic      = true;
+    private boolean       isRangeFixed       = false;
     
     public GraphicsAxis(){
         
@@ -53,6 +54,13 @@ public class GraphicsAxis {
         this.axisLength = len;
     }
     
+    public boolean rangeFixed(){
+        return this.isRangeFixed;
+    }
+    
+    public void rangeFixed(boolean flag){
+        this.isRangeFixed = flag;
+    }
     public void setMinMax(double min, double max){
         this.axisMinimum = min;
         this.axisMaximum = max;

@@ -153,6 +153,10 @@ public class EmbeddedCanvas extends JPanel {
         this.repaint();
     }
     
+    public EmbeddedPad  getPad(){
+        return this.canvasPads.get(this.currentPad);
+    }
+    
     public void setDivisionsX(int div){
         //this.getPad().setDivisionsX(div);
      }
@@ -179,11 +183,11 @@ public class EmbeddedCanvas extends JPanel {
     }
     
     public void setLogY(boolean logFlag){
-        this.canvasPads.get(this.currentPad).dataSetFrame.getAxisFrame().getAxisX().setLog(logFlag);
+        this.canvasPads.get(this.currentPad).dataSetFrame.getAxisFrame().getAxisY().setLog(logFlag);
     }
     
     public void setLogZ(boolean logFlag){
-        this.canvasPads.get(this.currentPad).dataSetFrame.getAxisFrame().getAxisX().setLog(logFlag);
+        this.canvasPads.get(this.currentPad).dataSetFrame.getAxisFrame().getAxisZ().setLog(logFlag);
     }
     
     public void update(){
