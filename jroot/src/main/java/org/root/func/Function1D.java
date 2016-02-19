@@ -28,6 +28,26 @@ public class Function1D  {
     
     private final Attributes attr = new Attributes();
     
+    public Function1D(int npar){
+        this.setLineColor(4);
+        this.setLineWidth(2);
+        this.setLineStyle(1);
+        for(int i = 0; i < npar;i++){
+            this.parameters().add(new RealParameter("p"+i,0.0));
+        }
+        this.setRange(0.0, 1.0);
+    }
+    
+    public Function1D(double min, double max, int npar){
+        this.setLineColor(4);
+        this.setLineWidth(2);
+        this.setLineStyle(1);
+        for(int i = 0; i < npar;i++){
+            this.parameters().add(new RealParameter("p"+i,0.0));
+        }
+        this.setRange(min,max);
+    }
+    
     public Function1D(){
         this.setLineColor(4);
         this.setLineWidth(2);

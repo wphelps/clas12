@@ -409,7 +409,7 @@ public class AbsDataSetDraw {
             g2d.setStroke(new BasicStroke(line_width, BasicStroke.CAP_BUTT,
                     BasicStroke.JOIN_MITER, 20.0f, dashPattern3, 0.0f));
         }
-        
+        int pointsadded = 0;
         g2d.setColor(ColorPalette.getColor(line_color));
         for(int loop = 0; loop < npoints; loop++){
             if(axis.getDataRegion().contains(ds.getDataX(loop),ds.getDataY(loop)) == true){
@@ -419,8 +419,9 @@ public class AbsDataSetDraw {
                 double yf = startY + axis.getFramePointY(yr);
                 //System.out.println(" POINT = " + loop + "  " + xr + "  " + yr
                 //+ " " + xf + " " + yf);
-                if(loop == 0){
+                if(pointsadded == 0){
                     path.moveTo( (int) xf, (int) yf);
+                    pointsadded++;
                 } else {
                     //System.out.println("adding point " + xf + " " + yf);
                     path.lineTo((int) xf, (int) yf);
