@@ -159,7 +159,7 @@ public class Function1D  {
         if(options.contains("P")==true) mode = 2;
             
         if(options.contains("R")==true) funcRangeCheck = true;
-        System.out.println(" FITTING MODE = " + mode);
+        //System.out.println(" FITTING MODE = " + mode);
         for(int b = 0; b < ds.getDataSize();b++){
             
             double xv = ds.getDataX(b);
@@ -176,8 +176,9 @@ public class Function1D  {
             }
             if(yv!=0.0&&denom!=0.0){
                 if(funcRangeCheck==true){
-                    if(xv>=this.getMin()&&xv<this.getMax()){
-                        chiSquare += (yv-fv)*(yv-fv)/denom;                        
+                    if(xv>=this.getMin()&&xv<=this.getMax()){
+                        chiSquare += (yv-fv)*(yv-fv)/denom;
+                        //System.out.println("Bin = " + b +  " COUNTING X = " + xv +  "  Y = " + yv + "  DENOM = " + denom);
                         ndfPoints++;
                     }
                 } else {
@@ -186,7 +187,7 @@ public class Function1D  {
                 }
             }
         } 
-        System.out.println("CHI2/ NDF = " +  chiSquare +" / " +ndfPoints);
+        //System.out.println("CHI2/ NDF = " +  chiSquare +" / " +ndfPoints);
         return chiSquare;        
     }
     

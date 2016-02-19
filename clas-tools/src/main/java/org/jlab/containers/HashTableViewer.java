@@ -28,12 +28,13 @@ import org.jlab.clas.detector.IConstantsTableListener;
  */
 public class HashTableViewer extends JPanel {
     
-    JTable  table = new JTable();
-    
+    JTable  table = new JTable();    
     private List<IHashTableListener>    listeners = new ArrayList<IHashTableListener>();
+    HashTable   hashTable = null;
     
     public HashTableViewer(HashTable ht){
         super();
+        this.hashTable = ht;
         this.setPreferredSize(new Dimension(600,600));
         this.setLayout(new BorderLayout());
         table.setModel(ht);
@@ -59,6 +60,8 @@ public class HashTableViewer extends JPanel {
                 //System.out.println("Selection has changed " + getSelected().toString());
                 if(listeners.size()>0){
                     int row   =  table.getSelectedRow();
+                    int nindex = hashTable.getIndexCount();
+                    int[] index = new int[nindex];
                     
                 }
             }

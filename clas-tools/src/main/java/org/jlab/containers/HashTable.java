@@ -169,6 +169,10 @@ public class HashTable extends DefaultTableModel {
     }
     
     
+    public int getIndexCount(){
+        return this.hashCollection.getIndexCount();
+    }
+    
     @Override
     public String getColumnName(int col) {
         
