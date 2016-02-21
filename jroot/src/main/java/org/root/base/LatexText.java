@@ -61,6 +61,7 @@ public class LatexText {
     public AttributedString getText(){ return this.latexString;}
     
     public void setFont(String fontname){
+        this.textFamily = fontname;
         if(this.latexString.getIterator().getEndIndex()>0){
         //System.out.println("INDEX = " + this.latexString.getIterator().getEndIndex());
             latexString.addAttribute(TextAttribute.FAMILY, fontname);

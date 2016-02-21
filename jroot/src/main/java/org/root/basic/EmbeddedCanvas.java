@@ -126,6 +126,7 @@ public class EmbeddedCanvas extends JPanel {
      */
     public void setStatBoxFontSize(int size){
          for(EmbeddedPad pad : this.canvasPads){
+             pad.setStatBoxSize(size);
              //pad.getPad().setStatBoxFontSize(size);
          }
      }
@@ -221,6 +222,7 @@ public class EmbeddedCanvas extends JPanel {
         canvas.setAxisFontSize(10);
         canvas.setTitleFontSize(10);
         canvas.setAxisTitleFontSize(10);
+        canvas.setStatBoxFontSize(8);
         H1D h1a = new H1D("h1a",120,0.0,5.0);
         H1D h1b = new H1D("h1b",120,0.0,5.0);
         h1b.setFillColor(44);
@@ -238,7 +240,7 @@ public class EmbeddedCanvas extends JPanel {
         canvas.draw(h1a, "same");
         for(int loop = 2; loop < 16; loop++){
             canvas.cd(loop);
-            canvas.draw(h1b);
+            canvas.draw(h1b,"S");
         }
         //canvas.setTitleFontSize(2);
         //canvas.setAxisFontSize(12);

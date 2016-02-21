@@ -78,9 +78,15 @@ public class NewGraphicsTest extends JPanel implements MouseMotionListener {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
         PaveText pave = new PaveText();
+        
         pave.addText("ep#rarrowe'pX");
         pave.addText("ep#rarrowe'pX");
-        pave.drawOnCanvas(g2d, 200, 200);
+        pave.addText("dfdspoi er ew 455654");
+        pave.addText("ddsfd edsfdsr ew 455654");
+        pave.setFont("Helvetica", 18);
+        pave.drawOnCanvas(g2d, 200, 200,0);
+        pave.drawOnCanvas(g2d, 200, 300,1);
+        pave.drawOnCanvas(g2d, 200, 400,2);
         /*
         LatexText text = pave.getTexts().get(0);
         text.setFont("Avenir");
@@ -122,8 +128,8 @@ public class NewGraphicsTest extends JPanel implements MouseMotionListener {
     @Override
     public void paint(Graphics g){        
         //this.paintAxis(g);
-        //this.paintPaveText(g);
-        this.drawAxisFrame(g);
+        this.paintPaveText(g);
+        //this.drawAxisFrame(g);
     }
     
     public static void main(String[] args){

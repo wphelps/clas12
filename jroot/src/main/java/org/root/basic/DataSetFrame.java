@@ -10,6 +10,7 @@ import java.awt.Graphics2D;
 import org.root.base.DataRegion;
 import org.root.base.DataSetCollection;
 import org.root.base.IDataSet;
+import org.root.base.PaveText;
 import org.root.func.F1D;
 import org.root.histogram.GraphErrors;
 import org.root.histogram.H1D;
@@ -21,9 +22,10 @@ import org.root.histogram.H2D;
  */
 public class DataSetFrame {
     
-    private  DataSetCollection   collection = new DataSetCollection();
-    private  GraphicsAxisFrame   axisFrame  = new GraphicsAxisFrame();
-    
+    private  DataSetCollection   collection   = new DataSetCollection();
+    private  GraphicsAxisFrame   axisFrame    = new GraphicsAxisFrame();
+    private  PaveText            datasetStats = new PaveText();
+    private  int                 statBoxFontSize = 12;
     public  DataSetFrame(){
         
     }
@@ -39,6 +41,8 @@ public class DataSetFrame {
             g2d.fillRect(xoffset, yoffset, w, h);
             return;
         }
+        
+        this.updateStatBox();
         DataRegion  region = this.collection.getDataRegion();
         
         if(this.axisFrame.getAxisX().rangeFixed()==false){
@@ -91,6 +95,12 @@ public class DataSetFrame {
             }
         }
         g2d.setClip(null);
+        if(this.datasetStats.getTexts().size()>0){
+            this.datasetStats.drawOnCanvas(g2d, 
+                    this.axisFrame.getMargins().x + this.axisFrame.getMargins().width,
+                    this.axisFrame.getMargins().y,
+                    2);
+        }
         //this.axisFrame.drawOnCanvas(g2d, xoffset, yoffset, w, h);
     }
     
@@ -113,6 +123,36 @@ public class DataSetFrame {
             }            
         }
         //this.updateStatBox();
+    }
+    
+    public void updateStatBox(){
+        this.datasetStats.clear();
+        int ndatasets = this.collection.getCount();
+        for(int i = 0; i < ndatasets; i++){
+            if(this.collection.getDataSetOption(i).contains("S")==true){
+                if(this.collection.getDataSet(i) instanceof H1D){
+                    H1D h = (H1D) this.collection.getDataSet(i);
+                    this.datasetStats.addText(String.format("%-9s %10s", "Name",h.getName()));
+                    this.datasetStats.addText(String.format("%-9s %10d", "Entries",h.getEntries()));
+                    this.datasetStats.addText(String.format("%-9s %10.5f", "Mean",h.getMean()));
+                    this.datasetStats.addText(String.format("%-9s %10.5f", "RMS",h.getRMS()));                
+                }
+                if(this.collection.getDataSet(i) instanceof F1D){
+                    F1D f = (F1D) this.collection.getDataSet(i);
+                    for(int p = 0; p < f.getNParams(); p++){
+                        this.datasetStats.addText(String.format("%-9s %10.5f", 
+                                f.parameter(p).name(),
+                                f.parameter(p).value()));
+                    }
+                }
+            }             
+        }
+        this.setStatBoxFontSize(this.statBoxFontSize);
+    }
+    
+    public void setStatBoxFontSize(int size){
+        this.statBoxFontSize = size;
+        this.datasetStats.setFont("Monospaced", size);
     }
     
 }

@@ -35,6 +35,7 @@ public class EmbeddedPad extends JPanel {
         this.dataSetFrame.getAxisFrame().getAxisX().setAxisFontSize(12);
         this.dataSetFrame.getAxisFrame().getAxisY().setTitleSize(12);
         this.dataSetFrame.getAxisFrame().getAxisY().setAxisFontSize(12);
+        this.dataSetFrame.setStatBoxFontSize(12);
         //this.setSize(500, 500);
     }
     
@@ -75,6 +76,10 @@ public class EmbeddedPad extends JPanel {
     public void setAxisSize(int size){
         this.dataSetFrame.getAxisFrame().getAxisX().setAxisFontSize(size);
         this.dataSetFrame.getAxisFrame().getAxisY().setAxisFontSize(size);
+    }
+    
+    public void setStatBoxSize(int size){
+        this.dataSetFrame.setStatBoxFontSize(size);
     }
     
     public void setAxisTitleSize(int size){
@@ -136,7 +141,8 @@ public class EmbeddedPad extends JPanel {
         f1.setLineColor(4);
         f1.setLineWidth(4);
         f1.setLineStyle(2);
-        pad.draw(h1,"EP");
+        pad.draw(h1,"EPS");
+        pad.draw(f1,"sameS");
         //pad.draw(f1, "same");
         
         H2D  h2 = new H2D("h2",60,0.0,12.0,60,0.0,12.0);

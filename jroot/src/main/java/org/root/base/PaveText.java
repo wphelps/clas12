@@ -22,6 +22,12 @@ import org.root.attr.TStyle;
 public class PaveText {
     
     private ArrayList<LatexText>  latexTexts = new ArrayList<LatexText>();
+    
+    private int       borderSizeX  = 5;
+    private int       borderSizeY  = 5;
+    private Color     backgroundColor = new Color(255,255,255,180);
+    private Color     borderColor = new Color(0,0,0);
+    
     public PaveText(){
         
     }
@@ -71,7 +77,7 @@ public class PaveText {
             //counter++;
             //r            
         }
-        bounds.setRect(0, 0, maxWidth, maxHeight);
+        bounds.setRect(0, 0, maxWidth + this.borderSizeX*2, maxHeight+this.borderSizeY*2);
         return bounds;
     }
     public void clear(){
@@ -82,15 +88,34 @@ public class PaveText {
         return this.latexTexts;
     }
     
-    public void drawOnCanvas(Graphics2D g2d,int x, int y){
+    
+    public void drawOnCanvas(Graphics2D g2d,int x, int y, int adjustment){
         Rectangle2D  rect = this.getBounds(g2d);
         
-        g2d.setColor(new Color(255,255,0,200));
-        g2d.fillRect(x, y, (int) rect.getWidth(),(int) rect.getWidth());
+        int startX = x;
+        int startY = y;
+        if(adjustment==1){
+            startX -= (int) (rect.getWidth()*0.5);
+        }
+        if(adjustment==2){
+            startX -= (int) rect.getWidth();
+        }
+        //System.out.println(" [PAVE TEXT] W/H " + rect.getWidth() + " " + rect.getHeight());
+        g2d.setColor(this.backgroundColor);
+        g2d.fillRect(startX, startY, (int) rect.getWidth(),(int) rect.getHeight());
 
         g2d.setStroke(new BasicStroke(1));
-        g2d.setColor(Color.BLACK);        
-        g2d.drawRect(x, y, (int) rect.getWidth(),(int) rect.getWidth());
+        g2d.setColor(this.borderColor);
+        
+        g2d.drawRect(startX, startY, (int) rect.getWidth(),(int) rect.getHeight());
+        int offset = 0;
+        for(int i = 0; i < this.latexTexts.size(); i++){
+            Rectangle2D bound = this.latexTexts.get(i).getBounds(g2d);
+            offset += bound.getHeight();
+            g2d.drawString(this.latexTexts.get(i).getText().getIterator(), 
+                    startX + this.borderSizeX, startY + this.borderSizeY + offset);
+            
+        }
         int startPoint = y;
         
     }
