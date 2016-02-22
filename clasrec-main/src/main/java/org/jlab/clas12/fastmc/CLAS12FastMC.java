@@ -92,8 +92,8 @@ public class CLAS12FastMC {
     
     private void initDetectosHits(){
         this.detectorMinHits.put("DC"   , 36);
-        this.detectorMinHits.put("FTOF" , 1);
-        this.detectorMinHits.put("EC"   , 30);
+        //this.detectorMinHits.put("FTOF" , 1);
+        //this.detectorMinHits.put("EC"   , 30);
     }
     
     public List<DetectorHit>  getDetectorHits(String det, Path3D path){

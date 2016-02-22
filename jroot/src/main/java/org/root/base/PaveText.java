@@ -25,7 +25,7 @@ public class PaveText {
     
     private int       borderSizeX  = 5;
     private int       borderSizeY  = 5;
-    private Color     backgroundColor = new Color(255,255,255,180);
+    private Color     backgroundColor = new Color(255,255,255,250);
     private Color     borderColor = new Color(0,0,0);
     
     public PaveText(){

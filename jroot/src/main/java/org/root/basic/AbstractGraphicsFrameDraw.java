@@ -62,14 +62,14 @@ public class AbstractGraphicsFrameDraw {
             //double ey = ds.getDataY(loop)-ds.getErrorY(loop);
             //System.out.println(" EY = " + ey);
             
-            double ey_start = frame.getFrameY(ds.getDataY(loop)-ds.getErrorY(loop));
-            double ey_end   = frame.getFrameY(ds.getDataY(loop)+ds.getErrorY(loop));
+            double ey_start = startY + frame.getFrameY(ds.getDataY(loop)-ds.getErrorY(loop));
+            double ey_end   = startY + frame.getFrameY(ds.getDataY(loop)+ds.getErrorY(loop));
             
             g2d.setStroke(errorStroke);
             g2d.drawLine( (int) xp, (int) ey_start, (int) xp, (int) ey_end);
             
-            double ex_start = frame.getFrameX(ds.getDataX(loop)-ds.getErrorX(loop)*0.5);
-            double ex_end   = frame.getFrameX(ds.getDataX(loop)+ds.getErrorX(loop)*0.5);
+            double ex_start = startX + frame.getFrameX(ds.getDataX(loop)-ds.getErrorX(loop)*0.5);
+            double ex_end   = startX + frame.getFrameX(ds.getDataX(loop)+ds.getErrorX(loop)*0.5);
             
             g2d.drawLine( (int) ex_start, (int) yp, (int) ex_end, (int) yp);
             
@@ -88,6 +88,7 @@ public class AbstractGraphicsFrameDraw {
         GraphErrors graph = h1.getGraph();
         AbstractGraphicsFrameDraw.drawOnCanvasGraph(g2d, frame, graph, startX, startY, width, height);
     }
+    
     public static void drawOnCanvasHistogram2D(Graphics2D g2d, GraphicsAxisFrame frame,
             IDataSet ds,
             int startX, int startY, int width, int height){

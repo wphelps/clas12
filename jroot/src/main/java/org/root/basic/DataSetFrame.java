@@ -57,9 +57,10 @@ public class DataSetFrame {
         //System.out.println(region);
         
         this.axisFrame.drawOnCanvas(g2d, xoffset, yoffset, w, h);
+        
         g2d.setClip(
-                this.axisFrame.getMargins().x + 1, 
-                this.axisFrame.getMargins().y + 1 , 
+                xoffset + this.axisFrame.getMargins().x + 1, 
+                yoffset + this.axisFrame.getMargins().y + 1 , 
                 this.axisFrame.getMargins().width  - 1, 
                 this.axisFrame.getMargins().height - 1
                 );
@@ -68,40 +69,44 @@ public class DataSetFrame {
                 if(this.collection.getDataSetOption(loop).contains("E")==true){
                     AbstractGraphicsFrameDraw.drawOnCanvasHistogram1D_EP(
                             g2d, axisFrame, this.collection.getDataSet(loop), 
-                            0, 0,w, h);
+                            xoffset, yoffset,w, h);
                 } else {
                     AbstractGraphicsFrameDraw.drawOnCanvasHistogram1D(
                             g2d, axisFrame, this.collection.getDataSet(loop), 
-                            0, 0,w, h);
+                            xoffset, yoffset,w, h);
                 }
             }
             
             if(this.collection.getDataSet(loop) instanceof F1D){
                 AbstractGraphicsFrameDraw.drawOnCanvasFunction(
                         g2d, axisFrame, this.collection.getDataSet(loop), 
-                        0, 0,w, h);
+                        xoffset, yoffset,w, h);
             }
             
             if(this.collection.getDataSet(loop) instanceof GraphErrors){
                 AbstractGraphicsFrameDraw.drawOnCanvasGraph(
                         g2d, axisFrame, this.collection.getDataSet(loop), 
-                        0, 0,w, h);
+                        xoffset, yoffset,w, h);
             }
             
             if(this.collection.getDataSet(loop) instanceof H2D){
                 AbstractGraphicsFrameDraw.drawOnCanvasHistogram2D(
                             g2d, axisFrame, this.collection.getDataSet(loop), 
-                            0, 0,w, h);
+                            xoffset, yoffset,w, h);
             }
         }
         g2d.setClip(null);
         if(this.datasetStats.getTexts().size()>0){
             this.datasetStats.drawOnCanvas(g2d, 
-                    this.axisFrame.getMargins().x + this.axisFrame.getMargins().width,
-                    this.axisFrame.getMargins().y,
+                    xoffset + this.axisFrame.getMargins().x + this.axisFrame.getMargins().width,
+                    yoffset + this.axisFrame.getMargins().y,
                     2);
         }
         //this.axisFrame.drawOnCanvas(g2d, xoffset, yoffset, w, h);
+    }
+    
+    public void clear(){
+        this.collection.clear();
     }
     
     public void add(IDataSet ds){

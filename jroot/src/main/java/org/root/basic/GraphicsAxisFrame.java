@@ -111,7 +111,7 @@ public class GraphicsAxisFrame {
         
         g2d.setColor(Color.BLACK);
         g2d.drawRect(startX + this.frameMargins.x, startY + frameMargins.y, 
-                startX + frameMargins.width,startY + frameMargins.height);    
+                frameMargins.width,frameMargins.height);    
         
         this.axisX.drawOnCanvas(g2d, startX + frameMargins.x, startY + frameMargins.height + frameMargins.y );
         this.axisY.drawOnCanvas(g2d, startX + frameMargins.x, startY + frameMargins.height + frameMargins.y);
