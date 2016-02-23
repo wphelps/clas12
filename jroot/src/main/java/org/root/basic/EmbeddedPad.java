@@ -117,10 +117,11 @@ public class EmbeddedPad extends JPanel {
         frame.setSize(600,600);
         EmbeddedPad pad = new EmbeddedPad();
         //pad.setAxisRange("Y", 0.0, 600.0);
-        pad.setAxisRange(0.5,2.0, 0.0, 600.0);
-        pad.setAxisSize(12);
-        pad.setAxisTitleSize(12);
-        pad.setTitleSize(12);
+        //pad.setAxisRange(0.5,2.0, 0.0, 600.0);
+        pad.setAxisSize(14);
+        pad.setAxisTitleSize(14);
+        pad.setTitleSize(14);
+        pad.setStatBoxSize(12);
                         
         H1D  h1 = new H1D("h1",100,0.0,2.5);
         h1.setTitle("Sample Histogram");
