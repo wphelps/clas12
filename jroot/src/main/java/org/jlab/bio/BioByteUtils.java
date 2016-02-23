@@ -5,8 +5,13 @@
  */
 package org.jlab.bio;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  *
@@ -14,6 +19,7 @@ import java.util.TreeMap;
  */
 public class BioByteUtils {
     
+    public static final int MTU = 1500;
     public static TreeMap<Integer,Integer> bitMap = BioByteUtils.createBitMap();
     
     public static TreeMap<Integer,Integer>  createBitMap(){
@@ -28,6 +34,57 @@ public class BioByteUtils {
         return map;
     }
     
+    /**
+     * returns the byte array GZIP compressed.
+     * @param count
+     * @return 
+     */
+    public static byte[] gzip(byte[] ungzipped) {
+        final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        try {
+            final GZIPOutputStream gzipOutputStream = new GZIPOutputStream(bytes);
+            gzipOutputStream.write(ungzipped);
+            gzipOutputStream.close();
+        } catch (IOException e) {
+           // LOG.error("Could not gzip " + Arrays.toString(ungzipped));
+            System.out.println("[iG5DataCompressor] ERROR: Could not gzip the array....");
+        }
+        return bytes.toByteArray();
+    }
+    /**
+     * The fastest Ungzip implementation. See PageInfoTest in ehcache-constructs.
+     * A high performance implementation, although not as fast as gunzip3.
+     * gunzips 100000 of ungzipped content in 9ms on the reference machine.
+     * It does not use a fixed size buffer and is therefore suitable for arbitrary
+     * length arrays.
+     * 
+     * @param gzipped
+     * @return a plain, uncompressed byte[]
+     */
+    public static byte[] ungzip(final byte[] gzipped) {
+        byte[] ungzipped = new byte[0];
+        try {
+            final GZIPInputStream inputStream = new GZIPInputStream(new ByteArrayInputStream(gzipped));
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(gzipped.length);
+            final byte[] buffer = new byte[BioByteUtils.MTU];
+            int bytesRead = 0;
+            while (bytesRead != -1) {
+                bytesRead = inputStream.read(buffer, 0, BioByteUtils.MTU);
+                if (bytesRead != -1) {
+                    byteArrayOutputStream.write(buffer, 0, bytesRead);
+                }
+            }
+            ungzipped = byteArrayOutputStream.toByteArray();
+            inputStream.close();
+            byteArrayOutputStream.close();
+        } catch (IOException e) {
+            //LOG.error("Could not ungzip. Heartbeat will not be working. " + e.getMessage());
+            System.out.println("[iG5DataCompressor] ERROR: could not uncompress the array. "
+                    + e.getMessage());
+        }
+        return ungzipped;
+    }
+
     public static byte[] generateByteArray(int count){
         byte[] array = new byte[count];
         byte data = 0;
@@ -81,12 +138,22 @@ public class BioByteUtils {
         byte byte_data = 0;
         return (byte) ((byte_data|data)&0xFF);
     }
-    
+    /**
+     * returns a byte from short number, anything that exceeds the number that
+     * fits in the byte they will be thrown away.
+     * @param data short data (2 bytes)
+     * @return a byte which is lower part of the given short (1 - byte)
+     */
     public static byte   getByteFromShort(short data){
         byte byte_data = 0;
         return (byte) ((byte_data|data)&0xFF);
     }
-    
+    /**
+     * returns byte string representation of the given integer, with 
+     * 32 bits 0 and 1.
+     * @param word reference integer word
+     * @return 
+     */
     public static String getByteString(int word){
         String strL = String.format("%32s", Integer.toBinaryString(word)).replace(' ', '0');
         StringBuilder str = new StringBuilder();
@@ -96,15 +163,30 @@ public class BioByteUtils {
         }
         return str.toString();
     }
-    
-    public static int write(int word, int number, int start, int end){
+    /**
+     * write a number to a specific bits of existing integer. the specified
+     * bits are reset to 0 first then the provided number is written into 
+     * specified bits
+     * @param word reference integer word (4 bits) is not changed
+     * @param number and integer number written (user should check if the number fits)
+     * @param start starting bits (first bit is 0)
+     * @param end ending bit (for one bit start=end)
+     * @return returns a new integer with bits written
+     */
+    public static int write(final int word, int number, int start, int end){
         int index = end - start + 1;
         int result = (word & ~(BioByteUtils.bitMap.get(index)<<(start)));
         result = result|( (number&BioByteUtils.bitMap.get(index))<<(start)) ;
         return result;
     }
-    
-    public static int read(int word, int start, int end){
+    /**
+     * read specific bit from given integer.
+     * @param word integer reference word
+     * @param start starting bit (0 being the first one)
+     * @param end   ending bit (for reading 1 bit start must be = to end)
+     * @return 
+     */
+    public static int read(final int word, int start, int end){
         int index = end-start+1;
         return (word>>(start))&BioByteUtils.bitMap.get(index);
     }
