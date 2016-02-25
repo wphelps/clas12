@@ -24,8 +24,12 @@ public class BioReader {
     FileInputStream  inputStream = null;
     List<Long>    recordList   = new ArrayList<Long>();
     List<Long>    recordLength = new ArrayList<Long>(); 
-    List<BioRecordIndex>  inRecords = new ArrayList<BioRecordIndex>();
+    
+    List<BioRecordIndex>  inRecords        = new ArrayList<BioRecordIndex>();
+    List<BioRecordIndex>  corruptedRecords = new ArrayList<BioRecordIndex>();
+    
     int                   debugMode = 10;
+    
     
     /**
      * parameters to keep statistics information about the performance
@@ -38,21 +42,65 @@ public class BioReader {
     public BioReader(){
         
     }
-    
+    /**
+     * Open file for reading. automatically reads file index in of records.
+     * the event index is not actually read.
+     * @param name file names to read
+     */
     public void open(String name){
+        if(this.debugMode>0) System.out.println("[bio-reader] ---> openning file : " + name);
         try {
             this.inputStream = new FileInputStream(new File(name));
             this.readRecordIndex(inRecords);
+            
         } catch (FileNotFoundException ex) {
             Logger.getLogger(BioReader.class.getName()).log(Level.SEVERE, null, ex);
         }
+        if(this.debugMode>0) System.out.println("[bio-reader] ---> recovered records : " + this.inRecords.size());
     }
-    
+    /**
+     * Reads the index of the records from the file. if problem occurs, the 
+     * then the problematic record is written to the list containing corrupt
+     * records. This records will contain a string describing the problem.
+     * @param index 
+     */
     public void readRecordIndex(List<BioRecordIndex>  index){
+        
+        byte[]  fileHeader   = new byte[BioHeaderConstants.FILE_HEADER_SIZE];
+        
+        int     firstRecordOffset = 0;
+        
+        try {
+            this.inputStream.read(fileHeader);
+            
+            ByteBuffer  hb =  ByteBuffer.wrap(fileHeader);
+            hb.order(ByteOrder.LITTLE_ENDIAN);
+            
+            int identifier   = hb.getInt(0);
+            int sizeWord     = hb.get(8);
+            
+            int headerLength = BioByteUtils.read(sizeWord,
+                    BioHeaderConstants.FILE_HEADER_LENGTH_LB,
+                    BioHeaderConstants.FILE_HEADER_LENGTH_HB);
+            
+            if(identifier==BioHeaderConstants.FILE_ID_STRING){
+                firstRecordOffset = BioHeaderConstants.FILE_HEADER_SIZE + headerLength;
+            } else {
+                System.out.println("[bio-reader] ---> errors. the provided file is not BIO format.");
+                return;
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(BioReader.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        // Assumin that we passed successfully the event 
+        
         byte[]  recordHeader = new byte[BioHeaderConstants.RECORD_HEADER_SIZE];
+        //System.out.println("[bio-reader] --->  reading file index ");
         long stime_indexing = System.currentTimeMillis();
         index.clear();
         try {
+            this.inputStream.getChannel().position(firstRecordOffset);    
             
             int nread = 1;
             ByteBuffer ib = null;
@@ -66,29 +114,17 @@ public class BioReader {
                     
                     ib = ByteBuffer.wrap(recordHeader);
                     ib.order(ByteOrder.LITTLE_ENDIAN);
+
                     int headerH = ib.getInt(8);
                     int headerM = ib.getInt(4);
                     int headerL = ib.getInt(0);
-                    
-                    int dataLength = BioByteUtils.read(headerH,
-                            BioHeaderConstants.LOWBYTE_RECORD_SIZE,
-                            BioHeaderConstants.HIGHBYTE_RECORD_SIZE);
-                    
-                    int indexCount = BioByteUtils.read(headerM, 
-                            BioHeaderConstants.LOWBYTE_RECORD_EVENTCOUNT,
-                            BioHeaderConstants.HIGHBYTE_RECORD_EVENTCOUNT
-                            );
-                    ri.setLength(
-                            BioHeaderConstants.RECORD_HEADER_SIZE // header byte size
-                                    + indexCount*4 // event index is an integer  
-                                    + dataLength);
+                                        
+                    if(ri.parseHeader(headerL, headerM, headerH)==false) return;
                     index.add(ri);
-                    //System.out.println(" Data Length = " + dataLength + "  INDEX COUNT = " 
-                    //        + indexCount + "  INDEXLENGTH = " + (indexCount*4));
-                    this.inputStream.skip(dataLength + indexCount*4);
-                    //System.out.println("Position = " + this.inputStream.getChannel().position());
+                    this.inputStream.skip(ri.getLength() + ri.getNumberOfEvents()*4);
+
                 }
-            }            
+            }
         } catch (IOException ex) {
             Logger.getLogger(BioReader.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -111,62 +147,19 @@ public class BioReader {
         return str.toString();
     }
     
-    public void readRecordTable(){
-        
-        byte[]  recordHeader = new byte[BioHeaderConstants.RECORD_HEADER_SIZE];
-        
-        //this.recordList.clear();
-        
-        this.inRecords.clear();
-        try {
-            
-            int nread = 1;
-            ByteBuffer ib = null;
-            
-            while(nread>0){
-                //System.out.println("Position = " + this.inputStream.getChannel().position());
-                nread = this.inputStream.read(recordHeader);
-                //System.out.println("Position = " + this.inputStream.getChannel().position());
-                if(nread>0){
-                    //System.out.println("NREAD = " + nread);
-                    this.recordList.add(this.inputStream.getChannel().position()-8);
-                    ib = ByteBuffer.wrap(recordHeader);
-                    ib.order(ByteOrder.LITTLE_ENDIAN);
-                    int headerH = ib.getInt(4);
-                    int headerL = ib.getInt(0);
-                    int dataLength = BioByteUtils.read(headerH,
-                            BioHeaderConstants.LOWBYTE_RECORD_SIZE,
-                            BioHeaderConstants.HIGHBYTE_RECORD_SIZE);
-                    
-                    int indexCount = BioByteUtils.read(headerL, 
-                            BioHeaderConstants.LOWBYTE_RECORD_EVENTCOUNT,
-                            BioHeaderConstants.HIGHBYTE_RECORD_EVENTCOUNT
-                            );
-                    
-                    this.recordLength.add((long) 8 + indexCount*4 + dataLength);
-                    //System.out.println(" Data Length = " + dataLength + "  INDEX COUNT = " 
-                    //        + indexCount + "  INDEXLENGTH = " + (indexCount*4));
-                    this.inputStream.skip(dataLength + indexCount*4);
-                    //System.out.println("Position = " + this.inputStream.getChannel().position());
-                }
-            }            
-        } catch (IOException ex) {
-            Logger.getLogger(BioReader.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        /*
-        for(Long offset : this.recordList){
-            System.out.println(offset );
-        }*/
-    }
     
     public int getRecordCount(){
-        return this.recordList.size();
+        return this.inRecords.size();
     }
     
     public BioRecord  readRecord(int record){
         try {
-            long record_offset = this.recordList.get(record);
-            long record_length = this.recordLength.get(record);
+            //long record_offset = this.recordList.get(record);
+            //long record_length = this.recordLength.get(record);
+            
+            long record_offset = this.inRecords.get(record).getPosition();
+            long record_length = this.inRecords.get(record).getLength();
+            
             this.inputStream.getChannel().position(record_offset);
             byte[]  buffer = new byte[(int) record_length];
             this.inputStream.read(buffer);
@@ -180,7 +173,7 @@ public class BioReader {
     public static void main(String[] args){
         BioReader reader = new BioReader();
         reader.open("testfile.bio");
-        //reader.show();
+        reader.show();
         System.out.println(reader.getStatusString());
         //reader.readRecordTable();
         /*

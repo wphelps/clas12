@@ -160,7 +160,7 @@ public class EmbeddedCanvas extends JPanel {
     
     public void setDivisionsX(int div){
         //this.getPad().setDivisionsX(div);
-     }
+    }
      
     public void setDivisionsY(int div){
         //this.getPad().setDivisionsY(div);

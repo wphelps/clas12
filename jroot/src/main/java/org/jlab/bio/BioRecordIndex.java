@@ -18,7 +18,7 @@ public class BioRecordIndex {
     long  recordPosition = (long) 0; // position of the record in the file (bytes)
     int   recordLength   =        0; // length of the record in bytes
     boolean recordCompression  = false; // indicates if the record is compressed
-    
+    int     numberofevents     = 0;
     /**
      * This list contains the pointers to the each event inside of the record
      * relative to the record position in the file, and does not include record header
@@ -44,6 +44,26 @@ public class BioRecordIndex {
         return this.eventOffsets;
     }
     
+    public boolean parseHeader(int hL, int hM, int hH){
+        if(hL!=BioHeaderConstants.RECORD_ID_STRING) return false;
+        this.recordLength = BioByteUtils.read(hH,
+                BioHeaderConstants.LOWBYTE_RECORD_SIZE,
+                BioHeaderConstants.HIGHBYTE_RECORD_SIZE);
+        
+        this.numberofevents = BioByteUtils.read(hM, 
+                BioHeaderConstants.LOWBYTE_RECORD_EVENTCOUNT,
+                BioHeaderConstants.HIGHBYTE_RECORD_EVENTCOUNT);
+        return true;
+    }
+    /**
+     * returns number of events in the record, this is not necessarily mean
+     * that event index will contain the same number of entries. In case the
+     * full index is not parsed, the index array will have length=0.
+     * @return 
+     */
+    public int getNumberOfEvents(){
+        return this.numberofevents;
+    }
     /**
      * Returns the position of the given event in the record, relative to the start of
      * the file. the record header size and record offset already added to the event offset.
@@ -101,7 +121,7 @@ public class BioRecordIndex {
         StringBuilder str = new StringBuilder();
         str.append(String.format("[BREC] [ %6s ]  OFFSET = %16d :  LENGTH = %14d : NEVENTS = %14d ",  
                 compression.toString(),
-                this.getPosition(), this.getLength(),this.getEventIdex().size()));
+                this.getPosition(), this.getLength(),this.getNumberOfEvents()));
         return str.toString();
     }
 }

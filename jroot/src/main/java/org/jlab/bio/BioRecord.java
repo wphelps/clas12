@@ -91,12 +91,14 @@ public class BioRecord {
     public final void reset(){
         this.index.clear();
         this.events.clear();
+
         byte[]  recs = new byte[]{'R','C','_','G'};
-        this.headerL = 0;
-        headerL = headerL|(recs[0]);
-        headerL = headerL|(recs[1]<<8);
-        headerL = headerL|(recs[2]<<16);
-        headerL = headerL|(recs[3]<<24);
+
+        this.headerL = BioHeaderConstants.getStringInt(recs);
+        //headerL = headerL|(recs[0]);
+        //headerL = headerL|(recs[1]<<8);
+        //headerL = headerL|(recs[2]<<16);
+        //headerL = headerL|(recs[3]<<24);
         this.headerM = 0;
         this.headerH = 0;
     }

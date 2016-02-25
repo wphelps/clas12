@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -75,10 +77,44 @@ public class BioWriter {
      * @param name file name to write data in
      */
     public final void open(String name){
+        this.open(name, new byte[]{'E','M','P','T','Y'});
+        /*
         try {
-            outStream = new FileOutputStream(new File(name));
+            outStream = new FileOutputStream(new File(name));            
             this.outputRecord.reset();
         } catch (FileNotFoundException ex) {
+            Logger.getLogger(BioWriter.class.getName()).log(Level.SEVERE, null, ex);
+        }*/
+    }
+    /**
+     * Opens a file, initializes it with a header. and appends provided
+     * array to the header. the array content is upto the user, and it 
+     * can be accessed in the reader once the file is opened for reading.
+     * @param name name of the file to open.
+     * @param array array to write as a header.
+     */
+    public final void open(String name, byte[] array) {
+        try {
+            outStream = new FileOutputStream(new File(name));
+            byte[]  bytes = new byte[BioHeaderConstants.FILE_HEADER_SIZE + array.length];
+            System.arraycopy(array, 0, bytes, BioHeaderConstants.FILE_HEADER_SIZE, array.length);
+            
+            ByteBuffer  buffer = ByteBuffer.wrap(bytes);
+            buffer.order(ByteOrder.LITTLE_ENDIAN);
+            
+            buffer.putInt(0, BioHeaderConstants.FILE_ID_STRING);
+            buffer.putInt(4, BioHeaderConstants.FILE_VER_STRING);
+            int  headerLength = BioByteUtils.write(0, array.length, 
+                    BioHeaderConstants.FILE_HEADER_LENGTH_LB, 
+                    BioHeaderConstants.FILE_HEADER_LENGTH_HB
+                    );
+            buffer.putInt(8, headerLength);
+            buffer.putInt(12,23);
+            outStream.write(buffer.array());
+            this.outputRecord.reset();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(BioWriter.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
             Logger.getLogger(BioWriter.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -164,6 +200,24 @@ public class BioWriter {
         this.streamCompression = flag;
     }
     /**
+     * sets maximum allowed events in the record until it's flushed into
+     * the stream.
+     * @param maxCount maximum number of records.
+     */
+    public void setMaxRecordCount(int maxCount){
+        this.MAX_RECORD_COUNT = maxCount;
+    }
+    
+    /**
+     * sets the maximum buffer size for the records. this value is used
+     * to check size of the record uncompressed, actual record size written 
+     * on the disk will be compressed size.
+     * @param maxSize maximum size in bytes for the record
+     */
+    public void setMaxRecordSize(int maxSize){
+        this.MAX_RECORD_SIZE = maxSize;
+    }
+    /**
      * Main program to run internal tests and validations.
      * @param args 
      */
@@ -171,12 +225,11 @@ public class BioWriter {
         BioWriter writer = new BioWriter();
         //writer.setCompression(true);
         writer.open("testfile.bio");
-        
-        for(int i = 0; i < 5*8000; i++){
+        writer.setMaxRecordSize(20000);
+        for(int i = 0; i < 80; i++){
             byte[] buffer = BioByteUtils.generateByteArray(45000);
             writer.writeEvent(buffer);
         }
-        
         writer.close();
     }
 }
