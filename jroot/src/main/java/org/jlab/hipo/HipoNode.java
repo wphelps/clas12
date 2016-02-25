@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.jlab.bio;
+package org.jlab.hipo;
 
 /**
  *
  * @author gavalian
  */
-public class BioNode {
+public class HipoNode {
     
 }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.jlab.bio;
+package org.jlab.hipo;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -14,7 +14,7 @@ import java.util.List;
  *
  * @author gavalian
  */
-public class BioRecord {
+public class HipoRecord {
     
     int  headerL = 0;
     int  headerM = 0;
@@ -28,7 +28,7 @@ public class BioRecord {
     /**
      * creates and empty record ready for adding events and removing events.
      */
-    public BioRecord(){
+    public HipoRecord(){
         reset();
     }
     
@@ -39,7 +39,7 @@ public class BioRecord {
      * @param array 
      */
     
-    public BioRecord(byte[] array){
+    public HipoRecord(byte[] array){
         this.initFromBinary(array);
         /*
         ByteBuffer  buffer = ByteBuffer.wrap(array);
@@ -94,7 +94,7 @@ public class BioRecord {
 
         byte[]  recs = new byte[]{'R','C','_','G'};
 
-        this.headerL = BioHeaderConstants.getStringInt(recs);
+        this.headerL = HipoHeader.getStringInt(recs);
         //headerL = headerL|(recs[0]);
         //headerL = headerL|(recs[1]<<8);
         //headerL = headerL|(recs[2]<<16);
@@ -110,13 +110,13 @@ public class BioRecord {
         int length = array.length;
         //System.out.println(BioByteUtils.getByteString(headerH));
         
-        int previousLength = BioByteUtils.read(headerH, 
-                BioHeaderConstants.LOWBYTE_RECORD_SIZE ,
-                BioHeaderConstants.HIGHBYTE_RECORD_SIZE);
+        int previousLength = HipoByteUtils.read(headerH, 
+                HipoHeader.LOWBYTE_RECORD_SIZE ,
+                HipoHeader.HIGHBYTE_RECORD_SIZE);
         
-        int previousCount  = BioByteUtils.read(headerM, 
-                BioHeaderConstants.LOWBYTE_RECORD_EVENTCOUNT,
-                BioHeaderConstants.HIGHBYTE_RECORD_EVENTCOUNT);
+        int previousCount  = HipoByteUtils.read(headerM, 
+                HipoHeader.LOWBYTE_RECORD_EVENTCOUNT,
+                HipoHeader.HIGHBYTE_RECORD_EVENTCOUNT);
         
         
         //System.out.println("PREVIOUS LENGTH =  " + previousLength);
@@ -124,13 +124,13 @@ public class BioRecord {
         index.add(previousLength);
         previousCount++;
         
-        headerH = BioByteUtils.write(headerH, previousLength+length,
-                BioHeaderConstants.LOWBYTE_RECORD_SIZE ,
-                BioHeaderConstants.HIGHBYTE_RECORD_SIZE);
+        headerH = HipoByteUtils.write(headerH, previousLength+length,
+                HipoHeader.LOWBYTE_RECORD_SIZE ,
+                HipoHeader.HIGHBYTE_RECORD_SIZE);
         
-        headerM = BioByteUtils.write(headerM, previousCount,
-                BioHeaderConstants.LOWBYTE_RECORD_EVENTCOUNT,
-                BioHeaderConstants.HIGHBYTE_RECORD_EVENTCOUNT);
+        headerM = HipoByteUtils.write(headerM, previousCount,
+                HipoHeader.LOWBYTE_RECORD_EVENTCOUNT,
+                HipoHeader.HIGHBYTE_RECORD_EVENTCOUNT);
         
         //System.out.println(BioByteUtils.getByteString(headerH));
     }
@@ -139,32 +139,32 @@ public class BioRecord {
         if(compressed == false) return this.getByteBuffer();
         
         byte[]  dataBytes = this.getDataBytes();
-        byte[]  dataBytesCompressed = BioByteUtils.gzip(dataBytes);
+        byte[]  dataBytesCompressed = HipoByteUtils.gzip(dataBytes);
         
-        int  size = BioHeaderConstants.RECORD_HEADER_SIZE + 
+        int  size = HipoHeader.RECORD_HEADER_SIZE + 
                 this.index.size()*4 + 
                 dataBytesCompressed.length;
         
         ByteBuffer buffer = ByteBuffer.allocate(size);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         
-        int ihH = BioByteUtils.write(0, dataBytesCompressed.length, 
-                BioHeaderConstants.LOWBYTE_RECORD_SIZE, 
-                BioHeaderConstants.HIGHBYTE_RECORD_SIZE
+        int ihH = HipoByteUtils.write(0, dataBytesCompressed.length, 
+                HipoHeader.LOWBYTE_RECORD_SIZE, 
+                HipoHeader.HIGHBYTE_RECORD_SIZE
                 );
         
-        int ihM = BioByteUtils.write(0, this.index.size(),
-                BioHeaderConstants.LOWBYTE_RECORD_EVENTCOUNT, 
-                BioHeaderConstants.HIGHBYTE_RECORD_EVENTCOUNT
+        int ihM = HipoByteUtils.write(0, this.index.size(),
+                HipoHeader.LOWBYTE_RECORD_EVENTCOUNT, 
+                HipoHeader.HIGHBYTE_RECORD_EVENTCOUNT
                 );
         
-        ihM = BioByteUtils.write(ihM, 1, 24, 24);
+        ihM = HipoByteUtils.write(ihM, 1, 24, 24);
         
         buffer.putInt(0, this.headerL);
         buffer.putInt(4, ihM);
         buffer.putInt(8, ihH);
 
-        int initPos = BioHeaderConstants.RECORD_HEADER_SIZE;
+        int initPos = HipoHeader.RECORD_HEADER_SIZE;
         
         for(int i = 0; i < this.index.size(); i++){
             buffer.putInt(initPos, this.index.get(i));
@@ -188,18 +188,18 @@ public class BioRecord {
         this.headerM = buffer.getInt(4);
         this.headerH = buffer.getInt(8);
         
-        int isCompressed = BioByteUtils.read(headerM, 
-                BioHeaderConstants.LOWBYTE_RECORD_COMPRESSION,
-                BioHeaderConstants.HIGHBYTE_RECORD_COMPRESSION);
-        int indexCount = BioByteUtils.read(headerM, 
-                BioHeaderConstants.LOWBYTE_RECORD_EVENTCOUNT,
-                BioHeaderConstants.HIGHBYTE_RECORD_EVENTCOUNT);
-        int dataLength = BioByteUtils.read(headerH,
-                BioHeaderConstants.LOWBYTE_RECORD_SIZE,
-                BioHeaderConstants.HIGHBYTE_RECORD_SIZE);
+        int isCompressed = HipoByteUtils.read(headerM, 
+                HipoHeader.LOWBYTE_RECORD_COMPRESSION,
+                HipoHeader.HIGHBYTE_RECORD_COMPRESSION);
+        int indexCount = HipoByteUtils.read(headerM, 
+                HipoHeader.LOWBYTE_RECORD_EVENTCOUNT,
+                HipoHeader.HIGHBYTE_RECORD_EVENTCOUNT);
+        int dataLength = HipoByteUtils.read(headerH,
+                HipoHeader.LOWBYTE_RECORD_SIZE,
+                HipoHeader.HIGHBYTE_RECORD_SIZE);
         //int indexOffset = BioHeaderConstants.RECORD_HEADER_SIZE;
         
-        int  position = BioHeaderConstants.RECORD_HEADER_SIZE;
+        int  position = HipoHeader.RECORD_HEADER_SIZE;
         
         this.index.clear();
         this.events.clear();
@@ -210,7 +210,7 @@ public class BioRecord {
             position +=4;
         }
         
-        position =  BioHeaderConstants.RECORD_HEADER_SIZE;
+        position =  HipoHeader.RECORD_HEADER_SIZE;
         
         
         byte[] eventdata = new byte[dataLength];
@@ -220,7 +220,7 @@ public class BioRecord {
          * and retrieve byte arrays from indecies. 
          */
         if(isCompressed==1){
-            byte[]  gunzipped = BioByteUtils.ungzip(eventdata);
+            byte[]  gunzipped = HipoByteUtils.ungzip(eventdata);
             if(gunzipped.length==0){
                 System.out.println("[BioRecord] ---> error : something went wrong with unzip.");
                 this.reset();
@@ -257,7 +257,7 @@ public class BioRecord {
         
         byte[]  dataBytes = this.getDataBytes();
         
-        int  size = BioHeaderConstants.RECORD_HEADER_SIZE + this.index.size()*4 + dataBytes.length;
+        int  size = HipoHeader.RECORD_HEADER_SIZE + this.index.size()*4 + dataBytes.length;
         
         ByteBuffer buffer = ByteBuffer.allocate(size);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
@@ -267,7 +267,7 @@ public class BioRecord {
         buffer.putInt(4, this.headerM);
         buffer.putInt(8, this.headerH);
         
-        int initPos = BioHeaderConstants.RECORD_HEADER_SIZE;
+        int initPos = HipoHeader.RECORD_HEADER_SIZE;
         
         for(int i = 0; i < this.index.size(); i++){
             buffer.putInt(initPos, this.index.get(i));
@@ -325,18 +325,18 @@ public class BioRecord {
      */
     public void show(){
         
-        int count = BioByteUtils.read(headerM, 
-                BioHeaderConstants.LOWBYTE_RECORD_EVENTCOUNT,
-                BioHeaderConstants.HIGHBYTE_RECORD_EVENTCOUNT
+        int count = HipoByteUtils.read(headerM, 
+                HipoHeader.LOWBYTE_RECORD_EVENTCOUNT,
+                HipoHeader.HIGHBYTE_RECORD_EVENTCOUNT
                 );
         System.out.println(
-                "HL = " + BioByteUtils.getByteString(headerL) + "\n"
-                        + "HM = " + BioByteUtils.getByteString(headerM) + "\n"
-                        + "HH = " + BioByteUtils.getByteString(headerH)
+                "HL = " + HipoByteUtils.getByteString(headerL) + "\n"
+                        + "HM = " + HipoByteUtils.getByteString(headerM) + "\n"
+                        + "HH = " + HipoByteUtils.getByteString(headerH)
         );
 
         System.out.println(String.format(" H L/H %X %X",headerL,headerH));
-        System.out.println("RECORD ELEMENTS = " + count + "  LENGTH = " + BioByteUtils.read(headerH,0,23));
+        System.out.println("RECORD ELEMENTS = " + count + "  LENGTH = " + HipoByteUtils.read(headerH,0,23));
         for(int i = 0 ; i < this.events.size();i++){
             System.out.println(" EVENT " + i + "  LENGTH = " + 
                     this.events.get(i).length + "  OFFSET = " + this.index.get(i));
@@ -349,13 +349,13 @@ public class BioRecord {
      */
     public void     compressed(boolean flag){
         if(flag==true){
-            headerM = BioByteUtils.write(headerM, 1, 
-                    BioHeaderConstants.LOWBYTE_RECORD_COMPRESSION,
-                    BioHeaderConstants.HIGHBYTE_RECORD_COMPRESSION);
+            headerM = HipoByteUtils.write(headerM, 1, 
+                    HipoHeader.LOWBYTE_RECORD_COMPRESSION,
+                    HipoHeader.HIGHBYTE_RECORD_COMPRESSION);
         } else {
-            headerM = BioByteUtils.write(headerM, 0, 
-                    BioHeaderConstants.LOWBYTE_RECORD_COMPRESSION,
-                    BioHeaderConstants.HIGHBYTE_RECORD_COMPRESSION);
+            headerM = HipoByteUtils.write(headerM, 0, 
+                    HipoHeader.LOWBYTE_RECORD_COMPRESSION,
+                    HipoHeader.HIGHBYTE_RECORD_COMPRESSION);
         }
     }
     /**
@@ -363,18 +363,18 @@ public class BioRecord {
      * @return 0 if compression flag is not set, 1 - if set
      */
     public boolean  compressed(){
-        int ic = BioByteUtils.read(headerM,
-                BioHeaderConstants.LOWBYTE_RECORD_COMPRESSION,
-                    BioHeaderConstants.HIGHBYTE_RECORD_COMPRESSION);
+        int ic = HipoByteUtils.read(headerM,
+                HipoHeader.LOWBYTE_RECORD_COMPRESSION,
+                    HipoHeader.HIGHBYTE_RECORD_COMPRESSION);
         return (ic==1);
     }
     
     public static void main(String[] args){
         
-        BioRecord  record = new BioRecord();
+        HipoRecord  record = new HipoRecord();
         //record.show();
-        record.addEvent(BioByteUtils.generateByteArray(2450));
-        record.addEvent(BioByteUtils.generateByteArray(5450));
+        record.addEvent(HipoByteUtils.generateByteArray(2450));
+        record.addEvent(HipoByteUtils.generateByteArray(5450));
 
         //record.compressed(true);
         byte[]  record_bytes_u = record.getByteBuffer().array();
@@ -388,10 +388,10 @@ public class BioRecord {
 
         
         System.out.println("----------->   Record uncompressed");
-        BioRecord  rru = new BioRecord(record_bytes_u);
+        HipoRecord  rru = new HipoRecord(record_bytes_u);
         rru.show();
         System.out.println("----------->   Record  compressed");
-        BioRecord  rrc = new BioRecord(record_bytes_c);
+        HipoRecord  rrc = new HipoRecord(record_bytes_c);
         rrc.show();
         /*
         record.addEvent(new byte[]{1,2,3,4,5});

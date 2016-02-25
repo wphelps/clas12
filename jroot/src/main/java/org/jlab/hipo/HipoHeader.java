@@ -3,13 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.jlab.bio;
+package org.jlab.hipo;
 
 /**
  *
  * @author gavalian
  */
-public class BioHeaderConstants {
+public class HipoHeader {
     
     /**
      * All constants for record bit definitions
@@ -21,12 +21,12 @@ public class BioHeaderConstants {
     public static int  HIGHBYTE_RECORD_EVENTCOUNT  = 23;
     public static int  LOWBYTE_RECORD_COMPRESSION  = 24;
     public static int  HIGHBYTE_RECORD_COMPRESSION = 24;
-    public static int  RECORD_ID_STRING            = BioHeaderConstants.getStringInt(new byte[]{'R','C','_','G'});
+    public static int  RECORD_ID_STRING            = HipoHeader.getStringInt(new byte[]{'R','C','_','G'});
     /**
      * Constants describing file  HEADER constants .
      */
-    public static int  FILE_ID_STRING              = BioHeaderConstants.getStringInt(new byte[]{'B','I','O','G'});
-    public static int  FILE_VER_STRING             = BioHeaderConstants.getStringInt(new byte[]{'V','0','.','1'});
+    public static int  FILE_ID_STRING              = HipoHeader.getStringInt(new byte[]{'B','I','O','G'});
+    public static int  FILE_VER_STRING             = HipoHeader.getStringInt(new byte[]{'V','0','.','1'});
     public static int  FILE_HEADER_SIZE            = 16;
     public static int  FILE_HEADER_LENGTH_LB       = 0;
     public static int  FILE_HEADER_LENGTH_HB       = 23;

@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package org.jlab.bio;
+package org.jlab.hipo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author gavalian
  */
-public class BioRecordIndex {
+public class HipoRecordIndex {
     
     long  recordPosition = (long) 0; // position of the record in the file (bytes)
     int   recordLength   =        0; // length of the record in bytes
@@ -30,7 +30,7 @@ public class BioRecordIndex {
      * Constructor for creating a record index with given position in the file.
      * @param offset offset relative to the start of the file.
      */
-    public BioRecordIndex(long offset){
+    public HipoRecordIndex(long offset){
         this.recordPosition = offset;
     }
     
@@ -45,14 +45,14 @@ public class BioRecordIndex {
     }
     
     public boolean parseHeader(int hL, int hM, int hH){
-        if(hL!=BioHeaderConstants.RECORD_ID_STRING) return false;
-        this.recordLength = BioByteUtils.read(hH,
-                BioHeaderConstants.LOWBYTE_RECORD_SIZE,
-                BioHeaderConstants.HIGHBYTE_RECORD_SIZE);
+        if(hL!=HipoHeader.RECORD_ID_STRING) return false;
+        this.recordLength = HipoByteUtils.read(hH,
+                HipoHeader.LOWBYTE_RECORD_SIZE,
+                HipoHeader.HIGHBYTE_RECORD_SIZE);
         
-        this.numberofevents = BioByteUtils.read(hM, 
-                BioHeaderConstants.LOWBYTE_RECORD_EVENTCOUNT,
-                BioHeaderConstants.HIGHBYTE_RECORD_EVENTCOUNT);
+        this.numberofevents = HipoByteUtils.read(hM, 
+                HipoHeader.LOWBYTE_RECORD_EVENTCOUNT,
+                HipoHeader.HIGHBYTE_RECORD_EVENTCOUNT);
         return true;
     }
     /**
@@ -71,7 +71,7 @@ public class BioRecordIndex {
      * @return 
      */
     public long getEventPosition(int index){
-        return (long) (recordPosition + this.eventOffsets.get(index) + BioHeaderConstants.RECORD_HEADER_SIZE);
+        return (long) (recordPosition + this.eventOffsets.get(index) + HipoHeader.RECORD_HEADER_SIZE);
     }
     
     /**

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.jlab.bio;
+package org.jlab.hipo;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -17,10 +17,10 @@ import java.util.zip.GZIPOutputStream;
  *
  * @author gavalian
  */
-public class BioByteUtils {
+public class HipoByteUtils {
     
     public static final int MTU = 1500;
-    public static TreeMap<Integer,Integer> bitMap = BioByteUtils.createBitMap();
+    public static TreeMap<Integer,Integer> bitMap = HipoByteUtils.createBitMap();
     
     public static TreeMap<Integer,Integer>  createBitMap(){
         TreeMap<Integer,Integer> map = new TreeMap<Integer,Integer>();
@@ -66,10 +66,10 @@ public class BioByteUtils {
         try {
             final GZIPInputStream inputStream = new GZIPInputStream(new ByteArrayInputStream(gzipped));
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(gzipped.length);
-            final byte[] buffer = new byte[BioByteUtils.MTU];
+            final byte[] buffer = new byte[HipoByteUtils.MTU];
             int bytesRead = 0;
             while (bytesRead != -1) {
-                bytesRead = inputStream.read(buffer, 0, BioByteUtils.MTU);
+                bytesRead = inputStream.read(buffer, 0, HipoByteUtils.MTU);
                 if (bytesRead != -1) {
                     byteArrayOutputStream.write(buffer, 0, bytesRead);
                 }
@@ -105,8 +105,8 @@ public class BioByteUtils {
     
     public static int getInteger(int data, int bitstart, int bitend){
         int length = bitend - bitstart + 1;
-        if(BioByteUtils.bitMap.containsKey(length)==true){
-            int value = ((data>>bitstart)&BioByteUtils.bitMap.get(length));
+        if(HipoByteUtils.bitMap.containsKey(length)==true){
+            int value = ((data>>bitstart)&HipoByteUtils.bitMap.get(length));
             return value;
         } else {
             System.out.println("[DataUtilities] : ERROR length = " + length);
@@ -175,8 +175,8 @@ public class BioByteUtils {
      */
     public static int write(final int word, int number, int start, int end){
         int index = end - start + 1;
-        int result = (word & ~(BioByteUtils.bitMap.get(index)<<(start)));
-        result = result|( (number&BioByteUtils.bitMap.get(index))<<(start)) ;
+        int result = (word & ~(HipoByteUtils.bitMap.get(index)<<(start)));
+        result = result|( (number&HipoByteUtils.bitMap.get(index))<<(start)) ;
         return result;
     }
     /**
@@ -188,18 +188,18 @@ public class BioByteUtils {
      */
     public static int read(final int word, int start, int end){
         int index = end-start+1;
-        return (word>>(start))&BioByteUtils.bitMap.get(index);
+        return (word>>(start))&HipoByteUtils.bitMap.get(index);
     }
     
     public static void main(String[] args){
         //BioByteUtils.printBitMap();
         //System.out.println(BioByteUtils.getByteString(1245678));
         int header  = 0x00FFFFFF;
-        int headerM = BioByteUtils.write(header, 4, 10, 12);
-        int headerR = BioByteUtils.read(headerM, 10,12);
+        int headerM = HipoByteUtils.write(header, 4, 10, 12);
+        int headerR = HipoByteUtils.read(headerM, 10,12);
         
-        System.out.println(BioByteUtils.getByteString(header));
-        System.out.println(BioByteUtils.getByteString(headerM));
-        System.out.println(BioByteUtils.getByteString(headerR));
+        System.out.println(HipoByteUtils.getByteString(header));
+        System.out.println(HipoByteUtils.getByteString(headerM));
+        System.out.println(HipoByteUtils.getByteString(headerR));
     }
 }

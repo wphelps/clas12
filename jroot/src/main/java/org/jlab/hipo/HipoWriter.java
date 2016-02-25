@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.jlab.bio;
+package org.jlab.hipo;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  *
  * @author gavalian
  */
-public class BioWriter {
+public class HipoWriter {
     
     /**
      * output stream used for writing binary data to the file.
@@ -29,7 +29,7 @@ public class BioWriter {
      * maximum record size and/or maximum events desired in the 
      * record.
      */
-    BioRecord         outputRecord = null;
+    HipoRecord         outputRecord = null;
     /**
      * maximum number of bytes allowed in the record. if the newly added
      * event exceeds the maximum size, the record will be written to the file. 
@@ -60,16 +60,16 @@ public class BioWriter {
     
     boolean  streamCompression = false;
     
-    public BioWriter(){
-        this.outputRecord = new BioRecord(); 
+    public HipoWriter(){
+        this.outputRecord = new HipoRecord(); 
     }
     /**
      * creates new Writer with an empty record store and associates with 
      * an external file with given name.
      * @param file 
      */
-    public BioWriter(String file){
-        this.outputRecord = new BioRecord();
+    public HipoWriter(String file){
+        this.outputRecord = new HipoRecord();
         this.open(file);
     }
     /**
@@ -96,26 +96,26 @@ public class BioWriter {
     public final void open(String name, byte[] array) {
         try {
             outStream = new FileOutputStream(new File(name));
-            byte[]  bytes = new byte[BioHeaderConstants.FILE_HEADER_SIZE + array.length];
-            System.arraycopy(array, 0, bytes, BioHeaderConstants.FILE_HEADER_SIZE, array.length);
+            byte[]  bytes = new byte[HipoHeader.FILE_HEADER_SIZE + array.length];
+            System.arraycopy(array, 0, bytes, HipoHeader.FILE_HEADER_SIZE, array.length);
             
             ByteBuffer  buffer = ByteBuffer.wrap(bytes);
             buffer.order(ByteOrder.LITTLE_ENDIAN);
             
-            buffer.putInt(0, BioHeaderConstants.FILE_ID_STRING);
-            buffer.putInt(4, BioHeaderConstants.FILE_VER_STRING);
-            int  headerLength = BioByteUtils.write(0, array.length, 
-                    BioHeaderConstants.FILE_HEADER_LENGTH_LB, 
-                    BioHeaderConstants.FILE_HEADER_LENGTH_HB
+            buffer.putInt(0, HipoHeader.FILE_ID_STRING);
+            buffer.putInt(4, HipoHeader.FILE_VER_STRING);
+            int  headerLength = HipoByteUtils.write(0, array.length, 
+                    HipoHeader.FILE_HEADER_LENGTH_LB, 
+                    HipoHeader.FILE_HEADER_LENGTH_HB
                     );
             buffer.putInt(8, headerLength);
             buffer.putInt(12,23);
             outStream.write(buffer.array());
             this.outputRecord.reset();
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(BioWriter.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HipoWriter.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(BioWriter.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HipoWriter.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     /**
@@ -139,7 +139,7 @@ public class BioWriter {
                 this.totalByteWritten += array.length;
                 this.outputRecord.reset();
             } catch (IOException ex) {
-                Logger.getLogger(BioWriter.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(HipoWriter.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -170,7 +170,7 @@ public class BioWriter {
         try {
             this.outStream.close();
         } catch (IOException ex) {
-            Logger.getLogger(BioWriter.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HipoWriter.class.getName()).log(Level.SEVERE, null, ex);
         }
         System.out.println(this.getStatusString());
     }
@@ -222,12 +222,12 @@ public class BioWriter {
      * @param args 
      */
     public static void main(String[] args){
-        BioWriter writer = new BioWriter();
+        HipoWriter writer = new HipoWriter();
         //writer.setCompression(true);
         writer.open("testfile.bio");
         writer.setMaxRecordSize(20000);
         for(int i = 0; i < 80; i++){
-            byte[] buffer = BioByteUtils.generateByteArray(45000);
+            byte[] buffer = HipoByteUtils.generateByteArray(45000);
             writer.writeEvent(buffer);
         }
         writer.close();

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.jlab.bio;
+package org.jlab.hipo;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,13 +20,13 @@ import java.util.logging.Logger;
  *
  * @author gavalian
  */
-public class BioReader {
+public class HipoReader {
     FileInputStream  inputStream = null;
     List<Long>    recordList   = new ArrayList<Long>();
     List<Long>    recordLength = new ArrayList<Long>(); 
     
-    List<BioRecordIndex>  inRecords        = new ArrayList<BioRecordIndex>();
-    List<BioRecordIndex>  corruptedRecords = new ArrayList<BioRecordIndex>();
+    List<HipoRecordIndex>  inRecords        = new ArrayList<HipoRecordIndex>();
+    List<HipoRecordIndex>  corruptedRecords = new ArrayList<HipoRecordIndex>();
     
     int                   debugMode = 10;
     
@@ -40,7 +40,7 @@ public class BioReader {
     long  timeSpendOnReading  = (long) 0;
     
     
-    public BioReader(){
+    public HipoReader(){
         
     }
     /**
@@ -55,7 +55,7 @@ public class BioReader {
             this.readRecordIndex(inRecords);
             
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(BioReader.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HipoReader.class.getName()).log(Level.SEVERE, null, ex);
         }
         if(this.debugMode>0) System.out.println("[bio-reader] ---> recovered records : " + this.inRecords.size());
     }
@@ -65,9 +65,9 @@ public class BioReader {
      * records. This records will contain a string describing the problem.
      * @param index 
      */
-    public void readRecordIndex(List<BioRecordIndex>  index){
+    public void readRecordIndex(List<HipoRecordIndex>  index){
         
-        byte[]  fileHeader   = new byte[BioHeaderConstants.FILE_HEADER_SIZE];
+        byte[]  fileHeader   = new byte[HipoHeader.FILE_HEADER_SIZE];
         
         int     firstRecordOffset = 0;
         
@@ -80,23 +80,23 @@ public class BioReader {
             int identifier   = hb.getInt(0);
             int sizeWord     = hb.get(8);
             
-            int headerLength = BioByteUtils.read(sizeWord,
-                    BioHeaderConstants.FILE_HEADER_LENGTH_LB,
-                    BioHeaderConstants.FILE_HEADER_LENGTH_HB);
+            int headerLength = HipoByteUtils.read(sizeWord,
+                    HipoHeader.FILE_HEADER_LENGTH_LB,
+                    HipoHeader.FILE_HEADER_LENGTH_HB);
             
-            if(identifier==BioHeaderConstants.FILE_ID_STRING){
-                firstRecordOffset = BioHeaderConstants.FILE_HEADER_SIZE + headerLength;
+            if(identifier==HipoHeader.FILE_ID_STRING){
+                firstRecordOffset = HipoHeader.FILE_HEADER_SIZE + headerLength;
             } else {
                 System.out.println("[bio-reader] ---> errors. the provided file is not BIO format.");
                 return;
             }
         } catch (IOException ex) {
-            Logger.getLogger(BioReader.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HipoReader.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         // Assumin that we passed successfully the event 
         
-        byte[]  recordHeader = new byte[BioHeaderConstants.RECORD_HEADER_SIZE];
+        byte[]  recordHeader = new byte[HipoHeader.RECORD_HEADER_SIZE];
         //System.out.println("[bio-reader] --->  reading file index ");
         long stime_indexing = System.currentTimeMillis();
         index.clear();
@@ -109,9 +109,9 @@ public class BioReader {
             while(nread>0){
                 nread = this.inputStream.read(recordHeader);                            
                 if(nread>0){    
-                    BioRecordIndex ri = new BioRecordIndex(
+                    HipoRecordIndex ri = new HipoRecordIndex(
                             this.inputStream.getChannel().position()-
-                                    BioHeaderConstants.RECORD_HEADER_SIZE);
+                                    HipoHeader.RECORD_HEADER_SIZE);
                     
                     ib = ByteBuffer.wrap(recordHeader);
                     ib.order(ByteOrder.LITTLE_ENDIAN);
@@ -127,7 +127,7 @@ public class BioReader {
                 }
             }
         } catch (IOException ex) {
-            Logger.getLogger(BioReader.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HipoReader.class.getName()).log(Level.SEVERE, null, ex);
         }
         long etime_indexing = System.currentTimeMillis();
         this.timeSpendOnIndexing = (etime_indexing-stime_indexing);
@@ -155,7 +155,7 @@ public class BioReader {
         return this.inRecords.size();
     }
     
-    public BioRecord  readRecord(int record){
+    public HipoRecord  readRecord(int record){
         long stime_reading = System.currentTimeMillis();
         try {
             //long record_offset = this.recordList.get(record);
@@ -164,7 +164,7 @@ public class BioReader {
             long record_offset = this.inRecords.get(record).getPosition();
             long record_length = this.inRecords.get(record).getLength();
             long record_nindex = this.inRecords.get(record).getNumberOfEvents();
-            long record_size   = BioHeaderConstants.RECORD_HEADER_SIZE + 
+            long record_size   = HipoHeader.RECORD_HEADER_SIZE + 
                     record_length + 4*record_nindex;
             
             this.inputStream.getChannel().position(record_offset);
@@ -173,16 +173,16 @@ public class BioReader {
             this.inputStream.read(buffer);
             long etime_reading = System.currentTimeMillis();
             this.timeSpendOnReading += (etime_reading-stime_reading);
-            return new BioRecord(buffer);
+            return new HipoRecord(buffer);
 
         } catch (IOException ex) {
-            Logger.getLogger(BioReader.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HipoReader.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
     
     public static void main(String[] args){
-        BioReader reader = new BioReader();
+        HipoReader reader = new HipoReader();
         reader.open("testfile.bio");
         reader.show();
         System.out.println(reader.getStatusString());

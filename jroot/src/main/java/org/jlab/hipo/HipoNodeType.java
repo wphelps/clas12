@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.jlab.bio;
+package org.jlab.hipo;
 
 import org.jlab.clas.detector.BankType;
 import static org.jlab.clas.detector.BankType.UNDEFINED;
@@ -12,7 +12,7 @@ import static org.jlab.clas.detector.BankType.UNDEFINED;
  *
  * @author gavalian
  */
-public enum BioNodeType {
+public enum HipoNodeType {
     
     UNDEFINED ( 0, "UNDEFINED"),
     BYTE      ( 1, "BYTE"),
@@ -24,12 +24,12 @@ public enum BioNodeType {
     private final int typeid;
     private final String typename;
     
-    BioNodeType(){
+    HipoNodeType(){
         typeid = 0;
         typename = "UNDEFINED";
     }
     
-    BioNodeType(int id, String name){
+    HipoNodeType(int id, String name){
         typeid = id;
         typename = name;
     }
@@ -46,9 +46,9 @@ public enum BioNodeType {
         return typeid;
     }
     
-    public static BioNodeType getType(String name) {
+    public static HipoNodeType getType(String name) {
         name = name.trim();
-        for(BioNodeType id: BioNodeType.values())
+        for(HipoNodeType id: HipoNodeType.values())
             if (id.getName().equalsIgnoreCase(name)) 
                 return id;
         return UNDEFINED;
