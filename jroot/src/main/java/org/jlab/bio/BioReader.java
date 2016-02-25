@@ -37,6 +37,7 @@ public class BioReader {
      */
     
     long  timeSpendOnIndexing = (long) 0;
+    long  timeSpendOnReading  = (long) 0;
     
     
     public BioReader(){
@@ -141,9 +142,11 @@ public class BioReader {
     
     public String getStatusString(){
         StringBuilder str = new StringBuilder();
-        double time = ((double) this.timeSpendOnIndexing)/1000.0;
+        double time  = ((double) this.timeSpendOnIndexing)/1000.0;
+        double timer = ((double) this.timeSpendOnReading)/1000.0;
         str.append(String.format("[BIO-READER]  NRECORDS = %12d, ",this.inRecords.size() ));
-        str.append(String.format("TIME INDEXING = %7.3f sec",time));
+        str.append(String.format(" TIME INDEXING = %7.3f sec",time));
+        str.append(String.format(" TIME READING = %7.3f sec",timer));
         return str.toString();
     }
     
@@ -153,17 +156,25 @@ public class BioReader {
     }
     
     public BioRecord  readRecord(int record){
+        long stime_reading = System.currentTimeMillis();
         try {
             //long record_offset = this.recordList.get(record);
             //long record_length = this.recordLength.get(record);
             
             long record_offset = this.inRecords.get(record).getPosition();
             long record_length = this.inRecords.get(record).getLength();
+            long record_nindex = this.inRecords.get(record).getNumberOfEvents();
+            long record_size   = BioHeaderConstants.RECORD_HEADER_SIZE + 
+                    record_length + 4*record_nindex;
             
             this.inputStream.getChannel().position(record_offset);
-            byte[]  buffer = new byte[(int) record_length];
+            
+            byte[]  buffer = new byte[(int) record_size];
             this.inputStream.read(buffer);
+            long etime_reading = System.currentTimeMillis();
+            this.timeSpendOnReading += (etime_reading-stime_reading);
             return new BioRecord(buffer);
+
         } catch (IOException ex) {
             Logger.getLogger(BioReader.class.getName()).log(Level.SEVERE, null, ex);
         }
