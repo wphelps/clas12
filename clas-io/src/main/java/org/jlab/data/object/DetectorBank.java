@@ -21,19 +21,19 @@ public class DetectorBank {
         
     }
     
-    @EvioDataType(parent=1200,tag=1502,num=3,type="int32")
+    @EvioDataType(parent=1500,tag=1502,num=3,type="int32")
     public List getADCL(){
         //System.out.println(" method called ");
         return this.adcL;
     }
     
-    @EvioDataType(parent=1200,tag=1502,num=4,type="int32")
+    @EvioDataType(parent=1500,tag=1502,num=4,type="int32")
     public List getADCR(){
         //System.out.println(" method called ");
         return this.adcR;
     }
     
-    @EvioDataType(parent=1200,tag=1502,num=1,type="int32")
+    @EvioDataType(parent=1500,tag=1502,num=1,type="int32")
     public List getSector(){
         //System.out.println(" method called ");
         return this.sector;
