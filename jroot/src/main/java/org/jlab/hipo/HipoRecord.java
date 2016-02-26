@@ -378,15 +378,11 @@ public class HipoRecord {
 
         //record.compressed(true);
         byte[]  record_bytes_u = record.getByteBuffer().array();
-        byte[]  record_bytes_c = record.getByteBuffer(true).array();
-        
-        record.show();
-        
+        byte[]  record_bytes_c = record.getByteBuffer(true).array();        
+        record.show();        
         System.out.println(" SIZE = " + record_bytes_u.length + "  " +
                 record_bytes_c.length);
-        
-
-        
+                
         System.out.println("----------->   Record uncompressed");
         HipoRecord  rru = new HipoRecord(record_bytes_u);
         rru.show();
