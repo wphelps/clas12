@@ -177,7 +177,23 @@ public class Function1D  {
         if(options.contains("E")==true) mode = 3;
         if(options.contains("N")==true) mode = 1;
         if(options.contains("P")==true) mode = 2;
-            
+        
+        
+        if(options.contains("L")==true){
+            double lnl = 0.0;
+            double A = 0.0;
+            for(int bin = 0; bin < ds.getDataSize(); bin++){
+         	   double xv = ds.getDataX(bin);
+         	   double yv = ds.getDataY(bin);
+         	   double fv = this.eval(xv);
+         	   if(yv!=0&&xv>=this.getMin()&&xv<this.getMax()&&fv>0.00000000000000000000000001){
+         		  lnl += yv*Math.log(fv);
+         		  A+=fv;
+         	   }
+            }
+            return -lnl+A;
+        }
+        
         if(options.contains("R")==true) funcRangeCheck = true;
         //System.out.println(" FITTING MODE = " + mode);
         for(int b = 0; b < ds.getDataSize();b++){
@@ -187,25 +203,31 @@ public class Function1D  {
             double ye = ds.getErrorY(b);
             double fv = this.eval(xv);
             double denom = 1.0;
-            
-            switch(mode){
-                case 1:  denom = yv; break;
-                case 2:  denom = fv; break;
-                case 3:  denom = ye*ye; break;
-                default: denom = 1.0; break;                    
-            }
-            if(yv!=0.0&&denom!=0.0){
-                if(funcRangeCheck==true){
-                    if(xv>=this.getMin()&&xv<=this.getMax()){
+            if(mode==4) {
+             
+
+            } else {
+                switch(mode){
+                    case 1:  denom = yv; break;
+                    case 2:  denom = fv; break;
+                    case 3:  denom = ye*ye; break;
+                    default: denom = 1.0; break;                    
+                }
+                
+                if(yv!=0.0&&denom!=0.0){
+                    if(funcRangeCheck==true){
+                        if(xv>=this.getMin()&&xv<=this.getMax()){
+                            chiSquare += (yv-fv)*(yv-fv)/denom;
+                            //System.out.println("Bin = " + b +  " COUNTING X = " + xv +  "  Y = " + yv + "  DENOM = " + denom);
+                            ndfPoints++;
+                        }
+                    } else {
                         chiSquare += (yv-fv)*(yv-fv)/denom;
-                        //System.out.println("Bin = " + b +  " COUNTING X = " + xv +  "  Y = " + yv + "  DENOM = " + denom);
                         ndfPoints++;
                     }
-                } else {
-                    chiSquare += (yv-fv)*(yv-fv)/denom;
-                    ndfPoints++;
                 }
-            }
+            }            
+            
         } 
         //System.out.println("CHI2/ NDF = " +  chiSquare +" / " +ndfPoints);
         return chiSquare;        

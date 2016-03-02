@@ -267,9 +267,7 @@ public class CLASReconstruction {
         
         Benchmark bench = new Benchmark();
         bench.addTimer("WRITER");
-        bench.addTimer("TOTAL");
-        
-       
+        bench.addTimer("TOTAL");               
         
         Long  processTime = System.currentTimeMillis();
         if(this.serviceConfig.hasItem("DAQ", "data")==false){

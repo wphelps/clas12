@@ -115,6 +115,11 @@ public class DataSetFrame {
     }
     
     public void add(IDataSet ds,String option){
+        
+        if(option.contains("same")==false){
+            this.collection.clear();
+        }
+        
         this.collection.addDataSet(ds,option);
         
         if(this.collection.getCount()==1){

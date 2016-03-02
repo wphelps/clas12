@@ -144,6 +144,9 @@ public class EmbeddedPad extends JPanel {
         f1.setLineStyle(2);
         pad.draw(h1,"EPS");
         pad.draw(f1,"sameS");
+        //pad.draw(h1,"S");
+        //pad.draw(f1,"S");
+        //pad.draw(f1,"S");
         //pad.draw(f1, "same");
         
         H2D  h2 = new H2D("h2",60,0.0,12.0,60,0.0,12.0);
