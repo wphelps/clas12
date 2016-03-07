@@ -223,7 +223,7 @@ public class HipoWriter {
      */
     public static void main(String[] args){
         HipoWriter writer = new HipoWriter();
-        writer.setCompression(true);
+        //writer.setCompression(true);
         writer.open("testfile.bio");
         writer.setMaxRecordSize(200000);
         for(int i = 0; i < 80; i++){

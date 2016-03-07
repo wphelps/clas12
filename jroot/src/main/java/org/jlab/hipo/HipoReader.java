@@ -21,6 +21,8 @@ import java.util.logging.Logger;
  * @author gavalian
  */
 public class HipoReader {
+    
+    
     FileInputStream  inputStream = null;
     List<Long>    recordList   = new ArrayList<Long>();
     List<Long>    recordLength = new ArrayList<Long>(); 
@@ -39,6 +41,16 @@ public class HipoReader {
     long  timeSpendOnIndexing = (long) 0;
     long  timeSpendOnReading  = (long) 0;
     
+    /**
+     * Keeping track of the events in the file
+     */
+    
+    private int  readerCurrentRecord       = 0;
+    private int  readerCurrentRecordLength = 0;
+    private int  readerCurrentEvent        = 0;
+    private int  numberOfEventsInFile      = 0;
+    
+    private HipoRecord readerRecord        = null;
     
     public HipoReader(){
         
@@ -70,7 +82,7 @@ public class HipoReader {
         byte[]  fileHeader   = new byte[HipoHeader.FILE_HEADER_SIZE];
         
         int     firstRecordOffset = 0;
-        
+        int     headerLength      = 0;
         try {
             this.inputStream.read(fileHeader);
             
@@ -80,20 +92,23 @@ public class HipoReader {
             int identifier   = hb.getInt(0);
             int sizeWord     = hb.get(8);
             
-            int headerLength = HipoByteUtils.read(sizeWord,
+            headerLength = HipoByteUtils.read(sizeWord,
                     HipoHeader.FILE_HEADER_LENGTH_LB,
                     HipoHeader.FILE_HEADER_LENGTH_HB);
             
             if(identifier==HipoHeader.FILE_ID_STRING){
                 firstRecordOffset = HipoHeader.FILE_HEADER_SIZE + headerLength;
             } else {
-                System.out.println("[bio-reader] ---> errors. the provided file is not BIO format.");
+                System.out.println("[bio-reader] ---> errors. the provided file is not HIPO format.");
                 return;
             }
         } catch (IOException ex) {
             Logger.getLogger(HipoReader.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+        if(this.debugMode>4){
+            System.out.println("[debug][read-index] ---->  first record index = " + firstRecordOffset);
+            System.out.println("[debug][read-index] ---->  file header length = " + headerLength);
+        }
         // Assumin that we passed successfully the event 
         
         byte[]  recordHeader = new byte[HipoHeader.RECORD_HEADER_SIZE];
@@ -107,7 +122,7 @@ public class HipoReader {
             ByteBuffer ib = null;
             
             while(nread>0){
-                nread = this.inputStream.read(recordHeader);                            
+                nread = this.inputStream.read(recordHeader); 
                 if(nread>0){    
                     HipoRecordIndex ri = new HipoRecordIndex(
                             this.inputStream.getChannel().position()-
@@ -131,6 +146,60 @@ public class HipoReader {
         }
         long etime_indexing = System.currentTimeMillis();
         this.timeSpendOnIndexing = (etime_indexing-stime_indexing);
+        this.numberOfEventsInFile = 0;
+        for(HipoRecordIndex ri : this.inRecords){
+            this.numberOfEventsInFile += ri.getNumberOfEvents();
+        }
+    }
+    
+    private int  getRecordByEvent(int event){
+        int nevents = 0;
+        int icount  = 0;
+        for(HipoRecordIndex ri : this.inRecords){
+            nevents += ri.getNumberOfEvents();
+            if(nevents>event) return icount;
+            icount++;
+        }
+        return -1;
+    }
+    
+    private int  getEventOffsetInRecord(int event){
+        int nevents = 0;
+        int icount  = 0;
+        for(HipoRecordIndex ri : this.inRecords){
+            if(nevents + ri.getNumberOfEvents() > event){
+                return event - nevents;
+            }
+            nevents += ri.getNumberOfEvents();            
+            //if(nevents>event) return icount;
+            icount++;
+        }
+        return -1;
+    }
+    
+    public byte[] readEvent(int pos){
+        int nrecord = getRecordByEvent(pos);
+        if(nrecord!=this.readerCurrentRecord){
+            this.readerRecord = this.readRecord(nrecord);
+            this.readerCurrentRecord = nrecord;
+        }
+        
+        if(this.readerRecord==null){
+            this.readerRecord = this.readRecord(nrecord);
+            this.readerCurrentRecord = nrecord;
+        }
+        int nevoffset = this.getEventOffsetInRecord(pos);
+        
+        byte[]  eventBytes = this.readerRecord.getEvent(nevoffset);
+        return eventBytes;
+    }
+    
+    public int  getEventCount(){
+        return this.numberOfEventsInFile;
+    }
+    
+    public int  getPosition(){
+        return this.readerCurrentEvent;
     }
     
     public void show(){
@@ -138,7 +207,7 @@ public class HipoReader {
             System.out.println(String.format(" %5d : %s" ,i, this.inRecords.get(i).toString()));
         }
     }
-    
+        
     
     public String getStatusString(){
         StringBuilder str = new StringBuilder();
@@ -156,11 +225,11 @@ public class HipoReader {
     }
     
     public HipoRecord  readRecord(int record){
+        //System.out.println("[Hipo::readRecord] --->  reading record " + record);
         long stime_reading = System.currentTimeMillis();
         try {
             //long record_offset = this.recordList.get(record);
-            //long record_length = this.recordLength.get(record);
-            
+            //long record_length = this.recordLength.get(record);            
             long record_offset = this.inRecords.get(record).getPosition();
             long record_length = this.inRecords.get(record).getLength();
             long record_nindex = this.inRecords.get(record).getNumberOfEvents();
