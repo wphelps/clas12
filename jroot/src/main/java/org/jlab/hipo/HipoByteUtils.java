@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -19,7 +20,7 @@ import java.util.zip.GZIPOutputStream;
  */
 public class HipoByteUtils {
     
-    public static final int MTU = 1500;
+    public static final int MTU = 1024*1024;
     public static TreeMap<Integer,Integer> bitMap = HipoByteUtils.createBitMap();
     
     public static TreeMap<Integer,Integer>  createBitMap(){
@@ -34,15 +35,22 @@ public class HipoByteUtils {
         return map;
     }
     
+
     /**
      * returns the byte array GZIP compressed.
      * @param count
      * @return 
      */
     public static byte[] gzip(byte[] ungzipped) {
-        final ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        final ByteArrayOutputStream bytes = new ByteArrayOutputStream();        
         try {
             final GZIPOutputStream gzipOutputStream = new GZIPOutputStream(bytes);
+            /*{
+                {
+                    this.def.setLevel(Deflater.BEST_COMPRESSION);
+                }
+            };*/
+            
             gzipOutputStream.write(ungzipped);
             gzipOutputStream.close();
         } catch (IOException e) {
@@ -63,8 +71,10 @@ public class HipoByteUtils {
      */
     public static byte[] ungzip(final byte[] gzipped) {
         byte[] ungzipped = new byte[0];
+        int    internalBufferSize  = 1*1024*1024;
         try {
-            final GZIPInputStream inputStream = new GZIPInputStream(new ByteArrayInputStream(gzipped));
+            final GZIPInputStream inputStream = new GZIPInputStream(new ByteArrayInputStream(gzipped),1024*1024);
+            
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(gzipped.length);
             final byte[] buffer = new byte[HipoByteUtils.MTU];
             int bytesRead = 0;
@@ -201,5 +211,18 @@ public class HipoByteUtils {
         System.out.println(HipoByteUtils.getByteString(header));
         System.out.println(HipoByteUtils.getByteString(headerM));
         System.out.println(HipoByteUtils.getByteString(headerR));
+        
+        byte[] buffer = HipoByteUtils.generateByteArray(1845000);
+        System.out.println("Length = " + buffer.length);
+        byte[] compressed = HipoByteUtils.gzip(buffer);
+        System.out.println("compressed length = " + compressed.length);
+        
+        long stime_ = System.currentTimeMillis();
+        for(int loop = 0; loop < 50000; loop++){
+            byte[] dc = HipoByteUtils.ungzip(compressed);
+        }
+        long etime_ = System.currentTimeMillis();
+        double time = (etime_-stime_)/1000.0;
+        System.out.println("Deflate speed = " + time + " sec");
     }
 }
