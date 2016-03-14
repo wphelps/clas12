@@ -18,7 +18,7 @@ import org.jlab.geom.prim.Transformation3D.Transform;
 public class Geant4Basic implements IGeant4Volume {
 
     String volumeName = "basic_volume";
-    String volumeType = "box";
+    String volumeType = "box";    
     
     Transformation3D  volumeRotation    = new Transformation3D();
     Transformation3D  volumeTranslation = new Transformation3D();
@@ -27,12 +27,25 @@ public class Geant4Basic implements IGeant4Volume {
     Point3D   volumePosition      = new Point3D(0.0,0.0,0.0);
     int[]     volumeID            = new int[]{};
     double[]  volumeParameters    = new double[]{};
+    String    volumeUnits         = "cm";
+    
+    
+    private List<Geant4Basic>  children = new ArrayList<Geant4Basic>();
+    
     
     public Geant4Basic(String name, String type, double... pars){
         this.volumeName = name;
         this.volumeType = type;
         this.volumeParameters = new double[pars.length];
         System.arraycopy(pars, 0, this.volumeParameters, 0, pars.length);
+    }
+    
+    public String getUnits(){
+        return this.volumeUnits;
+    }
+    
+    public void setName(String name){
+        this.volumeName = name;
     }
     
     @Override
@@ -51,6 +64,10 @@ public class Geant4Basic implements IGeant4Volume {
         System.arraycopy(pars, 0, this.volumeParameters, 0, pars.length);
     }
 
+    public List<Geant4Basic>   getChildren(){
+        return this.children;
+    }
+    
     @Override
     public double[] getParameters() {
         return this.volumeParameters;
@@ -115,7 +132,7 @@ public class Geant4Basic implements IGeant4Volume {
         StringBuilder  str = new StringBuilder();
         str.append(String.format("%18s | %8s |  ", this.getName(),this.getType()));
         for(double par : this.volumeParameters){
-            str.append(String.format("%8.3f", par));
+            str.append(String.format("%12.4f", par));
         }
         str.append(" | ");
         
