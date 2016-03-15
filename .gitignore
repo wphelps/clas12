@@ -16,3 +16,4 @@ hs_err_pid*
 /clas-physics/target/
 /clasrec-main/target/
 /clas-geometry/target/
+/extras/geometry-viewer/target/

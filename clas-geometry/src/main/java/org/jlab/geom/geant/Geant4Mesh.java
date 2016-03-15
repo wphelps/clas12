@@ -52,11 +52,35 @@ public class Geant4Mesh {
             vT.append(item.rotation());
             vT.append(volume.translation());            
             vT.append(volume.rotation());
-            vT.show();
+            //vT.show();
             MeshView  mesh = Geant4Mesh.makeMeshBox(item, vT);
             meshes.add(mesh);
         }
         return meshes;
+    }
+    
+    public static MeshView makeMeshTrap(Geant4Basic volume){  
+        float[] p = Geant4Mesh.getPointsTrap(volume.getParameters());
+        int[]  faces = new int[]{
+            0,0,  3,0, 2,0,
+            2,0,  1,0, 0,0,
+            4,0,  5,0, 6,0,
+            6,0,  7,0, 4,0,
+            1,0,  2,0, 6,0,
+            6,0,  5,0, 1,0,
+            0,0,  1,0, 5,0,
+            5,0,  4,0, 0,0,
+            0,0,  4,0, 7,0,
+            7,0,  3,0, 0,0,
+            2,0,  3,0, 7,0,
+            7,0,  6,0, 2,0                                  
+        };
+        TriangleMesh boxMesh = new TriangleMesh();
+        //System.out.println("CREATING MESH");
+        boxMesh.getTexCoords().addAll(0, 0);
+        boxMesh.getPoints().addAll(p);
+        boxMesh.getFaces().addAll(faces);
+        return new MeshView(boxMesh);
     }
     /**
      * Creates a JavaFX Mesh for a BOX object, it can be viewed in the JavaFX scene.
@@ -95,7 +119,7 @@ public class Geant4Mesh {
         };
         
         TriangleMesh boxMesh = new TriangleMesh();
-        System.out.println("CREATING MESH");
+        //System.out.println("CREATING MESH");
         boxMesh.getTexCoords().addAll(0, 0);
         boxMesh.getPoints().addAll(points);
         boxMesh.getFaces().addAll(faces);
@@ -189,6 +213,63 @@ public class Geant4Mesh {
         boxMesh.getFaces().addAll(faces);
         return new MeshView(boxMesh);
     }
+    
+    
+    public static float[]   getPointsBox(int dx, int dy, int dz){
+        float[] p = new float[]{
+            (float) -dx, (float) -dy, (float) -dz,
+            (float) -dx, (float)  dy, (float) -dz,
+            (float) -dx, (float)  dy, (float)  dz,
+            (float) -dx, (float) -dy, (float)  dz,
+            
+            (float)  dx, (float) -dy, (float) -dz,
+            (float)  dx, (float)  dy, (float) -dz,
+            (float)  dx, (float)  dy, (float)  dz,
+            (float)  dx, (float) -dy, (float)  dz
+        };
+        return p;
+    }
+    
+    public static float[]  getPointsTrap(double... pars){
+        if(pars.length!=11){
+            System.out.println("[Geatn4::getPointsTrap] --> parameter length is wrong ["
+            + pars.length + "]  must be 11" );
+            return null;
+        }
+        double pDz    = pars[ 0];
+        double pTheta = pars[ 1];
+        double pPhi   = pars[ 2];
+        double pDy1   = pars[ 3];
+        double pDx1   = pars[ 4];
+        double pDx2   = pars[ 5];
+        double pAlp1  = pars[ 6];
+        double pDy2   = pars[ 7];
+        double pDx3   = pars[ 8];
+        double pDx4   = pars[ 9];
+        double pAlp2  = pars[10];
+        //---------------------------
+        // PB describes the point of the bottom parallel face of the trapesoid
+        float[] pB = new float[]{
+            (float) (-pDx1 - pDy1*Math.tan(pAlp1)), (float) -pDy1, (float) -pDz,
+            (float) ( pDx1 - pDy1*Math.tan(pAlp1)), (float) -pDy1, (float) -pDz,
+            (float) ( pDx2 + pDy1*Math.tan(pAlp1)), (float)  pDy1, (float) -pDz,
+            (float) (-pDx2 + pDy1*Math.tan(pAlp1)), (float)  pDy1, (float) -pDz,            
+        };
+        
+        float[] pT = new float[]{
+            (float) (-pDx3 - pDy2*Math.tan(pAlp2)), (float) -pDy2, (float) -pDz,
+            (float) ( pDx3 - pDy2*Math.tan(pAlp2)), (float) -pDy2, (float) -pDz,
+            (float) ( pDx4 + pDy2*Math.tan(pAlp2)), (float)  pDy2, (float) -pDz,
+            (float) (-pDx4 + pDy2*Math.tan(pAlp2)), (float)  pDy2, (float) -pDz,
+        };
+        
+        float[] p = new float[8*3];
+        for(int loop = 0; loop < pB.length; loop++) p[loop] = pB[loop];
+        for(int loop = 0; loop < pT.length; loop++) p[loop+pB.length] = pT[loop];
+        
+        return pB;
+    }    
+    
     public static void main(String[] args){
         Geant4Basic  box = new Geant4Basic("box_1","box",20,20,120);
         MeshView view = Geant4Mesh.makeMesh(box);
