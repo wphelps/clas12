@@ -68,7 +68,7 @@ public class FTOFGeant4Factory {
         params[4]        = z_size_paddle + mother_grow_Z;
         
         Geant4Basic     mother = new Geant4Basic("FTOF_S_"+sector+"_L_"+layer,"trd",params);
-        mother.setPosition(perp_offset - center , 0.0, R);
+        mother.setPosition( -(perp_offset - center), 0.0, R);
         
         mother.setRotation("yzx", thtilt, Math.toRadians(60.0*(sector-1)), 0.0);
         for(int loop = 0; loop < paddles.size();loop++){

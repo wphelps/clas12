@@ -97,7 +97,10 @@ public class Geant4Basic implements IGeant4Volume {
     public int[] getId() {
         return this.volumeID;
     }
-
+    
+    public Transformation3D translation(){return this.volumeTranslation;}
+    public Transformation3D rotation(){return this.volumeRotation;}
+    
     @Override
     public void setPosition(double x, double y, double z) {
         this.volumeTranslation.clear();
