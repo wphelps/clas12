@@ -10,13 +10,22 @@ import java.util.Map;
 import java.util.TreeMap;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
+import static javafx.application.Application.launch;
+import static javafx.application.Application.launch;
+import static javafx.application.Application.launch;
+import static javafx.application.Application.launch;
+import static javafx.application.Application.launch;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
@@ -27,10 +36,12 @@ import javafx.scene.shape.Sphere;
 import javafx.scene.shape.TriangleMesh;
 import javafx.stage.Stage;
 import org.jlab.clasrec.utils.DataBaseLoader;
+import org.jlab.detector.geant4.DCGeant4Factory;
 import org.jlab.detector.geant4.FTOFGeant4Factory;
 import org.jlab.geom.base.ConstantProvider;
 import org.jlab.geom.geant.Geant4Basic;
 import org.jlab.geom.geant.Geant4Mesh;
+import org.jlab.geom.prim.Transformation3D;
 
 /**
  *
@@ -44,11 +55,14 @@ public class CLAS12GeometryViewer extends Application {
     TreeView<String>  treeView = null;    
     Map<String,MeshStore>  meshStores = new TreeMap<String,MeshStore>();
     
+    BorderPane   mainBorderPane = null;
     
     Group root = null;
     
     @Override
     public void start(Stage stage) throws Exception {
+        
+        this.mainBorderPane = new BorderPane();
         
         SplitPane  splitPane = new SplitPane();
         StackPane  treePane  = new StackPane();
@@ -71,9 +85,25 @@ public class CLAS12GeometryViewer extends Application {
         
         splitPane.getItems().addAll(treePane,pane);
         splitPane.setDividerPositions(0.2);
-        this.addDetector("FTOF");
+
+        //this.addDetector("FTOF");
+        //this.test();
+        this.testDC();
         //final Scene scene = new Scene(pane, 880, 880, true);
-        final Scene scene = new Scene(splitPane, 1280, 880, true);
+        this.mainBorderPane.setCenter(splitPane);
+        HBox statusPane = new HBox();
+        
+        ColorPicker colorPicker = new ColorPicker();
+        colorPicker.setOnAction(new EventHandler() {
+            @Override
+            public void handle(Event event) {
+                content.setBackgroundColor(colorPicker.getValue());
+            }            
+        });
+        statusPane.getChildren().add(colorPicker);
+        this.mainBorderPane.setBottom(statusPane);
+        
+        final Scene scene = new Scene(mainBorderPane, 1280, 880, true);
         
         scene.setFill(Color.ALICEBLUE);
         stage.setTitle("CLAS12 Geometry Viewer - JavaFX3D");
@@ -81,7 +111,50 @@ public class CLAS12GeometryViewer extends Application {
         stage.show();
     }
     
+
+    public void testDC(){
+        
+        PhongMaterial mat = new PhongMaterial();
+        mat.setDiffuseColor(new Color(0.2,0.2,0.4,0.4));
+        mat.setSpecularColor(new Color(0.4,0.4,0.8,0.4));
+        //mat.setSpecularPower(0.5);
+
+        DCGeant4Factory  factory = new DCGeant4Factory();
+        Geant4Basic  g4v   = factory.getRegion(1);
+        List<MeshView>  meshes = Geant4Mesh.getMesh(g4v);
+        for(MeshView mesh : meshes) mesh.setMaterial(mat);
+        root.getChildren().addAll(meshes);
+        System.out.println(" Meshes Size = " + meshes.size());
+        /*
+        
+        Geant4Basic  dcLayer = factory.getLayer(100, 120, 1.0, 
+                Math.toRadians(12.5), Math.toRadians(6.0));
+        
+        MeshView  mesh = Geant4Mesh.makeMeshTrap(dcLayer);
+        this.root.getChildren().add(mesh);
+        System.out.println(dcLayer);*/
+        
+    }
     
+    public void test(){
+        Geant4Basic  volume = new Geant4Basic("DC","trap",
+                100.0,Math.toRadians(0.0),Math.toRadians(90.0),                
+                5,40,40, Math.toRadians(0.0),
+                5,100,100, Math.toRadians(0.0)                
+        );
+        
+        MeshView  mesh = Geant4Mesh.makeMeshTrap(volume, new Transformation3D());
+        double red = 0.5;
+        double green = 0.0;
+        double blue = 0.2;
+        double alpha = 1.0;
+         PhongMaterial mat = new PhongMaterial();
+        mat.setDiffuseColor(new Color(red,green,blue,alpha));
+        mat.setSpecularColor(new Color(red,green,blue,alpha));
+        //mat.setSpecularPower(0.5);
+        mesh.setMaterial(mat);
+        this.root.getChildren().add(mesh);
+    }
     public void addDetector(String name){
         
         TreeItem<String>  clasROOT = new TreeItem<String>("CLAS12");

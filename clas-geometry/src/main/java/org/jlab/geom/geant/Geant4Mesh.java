@@ -48,18 +48,27 @@ public class Geant4Mesh {
 
         for(Geant4Basic item : volume.getChildren()){
             vT.clear();
-            vT.append(item.translation());
+
             vT.append(item.rotation());
-            vT.append(volume.translation());            
+            vT.append(item.translation());
             vT.append(volume.rotation());
+            vT.append(volume.translation());            
+
             //vT.show();
-            MeshView  mesh = Geant4Mesh.makeMeshBox(item, vT);
-            meshes.add(mesh);
+            if(item.getType().compareTo("box")==0){
+                MeshView  mesh = Geant4Mesh.makeMeshBox(item, vT);                
+                meshes.add(mesh);
+            }
+            if(item.getType().compareTo("trap")==0){
+                MeshView  mesh = Geant4Mesh.makeMeshTrap(item, vT);                
+                meshes.add(mesh);
+            }
+            
         }
         return meshes;
     }
     
-    public static MeshView makeMeshTrap(Geant4Basic volume){  
+    public static MeshView makeMeshTrap(Geant4Basic volume, Transformation3D tr){  
         float[] p = Geant4Mesh.getPointsTrap(volume.getParameters());
         int[]  faces = new int[]{
             0,0,  3,0, 2,0,
@@ -73,8 +82,18 @@ public class Geant4Mesh {
             0,0,  4,0, 7,0,
             7,0,  3,0, 0,0,
             2,0,  3,0, 7,0,
-            7,0,  6,0, 2,0                                  
+            7,0,  6,0, 2,0 
         };
+        Point3D  point = new Point3D();
+        for(int loop = 0; loop < 8; loop++){
+            int index = loop*3;
+            point.set(p[index], p[index+1], p[index+2]);
+            tr.apply(point);
+            p[index]   = (float) point.x();
+            p[index+1] = (float) point.y();
+            p[index+2] = (float) point.z();
+        }
+        
         TriangleMesh boxMesh = new TriangleMesh();
         //System.out.println("CREATING MESH");
         boxMesh.getTexCoords().addAll(0, 0);
@@ -247,27 +266,32 @@ public class Geant4Mesh {
         double pDx3   = pars[ 8];
         double pDx4   = pars[ 9];
         double pAlp2  = pars[10];
+
+        
+        double rt = pDz*Math.sin(pTheta);
+        double rx = rt*Math.sin(pPhi);
+        double ry = rt*Math.cos(pPhi);
         //---------------------------
         // PB describes the point of the bottom parallel face of the trapesoid
         float[] pB = new float[]{
-            (float) (-pDx1 - pDy1*Math.tan(pAlp1)), (float) -pDy1, (float) -pDz,
-            (float) ( pDx1 - pDy1*Math.tan(pAlp1)), (float) -pDy1, (float) -pDz,
-            (float) ( pDx2 + pDy1*Math.tan(pAlp1)), (float)  pDy1, (float) -pDz,
-            (float) (-pDx2 + pDy1*Math.tan(pAlp1)), (float)  pDy1, (float) -pDz,            
+            (float) (-pDx1 - pDy1*Math.tan(pAlp1)+rx), (float) (-pDy1 + ry), (float) -pDz,
+            (float) ( pDx1 - pDy1*Math.tan(pAlp1)+rx), (float) (-pDy1 + ry), (float) -pDz,
+            (float) ( pDx2 + pDy1*Math.tan(pAlp1)+rx), (float) ( pDy1 + ry), (float) -pDz,
+            (float) (-pDx2 + pDy1*Math.tan(pAlp1)+rx), (float) ( pDy1 + ry), (float) -pDz,            
         };
         
         float[] pT = new float[]{
-            (float) (-pDx3 - pDy2*Math.tan(pAlp2)), (float) -pDy2, (float) -pDz,
-            (float) ( pDx3 - pDy2*Math.tan(pAlp2)), (float) -pDy2, (float) -pDz,
-            (float) ( pDx4 + pDy2*Math.tan(pAlp2)), (float)  pDy2, (float) -pDz,
-            (float) (-pDx4 + pDy2*Math.tan(pAlp2)), (float)  pDy2, (float) -pDz,
+            (float) (-pDx3 - pDy2*Math.tan(pAlp2) - rx), (float) (-pDy2 - ry), (float) pDz,
+            (float) ( pDx3 - pDy2*Math.tan(pAlp2) - rx), (float) (-pDy2 - ry), (float) pDz,
+            (float) ( pDx4 + pDy2*Math.tan(pAlp2) - rx), (float) ( pDy2 - ry), (float) pDz,
+            (float) (-pDx4 + pDy2*Math.tan(pAlp2) - rx), (float) ( pDy2 - ry), (float) pDz,
         };
         
         float[] p = new float[8*3];
         for(int loop = 0; loop < pB.length; loop++) p[loop] = pB[loop];
         for(int loop = 0; loop < pT.length; loop++) p[loop+pB.length] = pT[loop];
         
-        return pB;
+        return p;
     }    
     
     public static void main(String[] args){

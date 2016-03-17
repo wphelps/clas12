@@ -94,6 +94,10 @@ public class ContentModel {
 
     }
     
+    public void setBackgroundColor(Color col){
+        this.subScene.setFill(col);
+    }
+    
     private void buildSubScene() {
         root3D.getChildren().add(autoScalingGroup);
         
