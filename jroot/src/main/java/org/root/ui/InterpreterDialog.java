@@ -19,7 +19,7 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import org.root.data.NTuple;
-import org.root.pad.EmbeddedCanvas;
+import org.root.pad.TEmbeddedCanvas;
 import org.root.pad.RootCanvas;
 
 /**
@@ -29,7 +29,7 @@ import org.root.pad.RootCanvas;
 public class InterpreterDialog extends JDialog {
     JTextArea  commandsHistory = null;
     JTextField commandLine     = null;
-    private EmbeddedCanvas canvas  = null;
+    private TEmbeddedCanvas canvas  = null;
     
     private TreeMap<Integer,NTuple> ntuples = new TreeMap<Integer,NTuple>();
     
@@ -82,7 +82,7 @@ public class InterpreterDialog extends JDialog {
             }
         });
         
-        canvas = new EmbeddedCanvas(600,600,1,1);
+        canvas = new TEmbeddedCanvas(600,600,1,1);
         this.add(canvas,BorderLayout.LINE_END);
         this.add(commandsHistory,BorderLayout.CENTER);
         this.add(commandLine,BorderLayout.PAGE_END);

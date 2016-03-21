@@ -18,25 +18,25 @@ import org.root.base.IDataSet;
  *
  * @author gavalian
  */
-public class EmbeddedCanvas extends JPanel {
+public class TEmbeddedCanvas extends JPanel {
     public   ArrayList<EmbeddedPad>  canvasPads = new  ArrayList<EmbeddedPad>();
     private  int                     canvas_COLUMNS = 1;
     private  int                     canvas_ROWS    = 1;
     private  Integer currentPad = 0;
     
-    public EmbeddedCanvas(){
+    public TEmbeddedCanvas(){
      super();
      this.setPreferredSize(new Dimension(500,500));
      this.divide(1, 1);
     }
     
-    public EmbeddedCanvas(int xsize, int ysize){
+    public TEmbeddedCanvas(int xsize, int ysize){
         super();
         this.setPreferredSize(new Dimension(xsize,ysize));
         this.divide(1, 1);
     }
     
-     public EmbeddedCanvas(int xsize, int ysize, int rows, int cols){
+     public TEmbeddedCanvas(int xsize, int ysize, int rows, int cols){
         super();
         this.setPreferredSize(new Dimension(xsize,ysize));
         this.divide(rows,cols);
@@ -178,7 +178,7 @@ public class EmbeddedCanvas extends JPanel {
         JFrame frame = new JFrame();
         frame.setLayout(new GridLayout(1,3));
         
-        EmbeddedCanvas canvas = new EmbeddedCanvas(500,500,2,3);
+        TEmbeddedCanvas canvas = new TEmbeddedCanvas(500,500,2,3);
         frame.setSize(800, 600);
         canvas.setTitleFontSize(2);
         canvas.setAxisFontSize(12);

@@ -170,6 +170,10 @@ public class EmbeddedCanvas extends JPanel {
         this.canvasPads.get(this.currentPad).setAxisRange(xmin, xmax, ymin, ymax);
     }
     
+    public void setAxisRange(String axis, double min, double max){
+        this.canvasPads.get(this.currentPad).setAxisRange(axis, min, max);
+    }
+    
     public void setGridX(boolean flag){
         this.canvasPads.get(this.currentPad).dataSetFrame.getAxisFrame().setGridX(flag);
     }

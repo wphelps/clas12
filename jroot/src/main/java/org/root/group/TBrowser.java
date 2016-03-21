@@ -26,7 +26,7 @@ import javax.swing.tree.TreePath;
 import org.root.data.NTuple;
 import org.root.histogram.H1D;
 import org.root.histogram.H2D;
-import org.root.pad.EmbeddedCanvas;
+import org.root.pad.TEmbeddedCanvas;
 import org.root.pad.RootCanvas;
 
 /**
@@ -36,7 +36,7 @@ import org.root.pad.RootCanvas;
 public class TBrowser extends JFrame implements ActionListener {
     
     private TDirectory browserDirectory = new TDirectory();
-    private EmbeddedCanvas       sciCanvas;
+    private TEmbeddedCanvas       sciCanvas;
     private JTree           canvasTree;
     private JSplitPane      splitPane;
     private JMenuBar        browserMenuBar = null;
@@ -78,7 +78,7 @@ public class TBrowser extends JFrame implements ActionListener {
         JScrollPane scroll = new JScrollPane(canvasTree);
         splitPane.setLeftComponent(scroll);
 
-        sciCanvas = new EmbeddedCanvas(1000,800,1,1);
+        sciCanvas = new TEmbeddedCanvas(1000,800,1,1);
         //this.addComponentListener(sciCanvas);
         
         splitPane.setRightComponent(sciCanvas);

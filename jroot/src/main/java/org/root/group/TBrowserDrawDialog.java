@@ -22,7 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 import javax.swing.WindowConstants;
-import org.root.pad.EmbeddedCanvas;
+import org.root.pad.TEmbeddedCanvas;
 import org.root.pad.RootCanvas;
 
 /**
@@ -38,9 +38,9 @@ public class TBrowserDrawDialog extends JDialog implements ActionListener {
     private JButton           buttonDraw     = null;
     private JButton           buttonClose    = null;
     private ITreeViewer       treeViewer    = null;
-    private EmbeddedCanvas        drawCanvas     = null;
+    private TEmbeddedCanvas        drawCanvas     = null;
     
-    public TBrowserDrawDialog(ITreeViewer treeV, EmbeddedCanvas canvas){
+    public TBrowserDrawDialog(ITreeViewer treeV, TEmbeddedCanvas canvas){
         super();
         this.setTitle("Tree PLOT");
         this.setPreferredSize(new Dimension(400,280));

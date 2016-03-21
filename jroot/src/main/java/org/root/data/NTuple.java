@@ -23,7 +23,7 @@ import org.root.group.ITreeViewer;
 import org.root.group.TDirectory;
 import org.root.histogram.H1D;
 import org.root.histogram.H2D;
-import org.root.pad.EmbeddedCanvas;
+import org.root.pad.TEmbeddedCanvas;
 import org.root.pad.RootCanvas;
 
 /**
@@ -239,7 +239,7 @@ public class NTuple implements ITreeViewer {
         return root;
     }
 
-    public void draw(String obj, String selection, String options, EmbeddedCanvas canvas) {
+    public void draw(String obj, String selection, String options, TEmbeddedCanvas canvas) {
         if(obj.contains("%")==true){
             String[] tokens = obj.split("%");
             System.out.println("NOT IMPLEMENTED YET to DRAW " + tokens[0] + " vs "
