@@ -12,21 +12,35 @@ import org.jlab.geom.geant.Geant4Basic;
 
 /**
  *
- * @author gavalian
+ * @author gavalian, kenjo
  */
 public class FTOFGeant4Factory {
 
-    private List<Geant4Basic> volumes = new ArrayList<Geant4Basic>();
+    private Geant4Basic frofVolume = new Geant4Basic("fc", "box", 1,1,1);
+    
+    Geant4Basic motherVolume = new Geant4Basic("fc", "box", 0);
+    
     private String[] stringLayers = new String[]{
         "/geometry/ftof/panel1a",
         "/geometry/ftof/panel1b",
         "/geometry/ftof/panel2"};
 
     public FTOFGeant4Factory(ConstantProvider provider) {
+        for (int sector = 1; sector <= 6; sector++) {
+            Geant4Basic sectorVolume = new Geant4Basic("ftof_sec"+sector, "box", 0);
+            for (int layer = 1; layer <= 3; layer++) {
+
+                Geant4Basic layerVolume = createPanel(provider, sector, layer);
+                sectorVolume.getChildren().add(layerVolume);
+                
+                System.out.println(layerVolume.getChildren().size());
+            }
+            motherVolume.getChildren().add(sectorVolume);
+        }
 
     }
 
-    public Geant4Basic createSector(ConstantProvider cp, int sector, int layer) {
+    public Geant4Basic createPanel(ConstantProvider cp, int sector, int layer) {
         //Geant4Basic  mother = new Geant4Basic();
 
         double motherGap = 4.0;
@@ -86,7 +100,7 @@ public class FTOFGeant4Factory {
         String paddleLengthStr = stringLayers[layer - 1] + "/paddles/Length";
 
         //List<Geant4Basic>  mother = new ArrayList<Geant4Basic>();
-        List<Geant4Basic> lv = new ArrayList<Geant4Basic>();
+        List<Geant4Basic> paddleVolumes = new ArrayList<Geant4Basic>();
 
         for (int ipaddle = 0; ipaddle < numPaddles; ipaddle++) {
             double paddlelength = cp.getDouble(paddleLengthStr, ipaddle);
@@ -97,9 +111,9 @@ public class FTOFGeant4Factory {
 
             double zoffset = (ipaddle - numPaddles / 2.) * (paddlewidth + gap + 2 * wrapperthickness);
             volume.setPosition(0.0, 0.0, zoffset);
-            lv.add(volume);
+            paddleVolumes.add(volume);
         }
-        return lv;
+        return paddleVolumes;
     }
 
 }
