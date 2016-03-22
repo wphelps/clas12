@@ -16,26 +16,23 @@ import org.jlab.geom.geant.Geant4Basic;
  */
 public class FTOFGeant4Factory {
 
-    private Geant4Basic frofVolume = new Geant4Basic("fc", "box", 1,1,1);
-    
-    Geant4Basic motherVolume = new Geant4Basic("fc", "box", 0);
-    
+    private Geant4Basic motherVolume = new Geant4Basic("fc", "Box", 0);
+
     private String[] stringLayers = new String[]{
         "/geometry/ftof/panel1a",
         "/geometry/ftof/panel1b",
         "/geometry/ftof/panel2"};
+    
+    private String[] gemcLayerNames = new String[]{
+        "1a", "1b", "2"
+    };
 
     public FTOFGeant4Factory(ConstantProvider provider) {
         for (int sector = 1; sector <= 6; sector++) {
-            Geant4Basic sectorVolume = new Geant4Basic("ftof_sec"+sector, "box", 0);
             for (int layer = 1; layer <= 3; layer++) {
-
                 Geant4Basic layerVolume = createPanel(provider, sector, layer);
-                sectorVolume.getChildren().add(layerVolume);
-                
-                System.out.println(layerVolume.getChildren().size());
+                layerVolume.setMother(motherVolume);
             }
-            motherVolume.getChildren().add(sectorVolume);
         }
 
     }
@@ -52,7 +49,7 @@ public class FTOFGeant4Factory {
         List<Geant4Basic> paddles = this.createLayer(cp, layer);
 
         double panel_width = (paddles.get(paddles.size() - 1).getPosition()[2] - paddles.get(0).getPosition()[2])
-                + 2 * paddles.get(0).getParameters()[2] + motherGap;
+                + 2 * paddles.get(0).getParameters()[2] + 2*motherGap;
 
         double panel_mother_dx1 = paddles.get(0).getParameters()[0] + motherGap;
         double panel_mother_dx2 = paddles.get(paddles.size() - 1).getParameters()[0]
@@ -69,7 +66,8 @@ public class FTOFGeant4Factory {
         params[3] = panel_mother_dy;
         params[4] = panel_mother_dz;
 
-        Geant4Basic panelVolume = new Geant4Basic("FTOF_S" + sector + "_L_" + layer, "trd", params);
+        Geant4Basic panelVolume = new Geant4Basic("ftof_p"+gemcLayerNames[layer-1]+"_s"+sector, "Trd", params);
+        panelVolume.setId(0, sector, layer);
 
         double panel_pos_xy = dist2edge * Math.sin(thmin) + panel_width / 2 * Math.cos(thtilt);
         double panel_pos_x = panel_pos_xy * Math.cos(Math.toRadians(sector * 60 - 60));
@@ -81,8 +79,10 @@ public class FTOFGeant4Factory {
         //panelVolume.setRotation("xzy", thtilt/3, Math.toRadians(-30.0 - 1 * 60.0), 0.0);
         panelVolume.setRotation("xzy", Math.toRadians(-90) - thtilt, Math.toRadians(-30.0 - sector * 60.0), 0.0);
         for (int ipaddle = 0; ipaddle < paddles.size(); ipaddle++) {
-            paddles.get(ipaddle).setName("ftof_S_" + sector + "_L_" + layer + "_P_" + (ipaddle + 1));
-            panelVolume.getChildren().add(paddles.get(ipaddle));
+            paddles.get(ipaddle).setName("panel" + gemcLayerNames[layer-1] + "_sector" + sector + "_paddle_" + (ipaddle + 1));
+            paddles.get(ipaddle).setId(sector, layer, ipaddle + 1);
+
+            paddles.get(ipaddle).setMother(panelVolume);
         }
         return panelVolume;
     }
@@ -104,16 +104,33 @@ public class FTOFGeant4Factory {
 
         for (int ipaddle = 0; ipaddle < numPaddles; ipaddle++) {
             double paddlelength = cp.getDouble(paddleLengthStr, ipaddle);
-            String vname = String.format("sci_S%d_L%d_C%d", 1, 1, ipaddle + 1);
-            Geant4Basic volume = new Geant4Basic(vname, "box",
+            String vname = String.format("sci_S%d_L%d_C%d", 0, layer, ipaddle + 1);
+            Geant4Basic volume = new Geant4Basic(vname, "Box",
                     paddlelength / 2., paddlethickness / 2., paddlewidth / 2.0);
-            volume.setId(1, layer, ipaddle + 1);
 
-            double zoffset = (ipaddle - numPaddles / 2.) * (paddlewidth + gap + 2 * wrapperthickness);
+            double zoffset = (ipaddle - numPaddles / 2. + 0.5) * (paddlewidth + gap + 2 * wrapperthickness);
             volume.setPosition(0.0, 0.0, zoffset);
             paddleVolumes.add(volume);
         }
         return paddleVolumes;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+
+        for (Geant4Basic layerVolume : motherVolume.getChildren()) {
+            str.append(layerVolume.toString());
+            str.append(System.getProperty("line.separator"));
+        }
+
+        for (Geant4Basic layerVolume : motherVolume.getChildren()) {
+            for (Geant4Basic paddleVolume : layerVolume.getChildren()) {
+                str.append(paddleVolume.toString());
+                str.append(System.getProperty("line.separator"));
+            }
+        }
+
+        return str.toString();
+    }
 }
