@@ -67,7 +67,7 @@ public class FTOFGeant4Factory {
         params[4] = panel_mother_dz;
 
         Geant4Basic panelVolume = new Geant4Basic("ftof_p"+gemcLayerNames[layer-1]+"_s"+sector, "Trd", params);
-        panelVolume.setId(0, sector, layer);
+        panelVolume.setId(sector, layer, 0);
 
         double panel_pos_xy = dist2edge * Math.sin(thmin) + panel_width / 2 * Math.cos(thtilt);
         double panel_pos_x = panel_pos_xy * Math.cos(Math.toRadians(sector * 60 - 60));

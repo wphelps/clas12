@@ -173,6 +173,9 @@ public class Geant4Basic implements IGeant4Volume {
         for (double par : this.volumeParameters) {
             str.append(String.format("%12.4f*cm", par));
         }
+        str.append(" | ");
+        int[] ids = this.getId();
+        for(int id : ids) str.append(String.format("%4d",id));
 
         return str.toString();
     }
