@@ -18,36 +18,44 @@ import org.jlab.geom.prim.Transformation3D.Transform;
 public class Geant4Basic implements IGeant4Volume {
 
     String volumeName = "basic_volume";
-    String volumeType = "box";    
-    
-    Transformation3D  volumeRotation    = new Transformation3D();
-    Transformation3D  volumeTranslation = new Transformation3D();
-    
-    String   transformationOrder  = "xyz";
-    Point3D   volumePosition      = new Point3D(0.0,0.0,0.0);
-    int[]     volumeID            = new int[]{};
-    double[]  volumeParameters    = new double[]{};
-    String    volumeUnits         = "cm";
-    
-    
-    private List<Geant4Basic>  children = new ArrayList<Geant4Basic>();
-    
-    
-    public Geant4Basic(String name, String type, double... pars){
+    String volumeType = "box";
+
+    Transformation3D volumeRotation = new Transformation3D();
+    Transformation3D volumeTranslation = new Transformation3D();
+
+    String transformationOrder = "xyz";
+    Point3D volumePosition = new Point3D(0.0, 0.0, 0.0);
+    int[] volumeID = new int[]{};
+    double[] volumeParameters = new double[]{};
+    String volumeUnits = "cm";
+
+    private List<Geant4Basic> children = new ArrayList<Geant4Basic>();
+    Geant4Basic motherVolume;
+
+    public Geant4Basic(String name, String type, double... pars) {
         this.volumeName = name;
         this.volumeType = type;
         this.volumeParameters = new double[pars.length];
         System.arraycopy(pars, 0, this.volumeParameters, 0, pars.length);
     }
-    
-    public String getUnits(){
+
+    public String getUnits() {
         return this.volumeUnits;
     }
-    
-    public void setName(String name){
+
+    public void setName(String name) {
         this.volumeName = name;
     }
-    
+
+    public void setMother(Geant4Basic motherVol) {
+        this.motherVolume = motherVol;
+        this.motherVolume.getChildren().add(this);
+    }
+
+    public Geant4Basic getMother() {
+        return this.motherVolume;
+    }
+
     @Override
     public String getName() {
         return this.volumeName;
@@ -64,10 +72,10 @@ public class Geant4Basic implements IGeant4Volume {
         System.arraycopy(pars, 0, this.volumeParameters, 0, pars.length);
     }
 
-    public List<Geant4Basic>   getChildren(){
+    public List<Geant4Basic> getChildren() {
         return this.children;
     }
-    
+
     @Override
     public double[] getParameters() {
         return this.volumeParameters;
@@ -75,14 +83,14 @@ public class Geant4Basic implements IGeant4Volume {
 
     @Override
     public double[] getPosition() {
-        return new double[]{this.volumePosition.x(),this.volumePosition.y(),this.volumePosition.z()};
+        return new double[]{this.volumePosition.x(), this.volumePosition.y(), this.volumePosition.z()};
     }
 
     @Override
     public double[] getRotation() {
-        List<Transform>  sequence = this.volumeRotation.transformSequence();
+        List<Transform> sequence = this.volumeRotation.transformSequence();
         double[] rotation = new double[3];
-        for(int i = 0; i < sequence.size(); i++){
+        for (int i = 0; i < sequence.size(); i++) {
             rotation[i] = sequence.get(i).getValue(0);
         }
         return rotation;
@@ -97,10 +105,15 @@ public class Geant4Basic implements IGeant4Volume {
     public int[] getId() {
         return this.volumeID;
     }
-    
-    public Transformation3D translation(){return this.volumeTranslation;}
-    public Transformation3D rotation(){return this.volumeRotation;}
-    
+
+    public Transformation3D translation() {
+        return this.volumeTranslation;
+    }
+
+    public Transformation3D rotation() {
+        return this.volumeRotation;
+    }
+
     @Override
     public void setPosition(double x, double y, double z) {
         this.volumeTranslation.clear();
@@ -113,14 +126,28 @@ public class Geant4Basic implements IGeant4Volume {
         int ro = 1;
         this.transformationOrder = order;
         this.volumeRotation.clear();
-        switch(order){
-            case "xyz" : this.volumeRotation.rotateX(r1).rotateY(r2).rotateZ(r3); break;
-            case "xzy" : this.volumeRotation.rotateX(r1).rotateZ(r2).rotateY(r3); break;
-            case "yxz" : this.volumeRotation.rotateY(r1).rotateX(r2).rotateZ(r3); break;
-            case "yzx" : this.volumeRotation.rotateY(r1).rotateZ(r2).rotateX(r3); break;
-            case "zxy" : this.volumeRotation.rotateZ(r1).rotateX(r2).rotateY(r3); break;
-            case "zyx" : this.volumeRotation.rotateZ(r1).rotateY(r2).rotateX(r3); break;
-            default: System.out.println("[GEANT4VOLUME]---> unknown rotation " + order); break;
+        switch (order) {
+            case "xyz":
+                this.volumeRotation.rotateX(r1).rotateY(r2).rotateZ(r3);
+                break;
+            case "xzy":
+                this.volumeRotation.rotateX(r1).rotateZ(r2).rotateY(r3);
+                break;
+            case "yxz":
+                this.volumeRotation.rotateY(r1).rotateX(r2).rotateZ(r3);
+                break;
+            case "yzx":
+                this.volumeRotation.rotateY(r1).rotateZ(r2).rotateX(r3);
+                break;
+            case "zxy":
+                this.volumeRotation.rotateZ(r1).rotateX(r2).rotateY(r3);
+                break;
+            case "zyx":
+                this.volumeRotation.rotateZ(r1).rotateY(r2).rotateX(r3);
+                break;
+            default:
+                System.out.println("[GEANT4VOLUME]---> unknown rotation " + order);
+                break;
         }
     }
 
@@ -129,37 +156,39 @@ public class Geant4Basic implements IGeant4Volume {
         this.volumeID = new int[id.length];
         System.arraycopy(id, 0, volumeID, 0, volumeID.length);
     }
-    
+
     @Override
-    public String toString(){
-        StringBuilder  str = new StringBuilder();
-        str.append(String.format("%18s | %8s |  ", this.getName(),this.getType()));
-        for(double par : this.volumeParameters){
-            str.append(String.format("%12.4f", par));
+    public String toString() {
+        StringBuilder str = new StringBuilder();
+        str.append(String.format("%18s | %8s", this.getName(), this.getMother().getName()));
+
+        str.append(String.format("| %8.3f*cm %8.3f*cm %8.3f*cm",
+                this.volumePosition.x(), this.volumePosition.y(), this.volumePosition.z()));
+        str.append(String.format("| %s : ", this.transformationOrder));
+        double[] rotate = this.getRotation();
+        for (double rot : rotate) {
+            str.append(String.format(" %8.3f*deg ", Math.toDegrees(rot)));
+        }
+        str.append(String.format("| %8s |", this.getType()));
+        for (double par : this.volumeParameters) {
+            str.append(String.format("%12.4f*cm", par));
         }
         str.append(" | ");
-        
-        str.append(String.format(" %8.3f %8.3f %8.3f | ",
-                this.volumePosition.x(),this.volumePosition.y(),this.volumePosition.z()));
-        str.append(String.format(" %s : ", this.transformationOrder));
-        double[]  rotate = this.getRotation();
-        for(double rot : rotate)
-            str.append(String.format(" %8.3f ", rot));
-        str.append(" | ");
         int[] ids = this.getId();
-        for(int id : ids) str.append(String.format("%4d",id));        
+        for(int id : ids) str.append(String.format("%4d",id));
+
         return str.toString();
     }
-    
-    public static void main(String[] args){
-        List<Geant4Basic>  volumes = new ArrayList<Geant4Basic>();
-        for(int loop = 0; loop < 20; loop++){
-            Geant4Basic  paddle = new Geant4Basic("paddle_"+loop,"box",4.0,4.0,20+loop*4);
+
+    public static void main(String[] args) {
+        List<Geant4Basic> volumes = new ArrayList<Geant4Basic>();
+        for (int loop = 0; loop < 20; loop++) {
+            Geant4Basic paddle = new Geant4Basic("paddle_" + loop, "box", 4.0, 4.0, 20 + loop * 4);
             //System.out.println("adding");
             volumes.add(paddle);
         }
-        
-        for(Geant4Basic paddle : volumes){
+
+        for (Geant4Basic paddle : volumes) {
             System.out.println(paddle.toString());
         }
     }
