@@ -19,12 +19,13 @@ import java.util.logging.Logger;
 import javax.swing.tree.DefaultMutableTreeNode;
 import org.jlab.evio.stream.EvioInputStream;
 import org.jlab.evio.stream.EvioOutputStream;
+import org.root.basic.EmbeddedCanvas;
 import org.root.group.ITreeViewer;
 import org.root.group.TDirectory;
 import org.root.histogram.H1D;
 import org.root.histogram.H2D;
-import org.root.pad.TEmbeddedCanvas;
 import org.root.pad.RootCanvas;
+import org.root.pad.TEmbeddedCanvas;
 
 /**
  *
@@ -239,7 +240,7 @@ public class NTuple implements ITreeViewer {
         return root;
     }
 
-    public void draw(String obj, String selection, String options, TEmbeddedCanvas canvas) {
+    public void draw(String obj, String selection, String options, EmbeddedCanvas canvas) {
         if(obj.contains("%")==true){
             String[] tokens = obj.split("%");
             System.out.println("NOT IMPLEMENTED YET to DRAW " + tokens[0] + " vs "
@@ -297,7 +298,7 @@ public class NTuple implements ITreeViewer {
             }
             //canvas.draw(canvas.getCurrentPad(), H);
             canvas.draw(H);
-            canvas.incrementPad();
+            canvas.cd(canvas.getCurrentPad()+1);
             
         } else {
             System.out.println("NOT IMPLEMENTED YET to DRAW " + obj);
@@ -350,7 +351,7 @@ public class NTuple implements ITreeViewer {
                 H.fill(vec.getValue(loop));
             }
             canvas.draw( H);
-            canvas.incrementPad();
+            canvas.cd(canvas.getCurrentPad()+1);
         }
         //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }

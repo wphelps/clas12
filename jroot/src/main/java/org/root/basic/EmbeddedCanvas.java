@@ -64,6 +64,7 @@ public class EmbeddedCanvas extends JPanel {
          
          if(pad>=this.canvasPads.size()){
              this.currentPad = 0;
+             return;
          }
          this.currentPad = pad;
     }
