@@ -164,7 +164,7 @@ public class Geant4Basic implements IGeant4Volume {
 
         str.append(String.format("| %8.3f*cm %8.3f*cm %8.3f*cm",
                 this.volumePosition.x(), this.volumePosition.y(), this.volumePosition.z()));
-        str.append(String.format("| %s : ", this.transformationOrder));
+        str.append(String.format("| ordered: %s ", this.transformationOrder));
         double[] rotate = this.getRotation();
         for (double rot : rotate) {
             str.append(String.format(" %8.3f*deg ", Math.toDegrees(rot)));
