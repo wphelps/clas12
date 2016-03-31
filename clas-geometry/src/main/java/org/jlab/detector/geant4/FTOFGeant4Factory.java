@@ -53,7 +53,7 @@ public class FTOFGeant4Factory {
 
         double panel_mother_dx1 = paddles.get(0).getParameters()[0] + motherGap;
         double panel_mother_dx2 = paddles.get(paddles.size() - 1).getParameters()[0]
-                + (paddles.get(paddles.size() - 1).getParameters()[0] - paddles.get(paddles.size() - 2).getParameters()[0]) / 2.0
+                + (paddles.get(paddles.size() - 1).getParameters()[0] - paddles.get(paddles.size() - 2).getParameters()[0])
                 + motherGap;
 
         double panel_mother_dy = paddles.get(0).getParameters()[1] + motherGap;
