@@ -87,7 +87,7 @@ public class FTOFGeant4Factory {
         }
         return panelVolume;
     }
-
+    
     public List<Geant4Basic> createLayer(ConstantProvider cp, int layer) {
 
         int numPaddles = cp.length(stringLayers[layer - 1] + "/paddles/paddle");

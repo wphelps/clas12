@@ -160,7 +160,11 @@ public class Geant4Basic implements IGeant4Volume {
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
-        str.append(String.format("%18s | %8s", this.getName(), this.getMother().getName()));
+        if(this.getMother()==null){
+            str.append(String.format("%18s ", this.getName()));
+        } else {
+            str.append(String.format("%18s | %8s", this.getName(), this.getMother().getName()));
+        }
 
         str.append(String.format("| %8.3f*cm %8.3f*cm %8.3f*cm",
                 this.volumePosition.x(), this.volumePosition.y(), this.volumePosition.z()));

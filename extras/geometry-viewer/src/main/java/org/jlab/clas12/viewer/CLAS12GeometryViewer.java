@@ -111,6 +111,9 @@ public class CLAS12GeometryViewer extends Application {
         stage.show();
     }
     
+    public void testBST(){
+        
+    }
 
     public void testDC(){
         
@@ -155,6 +158,7 @@ public class CLAS12GeometryViewer extends Application {
         mesh.setMaterial(mat);
         this.root.getChildren().add(mesh);
     }
+    
     public void addDetector(String name){
         
         TreeItem<String>  clasROOT = new TreeItem<String>("CLAS12");
