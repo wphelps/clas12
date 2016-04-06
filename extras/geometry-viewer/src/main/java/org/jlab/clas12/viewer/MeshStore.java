@@ -5,6 +5,7 @@
  */
 package org.jlab.clas12.viewer;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -13,6 +14,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.control.CheckBoxTreeItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Material;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.MeshView;
 import org.jlab.geom.geant.Geant4Basic;
@@ -29,13 +31,43 @@ public class MeshStore {
     
     Map<String,MeshView>  meshStore = new TreeMap<String,MeshView>();
     private   Boolean     isVisible = true;
+    private  Map<Integer,Material>   materials = new HashMap<Integer,Material>();
     
     public MeshStore(){
+        PhongMaterial matb = new PhongMaterial();
+        matb.setDiffuseColor(new Color(0.2,0.2,0.9,1.0));
+        matb.setSpecularColor(new Color(0.2,0.2,0.9,1.0));
+        materials.put(4, matb);
+        PhongMaterial matr = new PhongMaterial();
+        matr.setDiffuseColor(new Color(0.9,0.2,0.2,1.0));
+        matr.setSpecularColor(new Color(0.9,0.2,0.2,1.0));
+        materials.put(2, matr);
+        PhongMaterial matg = new PhongMaterial();
+        matg.setDiffuseColor(new Color(0.2,0.9,0.2,1.0));
+        matg.setSpecularColor(new Color(0.2,0.9,0.2,1.0));
+        materials.put(3, matg);
+        PhongMaterial matbt = new PhongMaterial();
+        matbt.setDiffuseColor(new Color(0.2,0.2,0.9,0.1));
+        matbt.setSpecularColor(new Color(0.2,0.2,0.9,0.1));
+        materials.put(14, matbt);
+        PhongMaterial matrt = new PhongMaterial();
+        matrt.setDiffuseColor(new Color(0.9,0.2,0.2,0.1));
+        matrt.setSpecularColor(new Color(0.9,0.2,0.2,0.1));
+        materials.put(12, matrt);
+        PhongMaterial matgt = new PhongMaterial();
+        matgt.setDiffuseColor(new Color(0.2,0.9,0.2,0.1));
+        matgt.setSpecularColor(new Color(0.2,0.9,0.2,0.1));
+        materials.put(13, matgt);
         
     }
     
     public String getName(){
         return this.storeName;
+    }
+    
+    
+    public Map<Integer,Material> getMaterials(){
+        return this.materials;
     }
     
     public void init(Geant4Basic volume){

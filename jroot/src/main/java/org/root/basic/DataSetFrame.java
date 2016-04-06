@@ -165,4 +165,7 @@ public class DataSetFrame {
         this.datasetStats.setFont("Monospaced", size);
     }
     
+    public DataSetCollection  getCollection(){
+        return this.collection;
+    }
 }

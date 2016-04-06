@@ -7,6 +7,8 @@ package org.jlab.geom.prim;
 
 import java.util.ArrayList;
 import java.util.List;
+import javafx.scene.shape.MeshView;
+import javafx.scene.shape.TriangleMesh;
 import org.jlab.geom.Showable;
 
 /**
@@ -14,15 +16,16 @@ import org.jlab.geom.Showable;
  * @author gavalian
  */
 public class Mesh3D implements Transformable, Showable{
-    private double[]  meshPoints = null;
+    
+    private float[]  meshPoints = null;
     private int[]     meshFaces  = null;
 
-    public Mesh3D(double[] points, int[] faces){
+    public Mesh3D(float[] points, int[] faces){
         this.set(points, faces);
     }
     
-    public final void set(double[] points, int[] faces){
-        this.meshPoints = new double[points.length];
+    public final void set(float[] points, int[] faces){
+        this.meshPoints = new float[points.length];
         this.meshFaces  = new int[faces.length];
         System.arraycopy(points, 0, this.meshPoints, 0, points.length);
         System.arraycopy(faces, 0, this.meshFaces, 0, faces.length);
@@ -43,9 +46,9 @@ public class Mesh3D implements Transformable, Showable{
         for(int p = 0; p < this.meshPoints.length; p+=3){
             point.set(meshPoints[p],meshPoints[p+1],meshPoints[p+2]);            
             point.rotateX(angle);
-            meshPoints[p]   = point.x();
-            meshPoints[p+1] = point.y();
-            meshPoints[p+2] = point.z();
+            meshPoints[p]   = (float) point.x();
+            meshPoints[p+1] = (float) point.y();
+            meshPoints[p+2] = (float) point.z();
         }
     }
 
@@ -55,9 +58,9 @@ public class Mesh3D implements Transformable, Showable{
         for(int p = 0; p < this.meshPoints.length; p+=3){
             point.set(meshPoints[p],meshPoints[p+1],meshPoints[p+2]);            
             point.rotateY(angle);
-            meshPoints[p]   = point.x();
-            meshPoints[p+1] = point.y();
-            meshPoints[p+2] = point.z();
+            meshPoints[p]   = (float) point.x();
+            meshPoints[p+1] = (float) point.y();
+            meshPoints[p+2] = (float) point.z();
         }
     }
 
@@ -67,9 +70,9 @@ public class Mesh3D implements Transformable, Showable{
         for(int p = 0; p < this.meshPoints.length; p+=3){
             point.set(meshPoints[p],meshPoints[p+1],meshPoints[p+2]);            
             point.rotateZ(angle);
-            meshPoints[p]   = point.x();
-            meshPoints[p+1] = point.y();
-            meshPoints[p+2] = point.z();
+            meshPoints[p]   = (float) point.x();
+            meshPoints[p+1] = (float) point.y();
+            meshPoints[p+2] = (float) point.z();
         }
     }
 
@@ -89,8 +92,16 @@ public class Mesh3D implements Transformable, Showable{
         }
     }
     
+    public int getNumPoints(){
+        return this.meshPoints.length/3;
+    }
+    
     public void getPoint(int n, Point3D point){
-        
+        point.set(this.meshPoints[n*3],this.meshPoints[n*3+1],this.meshPoints[n*3+2]);
+    }
+    
+    public int  getNumFaces(){
+        return this.meshFaces.length/3;
     }
     public void getFace(int face, Triangle3D tri){
         int start  = face*3;
@@ -194,8 +205,8 @@ public class Mesh3D implements Transformable, Showable{
         return false;
     }
     
-    public static Mesh3D box(double dx, double dy, double dz){
-        double[] p = new double[]{
+    public static Mesh3D box(float dx, float dy, float dz){
+        float[] p = new float[]{
             -dx, -dy,  -dz,
             -dx,  dy,  -dz,
             -dx,  dy,   dz,
@@ -223,6 +234,36 @@ public class Mesh3D implements Transformable, Showable{
         };
         Mesh3D  mesh = new Mesh3D(p,f);
         return  mesh;
+    }
+    
+    public MeshView  getMeshView(){
+        
+        float[] points = new float[this.meshPoints.length];
+        System.arraycopy(this.meshPoints, 0, points, 0, points.length);
+        int[] faces = new int[this.meshFaces.length*2];
+        // Mesh view requires also to have texture mapping coordinates
+        // so the faces array is twice as long, 0 are inserted.
+        
+        for(int f = 0; f < this.meshFaces.length; f++){
+            faces[f*2]   = this.meshFaces[f];
+            //System.out.println("f = " + f + "  length = " + this.meshFaces.length);
+            faces[f*2+1] = 0;
+        }
+        /*
+        for(int p = 0; p < faces.length; p++){
+            System.out.print("  " + faces[p]);
+            if((p+1)%6==0) System.out.println();
+        }
+        for(int p = 0; p < this.meshFaces.length; p++){
+            System.out.print("  " + meshFaces[p]);
+            if((p+1)%3==0) System.out.println();
+        }*/
+        TriangleMesh boxMesh = new TriangleMesh();
+        //System.out.println("CREATING MESH");
+        boxMesh.getTexCoords().addAll(0, 0);
+        boxMesh.getPoints().addAll(points);
+        boxMesh.getFaces().addAll(faces);
+        return new MeshView(boxMesh);
     }
     /**
      * Main program for tests

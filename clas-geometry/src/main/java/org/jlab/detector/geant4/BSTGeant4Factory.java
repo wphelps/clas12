@@ -37,13 +37,13 @@ public class BSTGeant4Factory {
         bstLayer.setId(sector,layer,0);
         int  region   = (layer-1)/2;
         int nsectors  = cp.getInteger("/geometry/bst/region/nsectors", region);
-        double radius = cp.getDouble("/geometry/bst/region/radius", region);
-        double zstart = cp.getDouble("/geometry/bst/region/zstart", region);
-        double zrotation = Math.toRadians(360.0/nsectors);
+        double radius = 0.1*cp.getDouble("/geometry/bst/region/radius", region);
+        double zstart = 0.1*cp.getDouble("/geometry/bst/region/zstart", region);
+        double zrotation = (sector-1)*Math.toRadians(360.0/nsectors);
         double trX       = radius*Math.cos(zrotation);
         double trY       = radius*Math.sin(zrotation);
         
-        bstLayer.setRotation("xyz", 0.0,0.0,(sector-1)*zrotation);
+        bstLayer.setRotation("xyz", 0.0,0.0,zrotation);
         bstLayer.setPosition(trX, trY,zstart);
         return bstLayer;
     }
@@ -52,6 +52,6 @@ public class BSTGeant4Factory {
         double dx = 0.04;
         double dy = 4.0032;
         double dz = 33.5096;
-        return new Geant4Basic("sector","box",dx,dy,dz);
+        return new Geant4Basic("sector","box",0.5*dx,0.5*dy,0.5*dz);
     }
 }

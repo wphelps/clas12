@@ -41,6 +41,7 @@ import org.jlab.detector.geant4.FTOFGeant4Factory;
 import org.jlab.geom.base.ConstantProvider;
 import org.jlab.geom.geant.Geant4Basic;
 import org.jlab.geom.geant.Geant4Mesh;
+import org.jlab.geom.prim.Mesh3D;
 import org.jlab.geom.prim.Transformation3D;
 
 /**
@@ -53,11 +54,11 @@ public class CLAS12GeometryViewer extends Application {
     
     ContentModel  content      = null;
     TreeView<String>  treeView = null;    
-    Map<String,MeshStore>  meshStores = new TreeMap<String,MeshStore>();
-    
-    BorderPane   mainBorderPane = null;
-    
+    Map<String,MeshStore>  meshStores = new TreeMap<String,MeshStore>();    
+    BorderPane   mainBorderPane = null;       
     Group root = null;
+    
+    
     
     @Override
     public void start(Stage stage) throws Exception {
@@ -88,7 +89,9 @@ public class CLAS12GeometryViewer extends Application {
 
         //this.addDetector("FTOF");
         //this.test();
-        this.testDC();
+        this.testFTOF();
+        //this.testDC();
+        //this.testBST();
         //final Scene scene = new Scene(pane, 880, 880, true);
         this.mainBorderPane.setCenter(splitPane);
         HBox statusPane = new HBox();
@@ -112,9 +115,27 @@ public class CLAS12GeometryViewer extends Application {
     }
     
     public void testBST(){
-        
+        PhongMaterial mat = new PhongMaterial();
+        mat.setDiffuseColor(new Color(0.1,0.1,0.8,0.5));
+        mat.setSpecularColor(new Color(0.1,0.1,0.8,0.5));
+        MeshStore  store = GeometryLoader.getGeometry("EC");
+        for(Map.Entry<String,MeshView> item : store.getMap().entrySet()){
+            item.getValue().setMaterial(mat);
+            root.getChildren().add(item.getValue());
+        }
     }
 
+    public void testFTOF(){
+        PhongMaterial mat = new PhongMaterial();
+        mat.setDiffuseColor(new Color(0.1,0.1,0.8,0.5));
+        mat.setSpecularColor(new Color(0.1,0.1,0.8,0.5));
+        MeshStore  store = GeometryLoader.getGeometryGemc();
+        for(Map.Entry<String,MeshView> item : store.getMap().entrySet()){
+            item.getValue().setMaterial(mat);
+            root.getChildren().add(item.getValue());
+        }
+    }
+    
     public void testDC(){
         
         PhongMaterial mat = new PhongMaterial();
@@ -140,22 +161,15 @@ public class CLAS12GeometryViewer extends Application {
     }
     
     public void test(){
-        Geant4Basic  volume = new Geant4Basic("DC","trap",
-                100.0,Math.toRadians(0.0),Math.toRadians(90.0),                
-                5,40,40, Math.toRadians(0.0),
-                5,100,100, Math.toRadians(0.0)                
-        );
+        MeshStore store = new MeshStore();
+        Mesh3D  box = Mesh3D.box(20, 20, 30);
         
-        MeshView  mesh = Geant4Mesh.makeMeshTrap(volume, new Transformation3D());
-        double red = 0.5;
-        double green = 0.0;
-        double blue = 0.2;
-        double alpha = 1.0;
-         PhongMaterial mat = new PhongMaterial();
-        mat.setDiffuseColor(new Color(red,green,blue,alpha));
-        mat.setSpecularColor(new Color(red,green,blue,alpha));
-        //mat.setSpecularPower(0.5);
-        mesh.setMaterial(mat);
+        //Geant4Basic  shape = new Geant4Basic("","box",20,20,80);
+        //MeshView mesh = Geant4Mesh.makeMeshBox(shape);
+        box.translateXYZ(40.0, 0.0, 120.0);
+        box.rotateZ(Math.toRadians(45.0));
+        MeshView mesh = box.getMeshView();
+        mesh.setMaterial(store.getMaterials().get(2));
         this.root.getChildren().add(mesh);
     }
     

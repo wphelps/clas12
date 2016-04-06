@@ -53,7 +53,7 @@ public class Geant4Mesh {
             vT.append(item.translation());
             vT.append(volume.rotation());
             vT.append(volume.translation());            
-
+            System.out.println("[creating mesh] --> name : " + item.getName());
             //vT.show();
             if(item.getType().compareTo("box")==0){
                 MeshView  mesh = Geant4Mesh.makeMeshBox(item, vT);                
@@ -63,9 +63,61 @@ public class Geant4Mesh {
                 MeshView  mesh = Geant4Mesh.makeMeshTrap(item, vT);                
                 meshes.add(mesh);
             }
-            
+            if(item.getType().compareTo("trd")==0){
+                MeshView  mesh = Geant4Mesh.makeMeshTrd(item, vT);                
+                meshes.add(mesh);
+            }
         }
         return meshes;
+    }
+    public static MeshView makeMeshTrd(Geant4Basic volume, Transformation3D tr){
+        double[] p = volume.getParameters();
+        float[] points = new float[]{
+            (float) -p[0], (float) -p[2], (float) -p[4],
+            (float) -p[0], (float)  p[2], (float) -p[4],
+            (float) -p[0], (float)  p[2], (float)  p[4],
+            (float) -p[0], (float) -p[2], (float)  p[4],
+            
+            (float)  p[1], (float) -p[3], (float) -p[4],
+            (float)  p[1], (float)  p[3], (float) -p[4],
+            (float)  p[1], (float)  p[3], (float)  p[4],
+            (float)  p[1], (float) -p[3], (float)  p[4]                     
+        };
+        int[]  faces = new int[]{
+            0,0,  3,0, 2,0,
+            2,0,  1,0, 0,0,
+            4,0,  5,0, 6,0,
+            6,0,  7,0, 4,0,
+            1,0,  2,0, 6,0,
+            6,0,  5,0, 1,0,
+            0,0,  1,0, 5,0,
+            5,0,  4,0, 0,0,
+            0,0,  4,0, 7,0,
+            7,0,  3,0, 0,0,
+            2,0,  3,0, 7,0,
+            7,0,  6,0, 2,0 
+        };
+        Point3D  point = new Point3D();
+        for(int loop = 0; loop < 8; loop++){
+            int index = loop*3;
+            point.set(points[index], points[index+1], points[index+2]);
+            tr.apply(point);
+            points[index]   = (float) point.x();
+            points[index+1] = (float) point.y();
+            points[index+2] = (float) point.z();
+        }
+        /*
+        System.out.println(" TRD = " );
+        for(int i = 0; i < points.length; i++){
+            System.out.print("  " + points[i]);
+            if((i+1)%3==0) System.out.println();
+        }*/
+        TriangleMesh boxMesh = new TriangleMesh();
+        //System.out.println("CREATING MESH");
+        boxMesh.getTexCoords().addAll(0, 0);
+        boxMesh.getPoints().addAll(points);
+        boxMesh.getFaces().addAll(faces);
+        return new MeshView(boxMesh);
     }
     
     public static MeshView makeMeshTrap(Geant4Basic volume, Transformation3D tr){  
@@ -226,7 +278,7 @@ public class Geant4Mesh {
         };
         
         TriangleMesh boxMesh = new TriangleMesh();
-        System.out.println("CREATING MESH");
+        //System.out.println("CREATING MESH");
         boxMesh.getTexCoords().addAll(0, 0);
         boxMesh.getPoints().addAll(points);
         boxMesh.getFaces().addAll(faces);

@@ -111,6 +111,13 @@ public class EmbeddedPad extends JPanel {
         }
     }
     
+    public int getDataSetCount(){
+        return this.dataSetFrame.getCollection().getCount();
+    }
+    
+    public IDataSet  getDataSet(int index){
+        return this.dataSetFrame.getCollection().getDataSet(index);
+    }
     
     public static void main(String[] args){
         JFrame frame = new JFrame();

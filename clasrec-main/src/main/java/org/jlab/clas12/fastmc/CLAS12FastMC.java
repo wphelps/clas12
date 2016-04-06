@@ -237,5 +237,9 @@ public class CLAS12FastMC {
         return recEvent;
     }
     
-
+    public Vector3D  getField(double x, double y, double z){
+        float[] result = new float[3];
+        this.particleSwimmer.getField().field((float) x, (float) y, (float) z, result);
+        return new Vector3D(result[0],result[1],result[2]);
+    }
 }
