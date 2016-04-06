@@ -7,6 +7,7 @@ package org.jlab.detector.geant4;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
 import org.jlab.geom.base.ConstantProvider;
 import org.jlab.geom.geant.Geant4Basic;
 
@@ -18,11 +19,13 @@ public class FTOFGeant4Factory {
 
     private Geant4Basic motherVolume = new Geant4Basic("fc", "Box", 0);
 
+    private HashMap<String, String> properties = new HashMap<String, String>();
+
     private String[] stringLayers = new String[]{
         "/geometry/ftof/panel1a",
         "/geometry/ftof/panel1b",
         "/geometry/ftof/panel2"};
-    
+
     private String[] gemcLayerNames = new String[]{
         "1a", "1b", "2"
     };
@@ -35,6 +38,9 @@ public class FTOFGeant4Factory {
             }
         }
 
+        properties.put("email", "carman@jlab.org, jguerra@jlab.org");
+        properties.put("author", "carman, guerra");
+        properties.put("date", "06/03/13");
     }
 
     public Geant4Basic createPanel(ConstantProvider cp, int sector, int layer) {
@@ -49,7 +55,7 @@ public class FTOFGeant4Factory {
         List<Geant4Basic> paddles = this.createLayer(cp, layer);
 
         double panel_width = (paddles.get(paddles.size() - 1).getPosition()[2] - paddles.get(0).getPosition()[2])
-                + 2 * paddles.get(0).getParameters()[2] + 2*motherGap;
+                + 2 * paddles.get(0).getParameters()[2] + 2 * motherGap;
 
         double panel_mother_dx1 = paddles.get(0).getParameters()[0] + motherGap;
         double panel_mother_dx2 = paddles.get(paddles.size() - 1).getParameters()[0]
@@ -66,7 +72,7 @@ public class FTOFGeant4Factory {
         params[3] = panel_mother_dy;
         params[4] = panel_mother_dz;
 
-        Geant4Basic panelVolume = new Geant4Basic("ftof_p"+gemcLayerNames[layer-1]+"_s"+sector, "Trd", params);
+        Geant4Basic panelVolume = new Geant4Basic("ftof_p" + gemcLayerNames[layer - 1] + "_s" + sector, "Trd", params);
         panelVolume.setId(sector, layer, 0);
 
         double panel_pos_xy = dist2edge * Math.sin(thmin) + panel_width / 2 * Math.cos(thtilt);
@@ -80,14 +86,14 @@ public class FTOFGeant4Factory {
         //panelVolume.setRotation("xzy", Math.toRadians(-90) - thtilt, Math.toRadians(-30.0 - sector * 60.0), 0.0);
         panelVolume.setRotation("zxy", Math.toRadians(-30.0 - sector * 60.0), Math.toRadians(-90) - thtilt, 0.0);
         for (int ipaddle = 0; ipaddle < paddles.size(); ipaddle++) {
-            paddles.get(ipaddle).setName("panel" + gemcLayerNames[layer-1] + "_sector" + sector + "_paddle_" + (ipaddle + 1));
+            paddles.get(ipaddle).setName("panel" + gemcLayerNames[layer - 1] + "_sector" + sector + "_paddle_" + (ipaddle + 1));
             paddles.get(ipaddle).setId(sector, layer, ipaddle + 1);
 
             paddles.get(ipaddle).setMother(panelVolume);
         }
         return panelVolume;
     }
-    
+
     public List<Geant4Basic> createLayer(ConstantProvider cp, int layer) {
 
         int numPaddles = cp.length(stringLayers[layer - 1] + "/paddles/paddle");
@@ -111,10 +117,14 @@ public class FTOFGeant4Factory {
 
             double zoffset = (ipaddle - numPaddles / 2. + 0.5) * (paddlewidth + gap + 2 * wrapperthickness);
             volume.setPosition(0.0, 0.0, zoffset);
-            volume.setRotation("zxy", 0,0,0);
+            volume.setRotation("zxy", 0, 0, 0);
             paddleVolumes.add(volume);
         }
         return paddleVolumes;
+    }
+
+    public Geant4Basic getMother() {
+        return motherVolume;
     }
 
     @Override
@@ -134,5 +144,9 @@ public class FTOFGeant4Factory {
         }
 
         return str.toString();
+    }
+
+    public String getProperty(String name) {
+        return properties.containsKey(name) ? properties.get(name) : "none";
     }
 }
