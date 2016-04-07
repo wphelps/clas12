@@ -111,6 +111,19 @@ public class EmbeddedPad extends JPanel {
         }
     }
     
+    public GraphicsAxisFrame  getAxisFrame(){        
+        return this.dataSetFrame.getAxisFrame();
+    }
+    
+    public GraphicsAxis  getAxisX(){
+        return this.dataSetFrame.getAxisFrame().getAxisX();
+    }
+    public GraphicsAxis  getAxisY(){
+        return this.dataSetFrame.getAxisFrame().getAxisY();
+    }
+    public GraphicsAxis  getAxisZ(){
+        return this.dataSetFrame.getAxisFrame().getAxisZ();
+    }
     public int getDataSetCount(){
         return this.dataSetFrame.getCollection().getCount();
     }

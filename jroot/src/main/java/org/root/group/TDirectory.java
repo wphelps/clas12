@@ -5,6 +5,9 @@
  */
 package org.root.group;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -12,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import org.jlab.evio.stream.EvioInputStream;
@@ -338,6 +343,32 @@ public class TDirectory implements ITreeViewer {
         outStream.close();
     }
     
+    
+    public void writeHipo(String filename){
+        for(Map.Entry<String,TDirectory> group : this.directory.entrySet()){
+
+            String dirname = group.getKey();//this.getName() + "/" + group.getValue().getName();
+            Map<String,Object>  groupObjects = group.getValue().getObjects();
+            int counter = 0;
+            for(Map.Entry<String,Object> objects : groupObjects.entrySet()){
+                Object dataObject = objects.getValue();
+                if(dataObject instanceof EvioWritableTree){
+                    TreeMap<Integer,Object> tree = ((EvioWritableTree) dataObject).toTreeMap();
+                     ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+                     ObjectOutputStream out;
+                    try {
+                        out = new ObjectOutputStream(byteOut);
+                        out.writeObject(tree);
+                        byte[]  buffer = byteOut.toByteArray();
+                        System.out.println("Saving object name = " + objects.getKey() + "  size = " + buffer.length);
+                    } catch (IOException ex) {
+                        Logger.getLogger(TDirectory.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                     
+                }
+            }
+        }
+    }
     private String[] getPathComponents(String path){
         int first = path.indexOf("/", 0);
         int last  = path.lastIndexOf("/");
@@ -499,6 +530,7 @@ public class TDirectory implements ITreeViewer {
     
     
     public static void main(String[] args){
+        
         String command    = args[0];
         String outputFile = args[1];
         

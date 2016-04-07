@@ -7,23 +7,36 @@ package org.root.basic;
 
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
 import org.root.base.IDataSet;
 import org.root.histogram.H1D;
+import org.root.pad.TImageCanvas;
 import org.root.utils.DataFactory;
 
 /**
  *
  * @author gavalian
  */
-public class EmbeddedCanvas extends JPanel {
+public class EmbeddedCanvas extends JPanel implements ActionListener {
      public   ArrayList<EmbeddedPad>  canvasPads = new  ArrayList<EmbeddedPad>();
     private  int                     canvas_COLUMNS = 1;
     private  int                     canvas_ROWS    = 1;
     private  Integer                     currentPad = 0;
+    private  JPopupMenu                       popup = null;
+    
     
     public EmbeddedCanvas(){
      super();
@@ -39,6 +52,7 @@ public class EmbeddedCanvas extends JPanel {
         super();
         this.setPreferredSize(new Dimension(xsize,ysize));
         this.divide(1, 1);
+        this.createPopupMenu();
     }
     /**
      * Constructor with initial size and divisions
@@ -51,6 +65,7 @@ public class EmbeddedCanvas extends JPanel {
         super();
         this.setPreferredSize(new Dimension(xsize,ysize));
         this.divide(rows,cols);
+        this.createPopupMenu();
     }
     /**
      * Change active pad on the canvas
@@ -159,6 +174,10 @@ public class EmbeddedCanvas extends JPanel {
         return this.canvasPads.get(this.currentPad);
     }
     
+    public EmbeddedPad  getPad(int index){
+        return this.canvasPads.get(index);
+    }
+    
     public void setDivisionsX(int div){
         //this.getPad().setDivisionsX(div);
     }
@@ -225,6 +244,79 @@ public class EmbeddedCanvas extends JPanel {
         }
     }
     
+    private void createPopupMenu(){
+        this.popup = new JPopupMenu();
+        JMenuItem itemSave = new JMenuItem("Save");
+        JMenuItem itemSaveAs = new JMenuItem("Save As...");
+        JMenuItem itemFitPanel = new JMenuItem("Fit Panel");
+        JMenuItem itemOptions = new JMenuItem("Options");
+        itemSave.addActionListener(this);
+        itemSaveAs.addActionListener(this);
+        itemFitPanel.addActionListener(this);
+        itemOptions.addActionListener(this);
+        
+        this.popup.add(itemSave);
+        this.popup.add(itemSaveAs);
+        this.popup.add(new JSeparator());
+        this.popup.add(itemFitPanel);
+        this.popup.add(new JSeparator());
+        this.popup.add(itemOptions);
+        addMouseListener(new MousePopupListener());
+    }
+
+    public int getPadNumberByXY(int x, int y){
+        int w  = this.getWidth();
+        int h  = this.getHeight();
+        int xc = x/(w/this.canvas_COLUMNS);
+        int yc = y/(h/this.canvas_ROWS);
+        int pad = yc*this.canvas_ROWS + xc;
+        return pad;
+    }
+    
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        System.out.println("action performed " + e.getActionCommand());
+        if(e.getActionCommand().compareTo("Save As...")==0){
+            final JFileChooser fc = new JFileChooser();
+//In response to a button click:
+            int returnVal = fc.showSaveDialog(this);
+            
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                File file = fc.getSelectedFile();
+                if(file.exists()==true){
+                    JOptionPane.showMessageDialog(this, "Error. The file already esits....");
+                } else {
+                    //System.out.println("saving file : " + file.getAbsolutePath());
+                    this.save(file.getAbsolutePath());
+                }
+            }
+        }
+    }
+    
+    
+    class MousePopupListener extends MouseAdapter {
+        public void mousePressed(MouseEvent e) {
+            checkPopup(e);
+        }
+
+        public void mouseClicked(MouseEvent e) {
+            checkPopup(e);
+        }
+
+        public void mouseReleased(MouseEvent e) {
+            checkPopup(e);
+        }
+
+        private void checkPopup(MouseEvent e) {
+            //System.out.println("showing");
+            if (e.isPopupTrigger()) {
+                int pad = getPadNumberByXY(e.getX(),e.getY());
+                System.out.println("POP-UP coordinates = " + e.getX() + " " + e.getY() + "  pad = " + pad);
+                popup.show(EmbeddedCanvas.this, e.getX(), e.getY());
+            }
+        }
+    }
+
     public static void main(String[] args){
         JFrame frame = new JFrame();
         frame.setLayout(new GridLayout(1,3));
