@@ -1,3 +1,4 @@
+package org.root.ui;
 
 
 import java.awt.BorderLayout;
@@ -68,14 +69,14 @@ public class FitPanel extends JPanel {
 		init();
 	}
 	
-	FitPanel(EmbeddedCanvas canvas, int index) {
+	public FitPanel(EmbeddedCanvas canvas, int indx) {
 		this.canvas = canvas;
-		this.index = index;
+		this.index = indx;
 		xMin = canvas.getPad(index).getAxisX().getMin();
 		xMax = canvas.getPad(index).getAxisX().getMax();
 		int ndataset = canvas.getPad(index).getDataSetCount();
 		for(int i = 0; i < ndataset; i++){
-			IDataSet ds = canvas.getPad().getDataSet(i);
+			IDataSet ds = canvas.getPad(index).getDataSet(i);
 			String name = ds.getName();
 			dataSetNames.add(name);
 			datasets.add(ds);
@@ -84,7 +85,7 @@ public class FitPanel extends JPanel {
 		init();
 	}
 	
-	void init(){
+	final void init(){
 		this.setLayout(new BorderLayout());
 		this.fitFunction = new F1D(predefFunctions[0],xMin, xMax);
 		initFitFunction();
@@ -239,7 +240,7 @@ public class FitPanel extends JPanel {
 				fitFunction.setLineColor(2);
 				fitFunction.setLineWidth(5);
 				fitFunction.setLineStyle(1);
-				
+				canvas.cd(index);                                
 				canvas.draw(fitFunction,"same");
 			}
 		});
