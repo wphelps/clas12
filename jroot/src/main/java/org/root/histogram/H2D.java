@@ -1,6 +1,7 @@
 package org.root.histogram;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.TreeMap;
 import org.root.attr.Attributes;
 import org.root.base.DataRegion;
@@ -604,7 +605,7 @@ public class H2D implements EvioWritableTree,IDataSet {
         }
         
     @Override
-    public TreeMap<Integer, Object> toTreeMap() {
+    public Map<Integer, Object> toTreeMap() {
         TreeMap<Integer, Object> hcontainer = new TreeMap<Integer, Object>();
         hcontainer.put(1, new int[]{2});     
         byte[] nameBytes = this.hName.getBytes();
@@ -619,7 +620,7 @@ public class H2D implements EvioWritableTree,IDataSet {
     }
 
     @Override
-    public void fromTreeMap(TreeMap<Integer, Object> map) {
+    public void fromTreeMap(Map<Integer, Object> map) {
         if(map.get(1) instanceof int[]){
             if(  ((int[]) map.get(1))[0]==2){
                 int[]    nbins      = ((int[]) map.get(3));

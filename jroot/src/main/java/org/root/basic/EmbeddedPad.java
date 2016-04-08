@@ -30,7 +30,7 @@ public class EmbeddedPad extends JPanel {
     public EmbeddedPad(){
         super();
         this.setPreferredSize(new Dimension(500,500));
-        this.dataSetFrame.getAxisFrame().setTitleSize(12);
+        this.dataSetFrame.getAxisFrame().setTitleFontSize(12);
         this.dataSetFrame.getAxisFrame().getAxisX().setTitleSize(12);
         this.dataSetFrame.getAxisFrame().getAxisX().setAxisFontSize(12);
         this.dataSetFrame.getAxisFrame().getAxisY().setTitleSize(12);
@@ -43,7 +43,7 @@ public class EmbeddedPad extends JPanel {
         super();
         this.setPreferredSize(new Dimension(xsize,ysize));
         //this.setSize(500, 500);
-        this.dataSetFrame.getAxisFrame().setTitleSize(12);
+        this.dataSetFrame.getAxisFrame().setTitleFontSize(12);
         this.dataSetFrame.getAxisFrame().getAxisX().setTitleSize(10);
         this.dataSetFrame.getAxisFrame().getAxisX().setAxisFontSize(10);
         this.dataSetFrame.getAxisFrame().getAxisY().setTitleSize(10);
@@ -92,7 +92,7 @@ public class EmbeddedPad extends JPanel {
     }
     
     public void setTitleSize(int size){
-        this.dataSetFrame.getAxisFrame().setTitleSize(size);
+        this.dataSetFrame.getAxisFrame().setTitleFontSize(size);
     }
     
     public void setAxisRange(double xmin, double xmax, double ymin, double ymax){
