@@ -291,6 +291,7 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
                 }
             }
         }
+        
     }
     
     

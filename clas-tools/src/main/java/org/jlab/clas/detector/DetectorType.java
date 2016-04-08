@@ -70,4 +70,11 @@ public enum DetectorType {
                 return id;
         return UNDEFINED;
     }
+    public static DetectorType getType(Integer detId) {
+
+        for(DetectorType id: DetectorType.values())
+            if (id.getDetectorId() == detId) 
+                return id;
+        return UNDEFINED;
+    }
 }

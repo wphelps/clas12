@@ -147,6 +147,10 @@ public class GraphicsAxis {
         this.axisTitle.setFontSize(size);
     }
     
+    public String getTitle(){
+        return this.axisTitle.toString();
+    }
+    
     public void setTitle(String title){
         this.axisTitle.setText(title);
     }
