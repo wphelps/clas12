@@ -5,6 +5,7 @@
  */
 package org.root.basic;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -24,6 +25,8 @@ import javax.swing.JSeparator;
 import org.root.base.IDataSet;
 import org.root.histogram.H1D;
 import org.root.pad.TImageCanvas;
+import org.root.ui.FitPanel;
+import org.root.ui.OptionsPanel;
 import org.root.utils.DataFactory;
 
 /**
@@ -36,7 +39,7 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
     private  int                     canvas_ROWS    = 1;
     private  Integer                     currentPad = 0;
     private  JPopupMenu                       popup = null;
-    
+    private  int                       popupPad     = -1;
     
     public EmbeddedCanvas(){
      super();
@@ -276,6 +279,12 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         System.out.println("action performed " + e.getActionCommand());
+        if(e.getActionCommand().compareTo("Options")==0){
+            this.openOptionsPane(popupPad);
+        }
+        if(e.getActionCommand().compareTo("Fit Panel")==0){
+            this.openFitsPane(popupPad);
+        }
         if(e.getActionCommand().compareTo("Save As...")==0){
             final JFileChooser fc = new JFileChooser();
 //In response to a button click:
@@ -311,13 +320,36 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         private void checkPopup(MouseEvent e) {
             //System.out.println("showing");
             if (e.isPopupTrigger()) {
-                int pad = getPadNumberByXY(e.getX(),e.getY());
-                System.out.println("POP-UP coordinates = " + e.getX() + " " + e.getY() + "  pad = " + pad);
+                popupPad = getPadNumberByXY(e.getX(),e.getY());
+                //System.out.println("POP-UP coordinates = " + e.getX() + " " + e.getY() + "  pad = " + pad);
                 popup.show(EmbeddedCanvas.this, e.getX(), e.getY());
             }
         }
     }
 
+    
+    public void openOptionsPane(int pad){
+        //System.out.println(" Openning option panbe for pad = " + pad);
+        //System.out.println(" Dataset count = " + this.getPad(pad).getDataSetCount());
+        JFrame frame = new JFrame("Options");
+        OptionsPanel options = new OptionsPanel(this,pad);
+        frame.setLayout(new BorderLayout());
+        frame.add(options, BorderLayout.CENTER);
+        frame.pack();
+        frame.setVisible(true);
+    }
+    
+    public void openFitsPane(int pad){
+        //System.out.println(" Openning option panbe for pad = " + pad);
+        //System.out.println(" Dataset count = " + this.getPad(pad).getDataSetCount());
+        JFrame frame = new JFrame("Fit Panel");
+        FitPanel options = new FitPanel(this,pad);
+        frame.setLayout(new BorderLayout());
+        frame.add(options, BorderLayout.CENTER);
+        frame.pack();
+        frame.setVisible(true);
+    }
+    
     public static void main(String[] args){
         JFrame frame = new JFrame();
         frame.setLayout(new GridLayout(1,3));

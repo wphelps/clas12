@@ -1,3 +1,5 @@
+package org.root.ui;
+
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -42,18 +44,18 @@ public class OptionsPanel extends JPanel  {
 	EmbeddedCanvas canvas;
 	int index;
 	JTabbedPane tabbedPane;
-	OptionsPanel(EmbeddedCanvas canvas, int index){
+	public OptionsPanel(EmbeddedCanvas canvas, int indx){
 		this.canvas = canvas;
-		this.index = index;
+		this.index = indx;
 		xMin = canvas.getPad(index).getAxisX().getMin();
 		xMax = canvas.getPad(index).getAxisX().getMax();
 		yMin = canvas.getPad(index).getAxisY().getMin();
 		yMax = canvas.getPad(index).getAxisY().getMax();
 		//canvas.getPad(index).getAxisY().getAxisFont().getSize()
 		//canvas.getPad(5).setAxisRange("X", 0.0, 5.0);
-		int ndataset = canvas.getPad(index).getDataSetCount();
+		int ndataset = canvas.getPad(indx).getDataSetCount();
 		for(int i = 0; i < ndataset; i++){
-			IDataSet ds = canvas.getPad().getDataSet(i);
+			IDataSet ds = canvas.getPad(indx).getDataSet(i);
 			String name = ds.getName();
 			dataSetPanels.add(new JPanel());
 			dataSetNames.add(name);

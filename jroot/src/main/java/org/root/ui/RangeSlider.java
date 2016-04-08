@@ -1,4 +1,5 @@
 
+package org.root.ui;
 
 
 import javax.swing.JSlider;
