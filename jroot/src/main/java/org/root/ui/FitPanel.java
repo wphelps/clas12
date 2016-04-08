@@ -240,7 +240,7 @@ public class FitPanel extends JPanel {
 				fitFunction.setLineColor(2);
 				fitFunction.setLineWidth(5);
 				fitFunction.setLineStyle(1);
-				canvas.cd(index);
+				canvas.cd(index);                                
 				canvas.draw(fitFunction,"same");
 			}
 		});

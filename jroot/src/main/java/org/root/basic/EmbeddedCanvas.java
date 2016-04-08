@@ -336,6 +336,7 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         frame.setLayout(new BorderLayout());
         frame.add(options, BorderLayout.CENTER);
         frame.pack();
+        frame.setLocationRelativeTo(this);
         frame.setVisible(true);
     }
     
@@ -343,10 +344,12 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         //System.out.println(" Openning option panbe for pad = " + pad);
         //System.out.println(" Dataset count = " + this.getPad(pad).getDataSetCount());
         JFrame frame = new JFrame("Fit Panel");
+        
         FitPanel options = new FitPanel(this,pad);
         frame.setLayout(new BorderLayout());
         frame.add(options, BorderLayout.CENTER);
         frame.pack();
+        frame.setLocationRelativeTo(this);
         frame.setVisible(true);
     }
     
