@@ -157,8 +157,7 @@ public class Geant4Basic implements IGeant4Volume {
         System.arraycopy(id, 0, volumeID, 0, volumeID.length);
     }
 
-    @Override
-    public String toString() {
+    public String gemcString() {
         StringBuilder str = new StringBuilder();
         if(this.getMother()==null){
             str.append(String.format("%18s ", this.getName()));

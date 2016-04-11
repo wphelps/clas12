@@ -136,13 +136,13 @@ public class FTOFGeant4Factory {
         StringBuilder str = new StringBuilder();
 
         for (Geant4Basic layerVolume : motherVolume.getChildren()) {
-            str.append(layerVolume.toString());
+            str.append(layerVolume.gemcString());
             str.append(System.getProperty("line.separator"));
         }
 
         for (Geant4Basic layerVolume : motherVolume.getChildren()) {
             for (Geant4Basic paddleVolume : layerVolume.getChildren()) {
-                str.append(paddleVolume.toString());
+                str.append(paddleVolume.gemcString());
                 str.append(System.getProperty("line.separator"));
             }
         }
