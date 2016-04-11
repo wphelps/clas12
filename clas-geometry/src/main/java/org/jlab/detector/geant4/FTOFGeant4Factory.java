@@ -87,8 +87,8 @@ public class FTOFGeant4Factory {
         panelVolume.setPosition(panel_pos_x, panel_pos_y, panel_pos_z);
 
         //panelVolume.setRotation("xzy", thtilt/3, Math.toRadians(-30.0 - 1 * 60.0), 0.0);
-        //panelVolume.setRotation("xzy", Math.toRadians(-90) - thtilt, Math.toRadians(-30.0 - sector * 60.0), 0.0);
-        panelVolume.setRotation("zxy", Math.toRadians(-30.0 - sector * 60.0), Math.toRadians(-90) - thtilt, 0.0);
+        panelVolume.setRotation("xyz", Math.toRadians(-90) - thtilt, 0.0, Math.toRadians(-30.0 - sector * 60.0));
+        //panelVolume.setRotation("zxy", Math.toRadians(-30.0 - sector * 60.0), Math.toRadians(-90) - thtilt, 0.0);
         for (int ipaddle = 0; ipaddle < paddles.size(); ipaddle++) {
             paddles.get(ipaddle).setName("panel" + gemcLayerNames[layer - 1] + "_sector" + sector + "_paddle_" + (ipaddle + 1));
             paddles.get(ipaddle).setId(sector, layer, ipaddle + 1);
@@ -121,7 +121,7 @@ public class FTOFGeant4Factory {
 
             double zoffset = (ipaddle - numPaddles / 2. + 0.5) * (paddlewidth + gap + 2 * wrapperthickness);
             volume.setPosition(0.0, 0.0, zoffset);
-            volume.setRotation("zxy", 0, 0, 0);
+            volume.setRotation("xyz", 0, 0, 0);
             paddleVolumes.add(volume);
         }
         return paddleVolumes;
