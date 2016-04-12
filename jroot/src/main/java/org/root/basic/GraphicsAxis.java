@@ -220,6 +220,7 @@ public class GraphicsAxis {
         }
     }
     
+    
     public void update(Graphics2D  g2d, int width, int height){
         
     }
