@@ -62,7 +62,13 @@ public class OptionsPanel extends JPanel  {
 		}
 		axisFontSize = canvas.getPad(index).getAxisX().getAxisFontSize();
 		axisTitleFontSize = canvas.getPad(index).getAxisX().getAxisTitleFontSize();
-		currentFont = systemFonts.indexOf(canvas.getPad(index).getAxisX().getAxisFont());
+		//currentFont = systemFonts.indexOf(canvas.getPad(index).getAxisX().getAxisFont());
+		//There's probably a better way
+		for(int i=0; i<systemFonts.size(); i++){
+			if(canvas.getPad(index).getAxisX().getAxisFont().getName().compareTo(systemFonts.get(i)) ==0){
+				currentFont = i;
+			}
+		}
 		
 		initDatasetOptions();
 		initAxisOptions();
@@ -209,18 +215,18 @@ public class OptionsPanel extends JPanel  {
 
 		optionsPanel.add(fontLabel);
 		optionsPanel.add(fontsBox);
+		optionsPanel.add(titleFontSizeLabel);
+		optionsPanel.add(titleFontSizeBox);
 		optionsPanel.add(axisTitleFontSizeLabel);
 		optionsPanel.add(axisTitleFontSizeBox);
 		optionsPanel.add(axisFontSizeLabel);
 		optionsPanel.add(axisFontSizeBox);
-		optionsPanel.add(titleFontSizeLabel);
-		optionsPanel.add(titleFontSizeBox);
+		optionsPanel.add(titleLabel);
+		optionsPanel.add(titleTextField);
 		optionsPanel.add(xAxisTitleLabel);
 		optionsPanel.add(xAxisTextField);
 		optionsPanel.add(yAxisTitleLabel);
 		optionsPanel.add(yAxisTextField);
-		optionsPanel.add(titleLabel);
-		optionsPanel.add(titleTextField);
 		optionsPanel.add(gridPanel);
 		//optionsPanel.add(fillColorLabel);
 		//optionsPanel.add(fillColorBox);
