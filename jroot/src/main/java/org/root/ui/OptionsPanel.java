@@ -11,6 +11,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -24,6 +25,7 @@ import javax.swing.event.ChangeListener;
 import org.root.attr.TStyle;
 import org.root.base.IDataSet;
 import org.root.basic.EmbeddedCanvas;
+import org.root.basic.EmbeddedPad;
 
 public class OptionsPanel extends JPanel  {
 	/**
@@ -33,11 +35,13 @@ public class OptionsPanel extends JPanel  {
 	JPanel axisOptions = new JPanel();
 	ArrayList<JPanel> dataSetPanels = new ArrayList<JPanel>();
 	ArrayList<String> dataSetNames = new ArrayList<String>();
+	JCheckBox[] applyToAllCheckBoxes;
 	double xMin, xMax, yMin, yMax;
 	int ySliderMin = 0;
 	int ySliderMax = 10000000;
 	int xSliderMin = 0;
 	int xSliderMax = 10000000;
+	RangeSlider xSlider, ySlider;
 	String xAxisLabel, yAxisLabel, title;
 	List<String>   systemFonts = TStyle.systemFonts();
 	int axisFontSize,titleFontSize,axisTitleFontSize,currentFont;
@@ -94,7 +98,7 @@ public class OptionsPanel extends JPanel  {
 	
 	private void initAxisOptions(){
 		axisOptions.setLayout(new BorderLayout());
-		JPanel optionsPanel = new JPanel(new GridLayout(8,1));
+		JPanel optionsPanel = new JPanel(new GridLayout(9,1));
 		optionsPanel.setBorder(new TitledBorder("Options"));
 		String[] lineThickness 	= {"1","2","3","4","5","6","7","8"};
 		String[] fillColor 		= {"34","35","36","37","38"};
@@ -212,22 +216,104 @@ public class OptionsPanel extends JPanel  {
 		
 		gridPanel.add(xGridBox);
 		gridPanel.add(yGridBox);
+	
+		JPanel applyToAllPanel = new JPanel(new BorderLayout());
+		String[] applyToAllOptions = {"Font","Title Font Size","Axis Title Font Size","Axis Label Font Size","Title","X Axis Title","Y Axis Title","Grid X","Grid Y","Range X","Range Y"};
+		boolean[] applyToAllDefaults = {true,true,true,true,false,false,false,true,true,false,false};
+		applyToAllCheckBoxes = new JCheckBox[applyToAllOptions.length];
+		for(int i=0; i<applyToAllOptions.length; i++){
+			applyToAllCheckBoxes[i] = new JCheckBox(applyToAllOptions[i]);
+			applyToAllCheckBoxes[i].setSelected(applyToAllDefaults[i]);
+		}
+		JComboCheckBox applyToAllComboCheckBox = new JComboCheckBox(applyToAllCheckBoxes);
+		JButton applyToAllButton = new JButton("Apply To All");
+		applyToAllButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				ArrayList<EmbeddedPad> canvasPads = canvas.canvasPads;
+				for(int i=0; i<canvasPads.size();i++){
+					canvas.cd(i);
+					if(applyToAllCheckBoxes[0].isSelected()){
+						canvas.getPad(i).getAxisX().setAxisFontName(systemFonts.get(fontsBox.getSelectedIndex()));
+						canvas.getPad(i).getAxisY().setAxisFontName(systemFonts.get(fontsBox.getSelectedIndex()));
+						canvas.getPad(i).getAxisX().setTitleFontName(systemFonts.get(fontsBox.getSelectedIndex()));
+						canvas.getPad(i).getAxisY().setTitleFontName(systemFonts.get(fontsBox.getSelectedIndex()));
+						canvas.getPad(i).getAxisFrame().setTitleFontName(systemFonts.get(fontsBox.getSelectedIndex()));
+					} 
+					if(applyToAllCheckBoxes[1].isSelected()){
+						canvas.getPad(i).getAxisFrame().setTitleFontSize(fontSizeInts[titleFontSizeBox.getSelectedIndex()]);
+					}
+					if(applyToAllCheckBoxes[2].isSelected()){
+						canvas.getPad(i).getAxisX().setAxisFontSize(fontSizeInts[axisFontSizeBox.getSelectedIndex()]);
+						canvas.getPad(i).getAxisY().setAxisFontSize(fontSizeInts[axisFontSizeBox.getSelectedIndex()]);
+					} 
+					if(applyToAllCheckBoxes[3].isSelected()){
+						canvas.getPad(i).getAxisX().setTitleFontSize(fontSizeInts[axisTitleFontSizeBox.getSelectedIndex()]);
+						canvas.getPad(i).getAxisY().setTitleFontSize(fontSizeInts[axisTitleFontSizeBox.getSelectedIndex()]);
+					}
+					if(applyToAllCheckBoxes[4].isSelected()){
+						canvas.getPad(i).getAxisFrame().setTitle(titleTextField.getText());
+					}
+					if(applyToAllCheckBoxes[5].isSelected()){
+						canvas.getPad(i).getAxisX().setTitle(xAxisTextField.getText());
 
-		optionsPanel.add(fontLabel);
-		optionsPanel.add(fontsBox);
-		optionsPanel.add(titleFontSizeLabel);
-		optionsPanel.add(titleFontSizeBox);
-		optionsPanel.add(axisTitleFontSizeLabel);
-		optionsPanel.add(axisTitleFontSizeBox);
-		optionsPanel.add(axisFontSizeLabel);
-		optionsPanel.add(axisFontSizeBox);
-		optionsPanel.add(titleLabel);
-		optionsPanel.add(titleTextField);
-		optionsPanel.add(xAxisTitleLabel);
-		optionsPanel.add(xAxisTextField);
-		optionsPanel.add(yAxisTitleLabel);
-		optionsPanel.add(yAxisTextField);
-		optionsPanel.add(gridPanel);
+					}
+					if(applyToAllCheckBoxes[6].isSelected()){
+						canvas.getPad(i).getAxisY().setTitle(yAxisTextField.getText());
+
+					}
+					if(applyToAllCheckBoxes[7].isSelected()){
+						canvas.getPad(i).getAxisFrame().setGridX(xGridBox.isSelected());
+
+					}
+					if(applyToAllCheckBoxes[8].isSelected()){
+						canvas.getPad(i).getAxisFrame().setGridX(yGridBox.isSelected());
+					}
+					if(applyToAllCheckBoxes[9].isSelected()){
+						canvas.getPad(i).setAxisRange("X",xSlider.getValue() * (xMax-xMin)/(double)(xSliderMax-xSliderMin) , xSlider.getUpperValue()* (xMax-xMin)/(double)(xSliderMax-xSliderMin));
+					}
+					if(applyToAllCheckBoxes[10].isSelected()){
+						canvas.getPad(i).setAxisRange("Y",ySlider.getValue() * (yMax-yMin)/(double)(ySliderMax-ySliderMin) , ySlider.getUpperValue()* (yMax-yMin)/(double)(ySliderMax-ySliderMin));
+					}
+				}
+				canvas.cd(index);
+				canvas.update();
+			}
+		});
+		applyToAllPanel.add(applyToAllComboCheckBox,BorderLayout.WEST);
+		applyToAllPanel.add(applyToAllButton,BorderLayout.EAST);
+		
+		JPanel fontsPanel = new JPanel(new BorderLayout());
+		fontsPanel.add(fontLabel,BorderLayout.WEST);
+		fontsPanel.add(fontsBox,BorderLayout.EAST);
+		optionsPanel.add(fontsPanel);
+		JPanel titleSizePanel = new JPanel(new BorderLayout());
+		titleSizePanel.add(titleFontSizeLabel,BorderLayout.WEST);
+		titleSizePanel.add(titleFontSizeBox,BorderLayout.EAST);
+		optionsPanel.add(titleSizePanel);
+		JPanel axisTitleSizePanel = new JPanel(new BorderLayout());
+		axisTitleSizePanel.add(axisTitleFontSizeLabel,BorderLayout.WEST);
+		axisTitleSizePanel.add(axisTitleFontSizeBox,BorderLayout.EAST);
+		optionsPanel.add(axisTitleSizePanel);
+		JPanel axisLabelPanel = new JPanel(new BorderLayout());
+		axisLabelPanel.add(axisFontSizeLabel,BorderLayout.WEST);
+		axisLabelPanel.add(axisFontSizeBox,BorderLayout.EAST);
+		optionsPanel.add(axisLabelPanel);
+		JPanel titleTextFieldPanel = new JPanel(new GridLayout(1,2));
+		titleTextFieldPanel.add(titleLabel);
+		titleTextFieldPanel.add(titleTextField);
+		optionsPanel.add(titleTextFieldPanel);
+		JPanel xAxisTextFieldPanel = new JPanel(new GridLayout(1,2));
+		xAxisTextFieldPanel.add(xAxisTitleLabel);
+		xAxisTextFieldPanel.add(xAxisTextField);
+		optionsPanel.add(xAxisTextFieldPanel);
+		JPanel yAxisTextFieldPanel = new JPanel(new GridLayout(1,2));
+		yAxisTextFieldPanel.add(yAxisTitleLabel);
+		yAxisTextFieldPanel.add(yAxisTextField);
+		optionsPanel.add(yAxisTextFieldPanel);
+
+		optionsPanel.add(gridPanel,BorderLayout.EAST);
+		optionsPanel.add(applyToAllPanel,BorderLayout.EAST);
+
 		//optionsPanel.add(fillColorLabel);
 		//optionsPanel.add(fillColorBox);
 
@@ -243,7 +329,7 @@ public class OptionsPanel extends JPanel  {
 		JLabel xAxisLabel = new JLabel("X:");
 		
 		//x axis
-		RangeSlider xSlider = new RangeSlider();
+		xSlider = new RangeSlider();
 		xSlider.setMinimum(xSliderMin);
 		xSlider.setMaximum(xSliderMax);
 		xSlider.setValue(xSliderMin);
@@ -269,7 +355,7 @@ public class OptionsPanel extends JPanel  {
 		JLabel yAxisLabel = new JLabel("Y:");
 		JLabel yrangeSliderValue1 = new JLabel(""+String.format("%4.2f",yMin));
 		JLabel yrangeSliderValue2 = new JLabel(""+String.format("%4.2f",yMax));
-		RangeSlider ySlider = new RangeSlider();
+		ySlider = new RangeSlider();
 		ySlider.setMinimum(ySliderMin);
 		ySlider.setMaximum(ySliderMax);
 		ySlider.setValue(ySliderMin);
