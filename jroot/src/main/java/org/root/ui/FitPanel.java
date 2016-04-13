@@ -47,7 +47,7 @@ public class FitPanel extends JPanel {
 	ArrayList<String> dataSetNames = new ArrayList<String>();
 	DataFitter fitter = new DataFitter();
 	JComboBox paramEstimationMethods;
-
+	ArrayList<JCheckBox> optionCheckBoxes;
 
 	//Actual low and high of the x axis
 
@@ -172,7 +172,7 @@ public class FitPanel extends JPanel {
 
 		JPanel fitOptions = new JPanel(new GridLayout(1, 1));
 		String[] options = {"Draw Stats"};
-		ArrayList<JCheckBox> optionCheckBoxes = new ArrayList<JCheckBox>();
+		optionCheckBoxes = new ArrayList<JCheckBox>();
 		for (int i = 0; i < options.length; i++) {
 			fitOptions.add(new JCheckBox(options[i]));
 		}
@@ -232,6 +232,14 @@ public class FitPanel extends JPanel {
 					options ="QR";
 				}else if(method==4){
 					options ="LQR";
+				}
+				for(int i=0; i<optionCheckBoxes.size(); i++){
+					if(optionCheckBoxes.get(i).getName().compareTo("Draw Stats")==0&&optionCheckBoxes.get(i).isSelected()){
+						options = options+"S";
+						System.out.println("Draw stats!");
+					}
+					System.out.println("Options: "+optionCheckBoxes.get(i).getName()+ " is "+optionCheckBoxes.get(i).isSelected());
+
 				}
 				fitFunction.setRange(currentRangeMin, currentRangeMax);
 				//histogram.fit(fitFunction,options);
