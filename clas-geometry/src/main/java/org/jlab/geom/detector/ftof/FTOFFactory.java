@@ -228,22 +228,26 @@ public class FTOFFactory implements Factory <FTOFDetector, FTOFSector, FTOFSuper
     public FTOFDetectorMesh getDetectorGeant4(ConstantProvider cp){
         FTOFDetectorMesh  detector = new FTOFDetectorMesh();
         FTOFGeant4Factory  factory = new FTOFGeant4Factory();
-        for(int sector = 1; sector <=3; sector++){
+        for(int sector = 1; sector <=6; sector++){
             
             FTOFSectorMesh ftofSector = new FTOFSectorMesh(sector);
             
-            for(int layer = 1; layer <= 1; layer++){
+            for(int layer = 1; layer <= 3; layer++){
                 
                 FTOFSuperlayerMesh  ftofSuperlayer = new FTOFSuperlayerMesh(sector,layer);
                 FTOFLayerMesh       ftofLayer      = new FTOFLayerMesh(sector,layer,1);
                 
                 Geant4Basic  sLayer = factory.createPanel(cp, sector, layer);
-                Transformation3D  rotationMother    = sLayer.rotation();
+                Transformation3D  rotationMother    = sLayer.rotation().inverse();
+                //Transformation3D  rotationMother    = new Transformation3D();
+                //rotationMother.copy(sLayer.rotation());
+                //rotationMother.inverse();
                 Transformation3D  translationMother = sLayer.translation();
-                System.out.println(" SECTOR = " + sector + "  LAYER = " + layer);
-                System.out.println(sLayer.toString());
-                rotationMother.show();
-                translationMother.show();
+                //System.out.println(" SECTOR = " + sector + "  LAYER = " + layer);
+                //System.out.println(sLayer.toString());
+                //rotationMother.show();
+                //translationMother.show();
+                
                 int counter = 1;
                 for(Geant4Basic paddle : sLayer.getChildren()){
 
@@ -261,8 +265,8 @@ public class FTOFFactory implements Factory <FTOFDetector, FTOFSector, FTOFSuper
                     rotChild.apply(sciPaddle);
                     trChild.apply(sciPaddle);
                     
-                    //rotationMother.apply(sciPaddle);
-                    //translationMother.apply(sciPaddle);
+                    rotationMother.apply(sciPaddle);
+                    translationMother.apply(sciPaddle);
                     
                     ftofLayer.addComponent(sciPaddle);                    
                     /*

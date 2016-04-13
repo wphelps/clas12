@@ -131,7 +131,7 @@ public class CLAS12GeometryViewer extends Application {
         mat.setSpecularColor(new Color(0.1,0.1,0.8,0.5));
         MeshStore  store = GeometryLoader.getGeometryGemc();
         for(Map.Entry<String,MeshView> item : store.getMap().entrySet()){
-            item.getValue().setMaterial(mat);
+            //item.getValue().setMaterial(mat);
             root.getChildren().add(item.getValue());
         }
     }

@@ -13,6 +13,7 @@ import javafx.scene.input.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
+import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
@@ -37,6 +38,7 @@ public class ContentModel {
     private final AutoScalingGroup autoScalingGroup = new AutoScalingGroup(2);
     private final AmbientLight ambientLight = new AmbientLight(Color.WHITE);
     private final PointLight light1 = new PointLight(Color.WHITE);
+    private MeshView         floorMesh = null;
     private final double paneW, paneH;
     private double dimModel=100d;
     private double mousePosX, mousePosY;
@@ -105,6 +107,17 @@ public class ContentModel {
         subScene.setCamera(camera);
         subScene.setFill(Color.CADETBLUE);
         setListeners(true);
+    }
+    
+    private void buildFloor(){
+        int ndivisions = 5;
+        float size     = 300.0f;
+        float[] points = new float[ndivisions*ndivisions];
+        for(int x = 0; x < ndivisions; x++){
+            for(int z = 0; z < ndivisions; z++){
+                int index = x*ndivisions + z;
+            }
+        }
     }
     
     private void buildAxes() {
