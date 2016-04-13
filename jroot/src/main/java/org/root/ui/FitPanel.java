@@ -72,6 +72,11 @@ public class FitPanel extends JPanel {
 	public FitPanel(EmbeddedCanvas canvas, int indx) {
 		this.canvas = canvas;
 		this.index = indx;
+		//Bug fix... Remove when gagik gets the pads labeled correctly
+		if(index>0){
+			index--;
+		}
+		//System.out.println("Inializing Fit Panel index:["+index+"]");
 		xMin = canvas.getPad(index).getAxisX().getMin();
 		xMax = canvas.getPad(index).getAxisX().getMax();
 		int ndataset = canvas.getPad(index).getDataSetCount();
@@ -170,11 +175,12 @@ public class FitPanel extends JPanel {
 		fitMethod.add(new JLabel("Method:"));
 		fitMethod.add(paramEstimationMethods);
 
-		JPanel fitOptions = new JPanel(new GridLayout(1, 1));
-		String[] options = {"Draw Stats"};
+		JPanel fitOptions = new JPanel(new GridLayout(1, 2));
+		String[] options = {"Draw Stats","Quiet"};
 		optionCheckBoxes = new ArrayList<JCheckBox>();
 		for (int i = 0; i < options.length; i++) {
-			fitOptions.add(new JCheckBox(options[i]));
+			optionCheckBoxes.add(new JCheckBox(options[i]));
+			fitOptions.add(optionCheckBoxes.get(i));
 		}
 		fitSettings = new JPanel(new GridLayout(2, 1));
 		fitSettings.add(fitMethod);
@@ -223,24 +229,32 @@ public class FitPanel extends JPanel {
 				//Construct options
 				int method = paramEstimationMethods.getSelectedIndex();
 				if(method==0){
-					options = "EQR";
+					options = "ER";
 				}else if(method==1){
-					options = "NQR";
+					options = "NR";
 				}else if(method==2){
-					options = "PQR";
+					options = "PR";
 				}else if(method==3){
-					options ="QR";
+					options ="R";
 				}else if(method==4){
-					options ="LQR";
+					options ="LR";
 				}
+				String drawOption = "";
+				//System.out.println("******************BLAH "+optionCheckBoxes.size());
 				for(int i=0; i<optionCheckBoxes.size(); i++){
-					if(optionCheckBoxes.get(i).getName().compareTo("Draw Stats")==0&&optionCheckBoxes.get(i).isSelected()){
-						options = options+"S";
-						System.out.println("Draw stats!");
+					if(optionCheckBoxes.get(0).isSelected()){
+						drawOption = "S";
+					//	System.out.println("Draw stats!");
 					}
-					System.out.println("Options: "+optionCheckBoxes.get(i).getName()+ " is "+optionCheckBoxes.get(i).isSelected());
-
+					if(optionCheckBoxes.get(1).isSelected()){
+						options = options+"Q";
+						//System.out.println("Draw quietly!");
+					}
+					//System.out.println("Options: "+optionCheckBoxes.get(i).getName()+ " is "+optionCheckBoxes.get(i).isSelected());
 				}
+				//System.out.println("******************BLAH2");
+				//System.out.println("Fit Options:["+options+"]");
+
 				fitFunction.setRange(currentRangeMin, currentRangeMax);
 				//histogram.fit(fitFunction,options);
 				fitter.fit(thisDataset, fitFunction,options);
@@ -249,7 +263,7 @@ public class FitPanel extends JPanel {
 				fitFunction.setLineWidth(5);
 				fitFunction.setLineStyle(1);
 				canvas.cd(index);                                
-				canvas.draw(fitFunction,"same");
+				canvas.draw(fitFunction,"same"+drawOption);
 			}
 		});
 		lowerWindow.add(fit);
