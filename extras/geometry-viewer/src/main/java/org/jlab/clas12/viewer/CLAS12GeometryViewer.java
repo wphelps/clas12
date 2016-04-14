@@ -19,12 +19,14 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.CheckBoxTreeCell;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -65,6 +67,19 @@ public class CLAS12GeometryViewer extends Application {
         
         this.mainBorderPane = new BorderPane();
         
+        FlowPane  toolbar = new FlowPane();
+        
+        Button  btnClear = new Button("Clear");
+        
+        btnClear.setOnAction(event -> {root.getChildren().clear();});
+        Button  btnLoadFtof = new Button("FTOF");
+        
+        btnLoadFtof.setOnAction(event -> {loadDetector("FTOF");});
+        
+        toolbar.getChildren().add(btnClear);
+        toolbar.getChildren().add(btnLoadFtof);
+        
+        
         SplitPane  splitPane = new SplitPane();
         StackPane  treePane  = new StackPane();
         
@@ -83,7 +98,7 @@ public class CLAS12GeometryViewer extends Application {
         content.getSubScene().widthProperty().bind(pane.widthProperty());
         
         pane.setCenter(content.getSubScene());
-        
+        mainBorderPane.setTop(toolbar);
         splitPane.getItems().addAll(treePane,pane);
         splitPane.setDividerPositions(0.2);
 
@@ -134,6 +149,17 @@ public class CLAS12GeometryViewer extends Application {
             //item.getValue().setMaterial(mat);
             root.getChildren().add(item.getValue());
         }
+    }
+    
+    public void loadDetector(String detector){
+        if(detector.compareTo("FTOF")==0){
+            MeshStore  store = GeometryLoader.getGeometryGemc();
+            for(Map.Entry<String,MeshView> item : store.getMap().entrySet()){
+                //item.getValue().setMaterial(mat);
+                root.getChildren().add(item.getValue());
+            }
+        }
+        
     }
     
     public void testDC(){

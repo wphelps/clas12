@@ -205,6 +205,102 @@ public class Mesh3D implements Transformable, Showable{
         return false;
     }
     
+    public Point3D  getCenterX(int order){
+        Point3D  point  = new Point3D();
+        Point3D  center = new Point3D();
+        int offset = order*4;
+        for(int p = 0; p < 4; p++){
+            this.getPoint(p+offset, point);
+            center.set(center.x()+point.x(),
+                    center.y()+point.y(),center.z()+point.z());
+        }
+        center.set(center.x()*0.25, center.y()*0.25, center.z()*0.25);
+        return center;
+    }
+    
+    
+    public Point3D  getCenterY(int order){
+        Point3D  point  = new Point3D();
+        Point3D  center = new Point3D();
+        int offset = order*4;
+        if(order==0){
+            this.getPoint(0, point);
+            center.set(center.x()+point.x(),
+                    center.y()+point.y(),center.z()+point.z());
+            this.getPoint(3, point);
+            center.set(center.x()+point.x(),
+                    center.y()+point.y(),center.z()+point.z());
+            this.getPoint(4, point);
+            center.set(center.x()+point.x(),
+                    center.y()+point.y(),center.z()+point.z());
+            this.getPoint(7, point);
+            center.set(center.x()+point.x(),
+                    center.y()+point.y(),center.z()+point.z());
+        } else {
+            this.getPoint(1, point);
+            center.set(center.x()+point.x(),
+                    center.y()+point.y(),center.z()+point.z());
+            this.getPoint(2, point);
+            center.set(center.x()+point.x(),
+                    center.y()+point.y(),center.z()+point.z());
+            this.getPoint(5, point);
+            center.set(center.x()+point.x(),
+                    center.y()+point.y(),center.z()+point.z());
+            this.getPoint(6, point);
+            center.set(center.x()+point.x(),
+                    center.y()+point.y(),center.z()+point.z());
+        }
+        center.set(center.x()*0.25, center.y()*0.25, center.z()*0.25);
+        return center;
+    }
+    
+    public Point3D  getCenterZ(int order){
+        Point3D  point  = new Point3D();
+        Point3D  center = new Point3D();
+        int offset = order*4;
+        if(order==0){
+            this.getPoint(0, point);
+            center.set(center.x()+point.x(),
+                    center.y()+point.y(),center.z()+point.z());
+            this.getPoint(1, point);
+            center.set(center.x()+point.x(),
+                    center.y()+point.y(),center.z()+point.z());
+            this.getPoint(4, point);
+            center.set(center.x()+point.x(),
+                    center.y()+point.y(),center.z()+point.z());
+            this.getPoint(5, point);
+            center.set(center.x()+point.x(),
+                    center.y()+point.y(),center.z()+point.z());
+        } else {
+            this.getPoint(2, point);
+            center.set(center.x()+point.x(),
+                    center.y()+point.y(),center.z()+point.z());
+            this.getPoint(3, point);
+            center.set(center.x()+point.x(),
+                    center.y()+point.y(),center.z()+point.z());
+            this.getPoint(6, point);
+            center.set(center.x()+point.x(),
+                    center.y()+point.y(),center.z()+point.z());
+            this.getPoint(7, point);
+            center.set(center.x()+point.x(),
+                    center.y()+point.y(),center.z()+point.z());
+        }
+        center.set(center.x()*0.25, center.y()*0.25, center.z()*0.25);
+        return center;
+    }
+    
+    public Line3D getLineX(){
+        return new Line3D(this.getCenterX(0),this.getCenterX(1));
+    }
+    
+    public Line3D getLineY(){
+        return new Line3D(this.getCenterY(0),this.getCenterY(1));
+    }
+    
+    public Line3D getLineZ(){
+        return new Line3D(this.getCenterZ(0),this.getCenterZ(1));
+    }
+    
     public static Mesh3D box(float dx, float dy, float dz){
         float[] p = new float[]{
             -dx, -dy,  -dz,
@@ -271,6 +367,13 @@ public class Mesh3D implements Transformable, Showable{
      */
     public static void main(String[] args){
         Mesh3D box = Mesh3D.box(10, 20, 60);
+        
+        Line3D  lineX = box.getLineX();
+        Line3D  lineY = box.getLineY();
+        Line3D  lineZ = box.getLineZ();
+        lineX.show();
+        lineY.show();
+        lineZ.show();
         box.translateXYZ(100, 0.0, 0.0);        
         box.show();
         Line3D  line = new Line3D();        

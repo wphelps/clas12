@@ -181,7 +181,7 @@ public class TBrowser extends JFrame implements ActionListener {
                     str.append(tp.getPathComponent(loop));
                 }
                 String objectname  = str.toString();
-                this.treeViewer.draw(objectname, "", "", sciCanvas);
+                this.treeViewer.draw(objectname, "", "S", sciCanvas);
                 //tp.getPathComponent(loop);
             }
         }
