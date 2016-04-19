@@ -176,6 +176,10 @@ public class HashTable extends DefaultTableModel {
         return 0;
     }
     
+    public boolean hasColumn(String name){
+        return (this.getColumnIndex(name)>=0);
+    }
+    
     private int  getColumnIndex(String name){
         for(int i = 0; i < this.columns.size(); i++){
             if(this.columns.get(i).compareTo(name)==0){
@@ -188,6 +192,13 @@ public class HashTable extends DefaultTableModel {
         this.hashCollection.show();
     }
     
+    public void describe(){
+        
+        for(int i = 0; i < this.columns.size();i++){
+            System.out.println(String.format("%12s  *  %5s *", this.columns.get(i),
+                    this.types.get(i)));
+        }
+    }
     
     public int getIndexCount(){
         return this.hashCollection.getIndexCount();

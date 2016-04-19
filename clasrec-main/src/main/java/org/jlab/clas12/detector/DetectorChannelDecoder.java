@@ -122,4 +122,6 @@ public class DetectorChannelDecoder {
         }
         System.out.println(this.getCharString("*", 64));
     }
+    
+    
 }
