@@ -70,7 +70,7 @@ public class HashTable extends DefaultTableModel {
             }
         }
         for(int loop = 0; loop < this.columns.size(); loop++){
-            System.out.println(loop + " " + this.columns.get(loop) + "  " + this.types.get(loop));
+           // System.out.println(loop + " " + this.columns.get(loop) + "  " + this.types.get(loop));
         }
     }
     
@@ -164,6 +164,26 @@ public class HashTable extends DefaultTableModel {
         return this.hashCollection.getItem(index);
     }
     
+    public boolean   hasRow(int... index){
+        return this.hashCollection.hasItem(index);
+    }
+    
+    public Number getValue(String name, int... index){
+        if(this.hasRow(index)==true){
+            //int index = this.findColumn(name);
+            
+        }
+        return 0;
+    }
+    
+    private int  getColumnIndex(String name){
+        for(int i = 0; i < this.columns.size(); i++){
+            if(this.columns.get(i).compareTo(name)==0){
+                return i;
+            }
+        }
+        return -1;
+    }
     public void show(){
         this.hashCollection.show();
     }
