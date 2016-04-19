@@ -170,8 +170,9 @@ public class HashTable extends DefaultTableModel {
     
     public Number getValue(String name, int... index){
         if(this.hasRow(index)==true){
-            //int index = this.findColumn(name);
-            
+            int idx = this.getColumnIndex(name);
+            if(idx<0) return 0;            
+            return this.getRow(index).get(idx);
         }
         return 0;
     }
@@ -195,7 +196,7 @@ public class HashTable extends DefaultTableModel {
     public void describe(){
         
         for(int i = 0; i < this.columns.size();i++){
-            System.out.println(String.format("%12s  *  %5s *", this.columns.get(i),
+            System.out.println(String.format("* %24s  *  %5s *", this.columns.get(i),
                     this.types.get(i)));
         }
     }
@@ -305,6 +306,11 @@ public class HashTable extends DefaultTableModel {
         }
         
         public boolean isValid(double value){ return (value>=this.MIN&&value<=this.MAX);}
+    }
+    
+    
+    public void export(String filename){
+        
     }
     
     public static void main(String[] args){

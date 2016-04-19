@@ -56,7 +56,7 @@ public class CalibrationConstants {
         this.calibrationTableNames.put(name, table);
     }
     
-    public void read(int run, String variation){
+    public void init(int run, String variation){
         DatabaseConstantProvider provider = new DatabaseConstantProvider(run,variation);
         for(Map.Entry<String,String> entry : this.calibrationTableNames.entrySet()){
             HashTable  table = provider.readTable(entry.getValue());
@@ -75,8 +75,11 @@ public class CalibrationConstants {
             return 0.0;
         }
         HashTable table = this.calibrationTables.get(name);
-        if(table.hasRow(sector,layer,component)==true&&table.hasColumn(name)){
-            return (Double) table.getValue(name, sector,layer,component);
+        if(table.hasRow(sector,layer,component)==true&&table.hasColumn(column)){
+            Number value = table.getValue(column, sector,layer,component);
+            if(value instanceof Double) return (Double) value;
+            System.out.println(String.format("(error) : [%3d %3d %3d] value [%s] is not a double.",
+                    sector,layer,component, column));
         }
         return 0.0;
     }
@@ -86,8 +89,12 @@ public class CalibrationConstants {
             return 0;
         }
         HashTable table = this.calibrationTables.get(name);
-        if(table.hasRow(sector,layer,component)==true&&table.hasColumn(name)){
-            return (Integer) table.getValue(name, sector,layer,component);
+        //System.out.println(" HAS ENTRY  = " + table.hasRow(sector,layer,component));
+        if(table.hasRow(sector,layer,component)==true&&table.hasColumn(column)){
+            Number value = table.getValue(column, sector,layer,component);
+            if(value instanceof Integer) return (Integer) value;
+            System.out.println(String.format("(error) : [%3d %3d %3d] value [%s] is not an integer.",
+                    sector,layer,component, column));
         }
         return 0;
     }
@@ -152,6 +159,12 @@ public class CalibrationConstants {
         System.out.println(this.getCharString("*", 64));
     }
     
+    public void describe(){
+         for(Map.Entry<String,HashTable>  entry : this.calibrationTables.entrySet()){
+            System.out.println("CALIBRATION CONSTANTS : " + entry.getKey());
+            entry.getValue().describe();
+        }
+    }
     public static void main(String[] args){
         
         CalibrationConstants calibGain = new CalibrationConstants();

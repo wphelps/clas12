@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.jlab.clas.detector.DetectorBankEntry;
+import org.jlab.clas.detector.DetectorDescriptor;
 import org.jlab.clas.detector.DetectorType;
 import org.jlab.clasrec.utils.DatabaseConstantProvider;
 import org.jlab.containers.HashTable;
@@ -51,6 +52,11 @@ public class DetectorChannelDecoder {
         detectorTables.put(DetectorType.getType(type), table);
     }
     
+    public void clear(){
+        this.detectorTables.clear();
+        this.translationTable.clear();
+    }
+    
     public void add(DetectorType type, String table){
         this.add(type.getName(), table);
     }
@@ -75,10 +81,30 @@ public class DetectorChannelDecoder {
     public HashTable  getTable(String type){
         return this.translationTable.get(DetectorType.getType(type));
     }
+    
     public String getCharString(String symbol,int length) {
         StringBuilder str = new StringBuilder();
         for(int i=0;i<length;i++) str.append(symbol);
         return str.toString();
+    }
+    
+    public DetectorDescriptor  getDescriptor(int... index){
+        DetectorDescriptor desc = new DetectorDescriptor();        
+        if(index.length>2){
+            desc.setCrateSlotChannel(index[0], index[1], index[2]);
+        }
+        for(Map.Entry<DetectorType,HashTable> table : this.translationTable.entrySet()){
+                TableRow  row = table.getValue().getRow(index);
+                if(row!=null){
+                    Integer sector = (Integer) row.get(0);
+                    Integer layer  = (Integer) row.get(1);
+                    Integer component = (Integer) row.get(2);
+                    Integer order = (Integer) row.get(3);
+                    desc.setSectorLayerComponent(sector, layer, component);
+                    desc.setOrder(order);
+                }
+        }
+        return desc;
     }
     
     public void decode(List<DetectorBankEntry> entries){
@@ -123,5 +149,10 @@ public class DetectorChannelDecoder {
         System.out.println(this.getCharString("*", 64));
     }
     
-    
+    public void dump(String name){
+        if(this.translationTable.containsKey(DetectorType.getType(name))==true){
+            HashTable table = this.translationTable.get(DetectorType.getType(name));
+            table.show();
+        }
+    }
 }
