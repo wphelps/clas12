@@ -111,14 +111,29 @@ public class ContentModel {
     }
     
     private void buildFloor(){
-        float xlength = 800.0f;
+        float xlength = 1600.0f;
         float zlength = 800.0f;
         Box floorBox = new Box(xlength,0.1,zlength);
         final PhongMaterial redMaterial = new PhongMaterial();
-        redMaterial.setDiffuseColor(new Color(1.0,1.0,1.0,0.1));
-        redMaterial.setSpecularColor(new Color(1.0,1.0,1.0,0.1));
+        redMaterial.setDiffuseColor(new Color(0.4,0.4,0.4,1.0));
+        redMaterial.setSpecularColor(new Color(0.4,0.4,0.4,1.0));
         floorBox.setMaterial(redMaterial);
-        autoScalingGroup.getChildren().add(floorBox);
+        
+        for(int i = 0; i < 20; i++){
+            Box xLine = new Box(xlength - 80, 1.0, 1.0);
+            double ytranslate = -760 + i * 80;
+            xLine.setTranslateZ(ytranslate);
+            xLine.setMaterial(redMaterial);
+            autoScalingGroup.getChildren().add(xLine);
+        }
+        
+        for(int i = 0; i < 20; i++){
+            Box xLine = new Box(1.0, 1.0,xlength-80);
+            double ytranslate = -760 + i * 80;
+            xLine.setTranslateX(ytranslate);
+            xLine.setMaterial(redMaterial);
+            autoScalingGroup.getChildren().add(xLine);
+        }
     }
     
     private void buildAxes() {
