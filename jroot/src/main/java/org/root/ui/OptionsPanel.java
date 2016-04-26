@@ -51,15 +51,20 @@ public class OptionsPanel extends JPanel  {
 	public OptionsPanel(EmbeddedCanvas canvas, int indx){
 		this.canvas = canvas;
 		this.index = indx;
+		//Bug fix... Remove when gagik gets the pads labeled correctly
+		if(index>0){
+			index--;
+		}
+		//System.out.println("Inializing Options Panel index:["+index+"]");
 		xMin = canvas.getPad(index).getAxisX().getMin();
 		xMax = canvas.getPad(index).getAxisX().getMax();
 		yMin = canvas.getPad(index).getAxisY().getMin();
 		yMax = canvas.getPad(index).getAxisY().getMax();
 		//canvas.getPad(index).getAxisY().getAxisFont().getSize()
 		//canvas.getPad(5).setAxisRange("X", 0.0, 5.0);
-		int ndataset = canvas.getPad(indx).getDataSetCount();
+		int ndataset = canvas.getPad(index).getDataSetCount();
 		for(int i = 0; i < ndataset; i++){
-			IDataSet ds = canvas.getPad(indx).getDataSet(i);
+			IDataSet ds = canvas.getPad(index).getDataSet(i);
 			String name = ds.getName();
 			dataSetPanels.add(new JPanel());
 			dataSetNames.add(name);
@@ -259,14 +264,13 @@ public class OptionsPanel extends JPanel  {
 					}
 					if(applyToAllCheckBoxes[6].isSelected()){
 						canvas.getPad(i).getAxisY().setTitle(yAxisTextField.getText());
-
 					}
 					if(applyToAllCheckBoxes[7].isSelected()){
 						canvas.getPad(i).getAxisFrame().setGridX(xGridBox.isSelected());
 
 					}
 					if(applyToAllCheckBoxes[8].isSelected()){
-						canvas.getPad(i).getAxisFrame().setGridX(yGridBox.isSelected());
+						canvas.getPad(i).getAxisFrame().setGridY(yGridBox.isSelected());
 					}
 					if(applyToAllCheckBoxes[9].isSelected()){
 						canvas.getPad(i).setAxisRange("X",xSlider.getValue() * (xMax-xMin)/(double)(xSliderMax-xSliderMin) , xSlider.getUpperValue()* (xMax-xMin)/(double)(xSliderMax-xSliderMin));
