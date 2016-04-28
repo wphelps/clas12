@@ -77,7 +77,19 @@ public class MeshComponent implements Component {
     public double getLength() {
         return 0.0;
     }
-
+    
+    public Line3D getLineX(){
+        return this.componentMesh.getLineX();
+    }
+    
+    public Line3D getLineY(){
+        return this.componentMesh.getLineY();
+    }
+    
+    public Line3D getLineZ(){
+        return this.componentMesh.getLineZ();
+    }
+    
     @Override
     public String getType() {
         return "mesh";

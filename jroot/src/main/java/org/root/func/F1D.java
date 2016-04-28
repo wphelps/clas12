@@ -61,6 +61,10 @@ public class F1D extends Function1D implements EvioWritableTree,IDataSet {
         return this.parameter(par).value();
     }
     
+    public double getParError(int par){
+        return this.parameter(par).error();
+    }
+    
     private void initParameters(){
         
         ArrayList<String> pars = new ArrayList<String>();

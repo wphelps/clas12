@@ -83,6 +83,11 @@ public class MeshStore {
     
     public Map<String,MeshView>  getMap(){return this.meshStore;}
     
+    public void addMesh(String name, MeshView view, int color){
+        view.setMaterial(this.materials.get(color));
+        this.meshStore.put(name, view);
+    }
+    
     public void setVisible(Boolean flag){
         for(Map.Entry<String,MeshView> entry : this.meshStore.entrySet()){
             entry.getValue().setVisible(flag);

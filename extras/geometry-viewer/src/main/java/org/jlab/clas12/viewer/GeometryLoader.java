@@ -22,6 +22,8 @@ import org.jlab.geom.geant.Geant4Basic;
  * @author gavalian
  */
 public class GeometryLoader {
+    
+        
     public static MeshStore  getGeometry(String name, int sector, int layer){
         MeshStore  store = new MeshStore();
         if(name.compareTo("FTOF")==0){
@@ -63,39 +65,16 @@ public class GeometryLoader {
         FTOFDetectorMesh detector = factory.getDetectorGeant4(cp);
 
         int counter = 1;
-        for(int sector = 1; sector <= 3; sector++){
-            List<ScintillatorMesh>  sci = detector.getSector(sector).getSuperlayer(1).getLayer(1).getAllComponents();
-            for(ScintillatorMesh m : sci){
-                //m.rotateX(Math.toRadians(90.0));
-                //m.translateXYZ(20.0, 0.0, 720.0);
-                //m.translateXYZ(0.0,217.19269643788255,  654.3257910569964);
-                /*
-                if(sector==1){
-                    m.translateXYZ(0.0,217.19269643788255, 654.3257910569964);
+        for(int sector = 1; sector <= 6; sector++){
+            for(int superlayer = 1; superlayer <=3; superlayer++){
+                List<ScintillatorMesh>  sci = detector.getSector(sector).getSuperlayer(superlayer).getLayer(1).getAllComponents();
+                for(ScintillatorMesh m : sci){                    
+                    MeshView mesh = m.getVolumeMesh().getMeshView();
+                    //store.getMap().put("sector_" + sector + "_mesh_"+counter, mesh);
+                    store.addMesh("FTOF_S_" + sector + "_SL_"+ superlayer + "P_"+counter, 
+                            mesh,superlayer+1);
+                    counter++;
                 }
-                if(sector==2){
-                    m.translateXYZ( 188.09439263164822,108.5963482189413, 654.3257910569964);
-                }
-                if(sector==3){
-                    m.translateXYZ( 188.09439263164822,-108.5963482189413, 654.3257910569964);
-                }*/
-                double zrot = -90.0+(sector-1)*60;
-                m.rotateX(Math.toRadians(-115.0));
-                m.rotateZ(Math.toRadians(zrot));
-                //m.rotateZ(Math.toRadians(20.0));
-                double phi = Math.toRadians((sector-1)*60.0);
-                double theta = Math.toRadians(25.0);
-                double r = 725.0;
-                double xp = Math.sin(theta)* Math.cos(phi);
-                double yp = Math.sin(theta)* Math.sin(phi);
-                double zp = Math.cos(theta);
-                m.translateXYZ( r * xp,r*yp
-                        , r * zp);
-                System.out.println(" TRANSLATION  " + xp + " " + yp + " " + zp);
-                System.out.println("   X DIR = " +  Math.sin(theta) + "  " +  Math.cos(phi));
-                MeshView mesh = m.getVolumeMesh().getMeshView();
-                store.getMap().put("sector_" + sector + "_mesh_"+counter, mesh);
-                counter++;
             }
         }
         return store;

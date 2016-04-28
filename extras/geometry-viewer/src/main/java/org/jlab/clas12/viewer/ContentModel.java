@@ -13,6 +13,7 @@ import javafx.scene.input.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
+import javafx.scene.shape.MeshView;
 import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
@@ -37,6 +38,7 @@ public class ContentModel {
     private final AutoScalingGroup autoScalingGroup = new AutoScalingGroup(2);
     private final AmbientLight ambientLight = new AmbientLight(Color.WHITE);
     private final PointLight light1 = new PointLight(Color.WHITE);
+    private MeshView         floorMesh = null;
     private final double paneW, paneH;
     private double dimModel=100d;
     private double mousePosX, mousePosY;
@@ -51,6 +53,7 @@ public class ContentModel {
         buildCamera();
         buildSubScene();        
         buildAxes();
+        buildFloor();
         addLights();        
     }
 
@@ -105,6 +108,32 @@ public class ContentModel {
         subScene.setCamera(camera);
         subScene.setFill(Color.CADETBLUE);
         setListeners(true);
+    }
+    
+    private void buildFloor(){
+        float xlength = 1600.0f;
+        float zlength = 800.0f;
+        Box floorBox = new Box(xlength,0.1,zlength);
+        final PhongMaterial redMaterial = new PhongMaterial();
+        redMaterial.setDiffuseColor(new Color(0.4,0.4,0.4,1.0));
+        redMaterial.setSpecularColor(new Color(0.4,0.4,0.4,1.0));
+        floorBox.setMaterial(redMaterial);
+        
+        for(int i = 0; i < 20; i++){
+            Box xLine = new Box(xlength - 80, 1.0, 1.0);
+            double ytranslate = -760 + i * 80;
+            xLine.setTranslateZ(ytranslate);
+            xLine.setMaterial(redMaterial);
+            autoScalingGroup.getChildren().add(xLine);
+        }
+        
+        for(int i = 0; i < 20; i++){
+            Box xLine = new Box(1.0, 1.0,xlength-80);
+            double ytranslate = -760 + i * 80;
+            xLine.setTranslateX(ytranslate);
+            xLine.setMaterial(redMaterial);
+            autoScalingGroup.getChildren().add(xLine);
+        }
     }
     
     private void buildAxes() {

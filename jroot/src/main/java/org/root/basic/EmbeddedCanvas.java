@@ -44,6 +44,7 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
     public EmbeddedCanvas(){
      super();
      this.setPreferredSize(new Dimension(500,500));
+     this.createPopupMenu();
      this.divide(1, 1);
     }
     /**
