@@ -159,6 +159,22 @@ public class CalibrationConstants {
         System.out.println(this.getCharString("*", 64));
     }
     
+    public void setValueAsDouble(String system, String variable, double value, int... index){
+        this.calibrationTables.get(system).setValueAtAsDouble(variable, value, index);
+    }
+    
+    public void setValueAsInt(String system, String variable, int value, int... index){
+        this.calibrationTables.get(system).setValueAtAsInt(variable, value, index);
+    }
+    
+    public void writeFile(String name, String filename){
+        if(this.calibrationTables.containsKey(name)==true){
+            this.calibrationTables.get(name).writeFile(filename);
+        } else {
+            System.out.println("[] ---> error. no calibration table with name "
+            + name + "  exists");
+        }
+    }
     public void describe(){
          for(Map.Entry<String,HashTable>  entry : this.calibrationTables.entrySet()){
             System.out.println("CALIBRATION CONSTANTS : " + entry.getKey());
