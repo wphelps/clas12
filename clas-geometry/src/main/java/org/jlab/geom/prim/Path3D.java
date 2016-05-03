@@ -138,6 +138,26 @@ public class Path3D implements Transformable, Showable {
     }
 
     /**
+     * Constructs a new {@code Line3D} from a line contained in this path to the
+     * given point such that the length of the constructed line is minimal.
+     *
+     * @param line the line
+     * @return the line with minimum distance from the path to the point, or
+     * null if this path contains fewer than 2 points
+     */
+    public Line3D distance(Line3D pl) {
+        Line3D shortestLine = null;
+        for (int i = 0; i < points.size() - 1; i++) {
+            Line3D pathLine = getLine(i);
+            Line3D line = pathLine.distanceSegments(pl);//.distanceSegments(line);
+            if (shortestLine == null || line.length() < shortestLine.length()) {
+                shortestLine = line;
+            }
+        }
+        return shortestLine;
+    }
+    
+    /**
      * Finds the index of the closest point in this path to the given point.
      *
      * @param point the point

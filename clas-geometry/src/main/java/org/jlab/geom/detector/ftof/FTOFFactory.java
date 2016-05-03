@@ -228,6 +228,7 @@ public class FTOFFactory implements Factory <FTOFDetector, FTOFSector, FTOFSuper
     public FTOFDetectorMesh getDetectorGeant4(ConstantProvider cp){
         FTOFDetectorMesh  detector = new FTOFDetectorMesh();
         FTOFGeant4Factory  factory = new FTOFGeant4Factory();
+        
         for(int sector = 1; sector <=6; sector++){
             
             FTOFSectorMesh ftofSector = new FTOFSectorMesh(sector);
@@ -268,7 +269,7 @@ public class FTOFFactory implements Factory <FTOFDetector, FTOFSector, FTOFSuper
                     rotationMother.apply(sciPaddle);
                     translationMother.apply(sciPaddle);
                     
-                    ftofLayer.addComponent(sciPaddle);                    
+                    ftofLayer.addComponent(sciPaddle);        
                     /*
                     System.out.print("paddle = " 
                             + params[0] + " " + params[1] + " " + params[2]  + "  ID = ");
