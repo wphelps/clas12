@@ -188,12 +188,12 @@ public class CLAS12GeometryViewer extends Application {
     
     public void test(){
         MeshStore store = new MeshStore();
-        Mesh3D  box = Mesh3D.box(20, 20, 30);
+        Mesh3D  box = Mesh3D.box(100, 25, 35);
         
         //Geant4Basic  shape = new Geant4Basic("","box",20,20,80);
         //MeshView mesh = Geant4Mesh.makeMeshBox(shape);
-        box.translateXYZ(40.0, 0.0, 120.0);
-        box.rotateZ(Math.toRadians(45.0));
+        //box.translateXYZ(40.0, 0.0, 120.0);
+        box.rotateZ(Math.toRadians(30.0));
         MeshView mesh = box.getMeshView();
         mesh.setMaterial(store.getMaterials().get(2));
         this.root.getChildren().add(mesh);

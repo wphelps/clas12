@@ -11,6 +11,7 @@ import java.util.TreeMap;
 import org.jlab.clas.detector.DetectorType;
 import org.jlab.clas.physics.Vector3;
 import org.jlab.geom.prim.Line3D;
+import org.jlab.geom.prim.Path3D;
 import org.jlab.geom.prim.Point3D;
 
 /**
@@ -114,16 +115,32 @@ public class DetectorParticle {
     public int    getStatus(){ return this.particleStatus;}
     public double getMass(){ return this.particleMass;}
     public int    getPid(){ return this.particlePID;}
-    public Vector3  vector(){return this.particleMomenta;}
     
-    public Vector3  vertex(){return this.particleVertex;}
+    public Path3D getTrajectory(){
+        Path3D  path = new Path3D();
+        //path.addPoint(this.particleCrossPosition.x(), 
+        //        this.particleCrossPosition.y()
+        //        , this.particleCrossPosition.z());
+        path.generate(
+                this.particleCrossPosition.x(),
+                this.particleCrossPosition.y(),
+                this.particleCrossPosition.z(),
+                this.particleCrossDirection.x(), 
+                this.particleCrossDirection.y(), 
+                this.particleCrossDirection.z(),                
+                               
+                1500.0, 2);
+        return path;
+    }
     
-    public Vector3  getCross(){ return this.particleCrossPosition;}
-    
-    public Vector3  getCrossDir(){ return this.particleCrossDirection;}
-    
+    public Vector3  vector(){return this.particleMomenta;}    
+    public Vector3  vertex(){return this.particleVertex;}    
+    public Vector3  getCross(){ return this.particleCrossPosition;}    
+    public Vector3  getCrossDir(){ return this.particleCrossDirection;}    
     public double   getPathLength(){ return this.particlePath;}
     public int      getCharge(){ return this.particleCharge;}
+    
+    
     
     public double   getPathLength(DetectorType type){
         DetectorResponse response = this.getHit(type);
@@ -228,6 +245,45 @@ public class DetectorParticle {
         }
         return bestIndex;
     }
+    /**
+     * returns DetectorResponse that matches closely with the trajectory
+     * @param responses
+     * @return 
+     */
+    public DetectorResponse getDetectorResponse(List<DetectorResponse> responses){
+        int index = this.getDetectorHitIndex(responses);
+        return responses.get(index);
+    }
+    /**
+     * Finds the index of the best matching detector response object from the list.
+     * @param responses
+     * @return 
+     */
+    public int  getDetectorHitIndex(List<DetectorResponse> responses){
+        Path3D   trajectory = this.getTrajectory();
+        int       bestIndex = 0;
+        Line3D    bestLine     = new Line3D(0.,0.,0.,1000.0,0.0,0.0);
+        Point3D   hitPosition  = new Point3D();
+        int       index        = 0;
+        for(DetectorResponse res : responses){
+            hitPosition.set(res.getPosition().x(), 
+                    res.getPosition().y(),res.getPosition().z());
+            Line3D distance = trajectory.distance(hitPosition);
+            if(distance.length()<bestLine.length()){
+                bestLine.copy(distance);
+                bestIndex = index;
+            }
+            index++;
+        }
+        return bestIndex;
+    }
+    
+    public Line3D  getDistance(DetectorResponse  response){
+        Path3D trajectory = this.getTrajectory();
+        Point3D hitPoint = new Point3D(
+                response.getPosition().x(),response.getPosition().y(),response.getPosition().z());
+        return trajectory.distance(hitPoint);
+    }
     
     public void setPath(double path){
         this.particlePath = path;
@@ -247,6 +303,10 @@ public class DetectorParticle {
                 this.particleVertex.x(),this.particleVertex.y(),
                 this.particleVertex.z()));
         str.append("\n");
+        str.append(String.format("\t\t\t CROSS [%8.4f %8.4f %8.4f]  DIRECTION [%8.4f %8.4f %8.4f]",
+                this.particleCrossPosition.x(),this.particleCrossPosition.y(),
+                this.particleCrossPosition.z(),this.particleCrossDirection.x(),
+                this.particleCrossDirection.y(),this.particleCrossDirection.z()));
         for(DetectorResponse res : this.responseStore){
             str.append(res.toString());
             str.append("\n");
