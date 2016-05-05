@@ -82,6 +82,7 @@ public class DetectorMesh2DCanvas extends Canvas {
         ObservableList<String>  options = FXCollections.observableArrayList(
                 layers
         );
+        comboBox.getItems().clear();
         comboBox.getItems().addAll(options);
         comboBox.getSelectionModel().select(0);
     }
@@ -352,6 +353,18 @@ public class DetectorMesh2DCanvas extends Canvas {
                     meshLayers.get(layerName).setOpacity(new_val.doubleValue());
                     update();
             }
+        });
+        
+        comboBox.valueProperty().addListener(new ChangeListener<String>() {
+            @Override public void changed(ObservableValue ov, String t, String t1) {
+                System.out.println(ov);
+                System.out.println(t);
+                System.out.println(t1);
+                if(meshLayers.containsKey(t1)==true){
+                    double opacity = meshLayers.get(t1).getOpacity();
+                    slider.setValue(opacity);
+                }
+            }    
         });
     }
 }

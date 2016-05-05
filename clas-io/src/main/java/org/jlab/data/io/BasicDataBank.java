@@ -7,6 +7,7 @@
 package org.jlab.data.io;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -20,11 +21,11 @@ public class BasicDataBank implements DataBank {
      * Defining the containers to hold bank data.
      */
     private Boolean  isUniLength = true;
-    private HashMap<String,short[]>   shortContainer = new HashMap<String,short[]>();
-    private HashMap<String,int[]>     intContainer = new HashMap<String,int[]>();
-    private HashMap<String,float[]>   floatContainer = new HashMap<String,float[]>();
-    private HashMap<String,double[]>  doubleContainer  = new HashMap<String,double[]>();
-    private HashMap<String,byte[]>    byteContainer    = new HashMap<String,byte[]>();
+    private Map<String,short[]>   shortContainer   = new LinkedHashMap<String,short[]>();
+    private Map<String,int[]>     intContainer     = new LinkedHashMap<String,int[]>();
+    private Map<String,float[]>   floatContainer   = new LinkedHashMap<String,float[]>();
+    private Map<String,double[]>  doubleContainer  = new LinkedHashMap<String,double[]>();
+    private Map<String,byte[]>    byteContainer    = new LinkedHashMap<String,byte[]>();
     private DataDescriptor            bankDescriptor;
     
     public BasicDataBank(DataDescriptor desc){
