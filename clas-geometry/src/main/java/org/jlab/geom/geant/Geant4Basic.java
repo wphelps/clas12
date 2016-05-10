@@ -6,6 +6,7 @@
 package org.jlab.geom.geant;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.jlab.geom.prim.Point3D;
 import org.jlab.geom.prim.Transformation3D;
@@ -27,7 +28,8 @@ public class Geant4Basic implements IGeant4Volume {
     Point3D volumePosition = new Point3D(0.0, 0.0, 0.0);
     int[] volumeID = new int[]{};
     double[] volumeParameters = new double[]{};
-    String volumeUnits = "cm";
+    String[] volumeParUnits = new String[]{};
+    String defaultUnits = "cm";
 
     private List<Geant4Basic> children = new ArrayList<Geant4Basic>();
     Geant4Basic motherVolume;
@@ -36,11 +38,16 @@ public class Geant4Basic implements IGeant4Volume {
         this.volumeName = name;
         this.volumeType = type;
         this.volumeParameters = new double[pars.length];
+        Arrays.fill(volumeParUnits, "cm");
         System.arraycopy(pars, 0, this.volumeParameters, 0, pars.length);
     }
 
     public String getUnits() {
-        return this.volumeUnits;
+        return defaultUnits;
+    }
+
+    public String getUnits(int ipar) {
+        return volumeParUnits[ipar];
     }
 
     public void setName(String name) {
@@ -70,6 +77,11 @@ public class Geant4Basic implements IGeant4Volume {
     public void setParameters(double... pars) {
         this.volumeParameters = new double[pars.length];
         System.arraycopy(pars, 0, this.volumeParameters, 0, pars.length);
+    }
+
+    public void setParUnits(String... parUnits) {
+        this.volumeParUnits = new String[parUnits.length];
+        System.arraycopy(parUnits, 0, this.volumeParUnits, 0, parUnits.length);
     }
 
     public List<Geant4Basic> getChildren() {
@@ -159,26 +171,28 @@ public class Geant4Basic implements IGeant4Volume {
 
     public String gemcString() {
         StringBuilder str = new StringBuilder();
-        if(this.getMother()==null){
+        if (this.getMother() == null) {
             str.append(String.format("%18s ", this.getName()));
         } else {
             str.append(String.format("%18s | %8s", this.getName(), this.getMother().getName()));
         }
 
-        str.append(String.format("| %8.3f*cm %8.3f*cm %8.3f*cm",
+        str.append(String.format("| %8.4f*cm %8.4f*cm %8.4f*cm",
                 this.volumePosition.x(), this.volumePosition.y(), this.volumePosition.z()));
         str.append(String.format("| ordered: %s ", new StringBuilder(this.transformationOrder).reverse().toString()));
         double[] rotate = this.getRotation();
         for (int irot = 0; irot < rotate.length; irot++) {
-            str.append(String.format(" %8.3f*deg ", Math.toDegrees(rotate[rotate.length-irot-1])));
+            str.append(String.format(" %8.4f*deg ", Math.toDegrees(rotate[rotate.length - irot - 1])));
         }
         str.append(String.format("| %8s |", this.getType()));
-        for (double par : this.volumeParameters) {
-            str.append(String.format("%12.4f*cm", par));
+        for (int ipar = 0; ipar < volumeParameters.length; ipar++) {
+            str.append(String.format("%12.4f*%s", volumeParameters[ipar], volumeParUnits[ipar]));
         }
         str.append(" | ");
         int[] ids = this.getId();
-        for(int id : ids) str.append(String.format("%4d",id));
+        for (int id : ids) {
+            str.append(String.format("%4d", id));
+        }
 
         return str.toString();
     }
