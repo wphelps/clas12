@@ -91,6 +91,9 @@ public class DetectorMesh2DCanvas extends Canvas {
         this.meshLayers.put(name, new DetectorMesh2DLayer(name));
     }
     
+    public DetectorMesh2DLayer getLayer(String name){
+        return this.meshLayers.get(name);
+    }
     public void addMesh(String name, DetectorMesh2D mesh){
         if(this.meshLayers.containsKey(name)==true){
             this.meshLayers.get(name).addMesh(mesh);

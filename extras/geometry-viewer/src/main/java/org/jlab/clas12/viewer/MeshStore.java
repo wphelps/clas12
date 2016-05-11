@@ -51,15 +51,15 @@ public class MeshStore {
         matg.setSpecularColor(new Color(0.2,0.9,0.2,1.0));
         materials.put(3, matg);
         PhongMaterial matbt = new PhongMaterial();
-        matbt.setDiffuseColor(new Color(0.2,0.2,0.9,0.1));
+        matbt.setDiffuseColor(new Color(0.2,0.2,0.9,0.5));
         matbt.setSpecularColor(new Color(0.2,0.2,0.9,0.1));
         materials.put(14, matbt);
         PhongMaterial matrt = new PhongMaterial();
-        matrt.setDiffuseColor(new Color(0.9,0.2,0.2,0.1));
+        matrt.setDiffuseColor(new Color(0.9,0.2,0.2,0.5));
         matrt.setSpecularColor(new Color(0.9,0.2,0.2,0.1));
         materials.put(12, matrt);
         PhongMaterial matgt = new PhongMaterial();
-        matgt.setDiffuseColor(new Color(0.2,0.9,0.2,0.1));
+        matgt.setDiffuseColor(new Color(0.2,0.9,0.2,0.5));
         matgt.setSpecularColor(new Color(0.2,0.9,0.2,0.1));
         materials.put(13, matgt);
         

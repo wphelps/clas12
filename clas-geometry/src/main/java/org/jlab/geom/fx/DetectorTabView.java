@@ -14,7 +14,9 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 
 /**
  *
@@ -41,21 +43,42 @@ public class DetectorTabView extends BorderPane {
         }
     }
     
+    
+    public void createCanvas(String cname){
+        DetectorMesh2DCanvas canvas = new DetectorMesh2DCanvas(cname);
+        this.addView(canvas);
+    }
+    
+    public DetectorMesh2DCanvas getView(String name){
+        return this.canvases.get(name);
+    }
+    
     public void addView(DetectorMesh2DCanvas canvas){
         this.canvases.put(canvas.getName(), canvas);
         Tab tab1 = new Tab();
         
         tab1.setText(canvas.getName());
         tab1.setClosable(false);
+        //VBox  box = new VBox();
+        //VBox.setVgrow(box, Priority.ALWAYS);
+        //box.getChildren().add(canvas);
+        
+        //canvas.widthProperty().bind(box.widthProperty());
+        //canvas.heightProperty().bind(box.heightProperty());
         
         BorderPane  pane = new BorderPane();
+        
         pane.setPadding(new Insets(5,5,5,5));
+        
         pane.setTop(canvas.getToolBar());
         pane.setCenter(canvas);
+        //pane.setCenter(box);
+        
         tab1.setContent(pane);
         
         //canvas.widthProperty().bind(pane.widthProperty());
         //canvas.heightProperty().bind(pane.heightProperty());
+        //canvas.widthProperty().bind(pane.getCe);
         canvas.widthProperty().bind(tabPane.widthProperty());
         canvas.heightProperty().bind(tabPane.heightProperty().multiply(0.90));
         tabPane.getTabs().add(tab1);
