@@ -70,9 +70,10 @@ public class GeometryLoader {
                 List<ScintillatorMesh>  sci = detector.getSector(sector).getSuperlayer(superlayer).getLayer(1).getAllComponents();
                 for(ScintillatorMesh m : sci){                    
                     MeshView mesh = m.getVolumeMesh().getMeshView();
+                    
                     //store.getMap().put("sector_" + sector + "_mesh_"+counter, mesh);
                     store.addMesh("FTOF_S_" + sector + "_SL_"+ superlayer + "P_"+counter, 
-                            mesh,superlayer+1);
+                            mesh,superlayer+1+10);
                     counter++;
                 }
             }

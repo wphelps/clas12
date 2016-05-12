@@ -8,8 +8,11 @@ package org.jlab.containers;
 import java.awt.Color;
 import java.awt.Component;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -105,6 +108,22 @@ public class HashTable extends DefaultTableModel {
         for(int i = 0 ; i < ic; i++) index[i] = Integer.parseInt(values[i]);
         for(int i = ic; i < values.length; i++) array[i-ic] = Integer.parseInt(values[i]);
         this.addRow(array, index);
+    }
+    
+    public void setValueAtAsDouble(String name, double value, int... index){
+        if(this.hasRow(index)==true){
+            int idx = this.getColumnIndex(name);
+            if(idx<0) return;           
+            this.setValueAtAsDouble(idx,value,index);
+        }
+    }
+    
+    public void setValueAtAsInt(String name, int value, int... index){
+        if(this.hasRow(index)==true){
+            int idx = this.getColumnIndex(name);
+            if(idx<0) return;           
+            this.setValueAtAsDouble(idx,value,index);
+        }
     }
     
     public void setValueAtAsDouble(int column, double value, int... index){        
@@ -266,6 +285,31 @@ public class HashTable extends DefaultTableModel {
             } catch (IOException ex) {
                 Logger.getLogger(HashTable.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+    }
+    
+    
+    public void writeFile(String filename){
+        List<String> lines = new ArrayList<String>();
+        for(Map.Entry<Long,TableRow>  rows : this.hashCollection.getMap().entrySet()){
+            long hashcode = rows.getKey();
+            String  keys = String.format("%4d %4d %4d ", 
+                    HashGenerator.getIndex(hashcode, 0), HashGenerator.getIndex(hashcode, 1),
+                    HashGenerator.getIndex(hashcode, 2));
+            lines.add(keys+rows.getValue().stringLine());
+        }
+        try {
+            File logFile=new File(filename);
+            
+            BufferedWriter writer = new BufferedWriter(new FileWriter(logFile));
+            for(String line : lines){
+                writer.write (line);
+            }
+            
+            //Close writer
+            writer.close();
+        } catch(Exception e) {
+            e.printStackTrace();
         }
     }
     

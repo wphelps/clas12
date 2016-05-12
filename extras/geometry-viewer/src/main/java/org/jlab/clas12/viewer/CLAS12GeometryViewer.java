@@ -5,6 +5,7 @@
  */
 package org.jlab.clas12.viewer;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -34,6 +35,7 @@ import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
 import javafx.scene.shape.DrawMode;
 import javafx.scene.shape.MeshView;
+import javafx.scene.shape.Shape3D;
 import javafx.scene.shape.Sphere;
 import javafx.scene.shape.TriangleMesh;
 import javafx.stage.Stage;
@@ -60,7 +62,7 @@ public class CLAS12GeometryViewer extends Application {
     BorderPane   mainBorderPane = null;       
     Group root = null;
     
-    
+    List<Shape3D>  detectorHits = new ArrayList<Shape3D>();
     
     @Override
     public void start(Stage stage) throws Exception {
@@ -76,8 +78,13 @@ public class CLAS12GeometryViewer extends Application {
         
         btnLoadFtof.setOnAction(event -> {loadDetector("FTOF");});
         
+        
+        Button  btnClearHits = new Button("Clear Hits");
+        btnClearHits.setOnAction(event -> {clearHits();});
+        
         toolbar.getChildren().add(btnClear);
         toolbar.getChildren().add(btnLoadFtof);
+        toolbar.getChildren().add(btnClearHits);
         
         
         SplitPane  splitPane = new SplitPane();
@@ -105,6 +112,7 @@ public class CLAS12GeometryViewer extends Application {
         //this.addDetector("FTOF");
         //this.test();
         this.testFTOF();
+        this.addHits();
         //this.testDC();
         //this.testBST();
         //final Scene scene = new Scene(pane, 880, 880, true);
@@ -140,6 +148,39 @@ public class CLAS12GeometryViewer extends Application {
         }
     }
 
+    public void addPath(){
+        final PhongMaterial blueMaterial = new PhongMaterial();
+        blueMaterial.setDiffuseColor(Color.YELLOW);
+        blueMaterial.setSpecularColor(Color.YELLOWGREEN);
+        
+        Sphere xSphere = new Sphere(10);
+        xSphere.setMaterial(blueMaterial);
+        xSphere.setTranslateX(200);
+        xSphere.setTranslateY(200);
+        xSphere.setTranslateZ(450);
+        root.getChildren().add(xSphere);
+    }
+    
+    public void clearHits(){
+        for(Shape3D shape : this.detectorHits){
+            root.getChildren().remove(shape);
+        }
+        this.detectorHits.clear();
+    }
+    
+    public void addHits(){
+        final PhongMaterial blueMaterial = new PhongMaterial();
+        blueMaterial.setDiffuseColor(Color.YELLOW);
+        blueMaterial.setSpecularColor(Color.YELLOWGREEN);        
+        Sphere xSphere = new Sphere(10);
+        xSphere.setMaterial(blueMaterial);
+        xSphere.setTranslateX(200);
+        xSphere.setTranslateY(200);
+        xSphere.setTranslateZ(450);
+        this.detectorHits.add(xSphere);
+        root.getChildren().add(xSphere);
+    }
+    
     public void testFTOF(){
         PhongMaterial mat = new PhongMaterial();
         mat.setDiffuseColor(new Color(0.1,0.1,0.8,0.5));
@@ -152,6 +193,7 @@ public class CLAS12GeometryViewer extends Application {
     }
     
     public void loadDetector(String detector){
+        
         if(detector.compareTo("FTOF")==0){
             MeshStore  store = GeometryLoader.getGeometryGemc();
             for(Map.Entry<String,MeshView> item : store.getMap().entrySet()){
@@ -188,12 +230,12 @@ public class CLAS12GeometryViewer extends Application {
     
     public void test(){
         MeshStore store = new MeshStore();
-        Mesh3D  box = Mesh3D.box(20, 20, 30);
+        Mesh3D  box = Mesh3D.box(100, 25, 35);
         
         //Geant4Basic  shape = new Geant4Basic("","box",20,20,80);
         //MeshView mesh = Geant4Mesh.makeMeshBox(shape);
-        box.translateXYZ(40.0, 0.0, 120.0);
-        box.rotateZ(Math.toRadians(45.0));
+        //box.translateXYZ(40.0, 0.0, 120.0);
+        box.rotateZ(Math.toRadians(30.0));
         MeshView mesh = box.getMeshView();
         mesh.setMaterial(store.getMaterials().get(2));
         this.root.getChildren().add(mesh);

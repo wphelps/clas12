@@ -87,8 +87,8 @@ public class FTOFGeant4Factory {
         panelVolume.setPosition(panel_pos_x, panel_pos_y, panel_pos_z);
 
         //panelVolume.setRotation("xzy", thtilt/3, Math.toRadians(-30.0 - 1 * 60.0), 0.0);
-        panelVolume.setRotation("xyz", Math.toRadians(-90) - thtilt, 0.0, Math.toRadians(-30.0 - sector * 60.0));
-        //panelVolume.setRotation("zxy", Math.toRadians(-30.0 - sector * 60.0), Math.toRadians(-90) - thtilt, 0.0);
+        //panelVolume.setRotation("xyz", Math.toRadians(-90) - thtilt, 0.0, Math.toRadians(-30.0 - sector * 60.0));
+        panelVolume.setRotation("zxy", Math.toRadians(-30.0 - sector * 60.0), Math.toRadians(-90) - thtilt, 0.0);
         for (int ipaddle = 0; ipaddle < paddles.size(); ipaddle++) {
             paddles.get(ipaddle).setName("panel" + gemcLayerNames[layer - 1] + "_sector" + sector + "_paddle_" + (ipaddle + 1));
             paddles.get(ipaddle).setId(sector, layer, ipaddle + 1);
