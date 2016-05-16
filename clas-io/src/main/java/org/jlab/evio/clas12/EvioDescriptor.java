@@ -109,4 +109,8 @@ public class EvioDescriptor implements DataDescriptor {
     public String getPropertyString(String property_name) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    public boolean hasEntry(String entry) {
+        return this.types.containsKey(entry);
+    }
 }

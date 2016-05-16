@@ -9,6 +9,7 @@ public interface DataDescriptor {
 	String[] getEntryList();
 	String getName();
         String getXML();
+        boolean  hasEntry(String entry);
 	int getProperty(String property_name, String entry_name);
 	int getProperty(String property_name);
         void    setPropertyString(String name, String value);
