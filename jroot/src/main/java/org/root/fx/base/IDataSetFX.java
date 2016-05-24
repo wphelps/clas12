@@ -9,7 +9,7 @@ package org.root.fx.base;
  *
  * @author gavalian
  */
-public interface IDataSet {
+public interface IDataSetFX {
     
     String  getName();
     int     getDimension();

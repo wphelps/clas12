@@ -6,6 +6,8 @@
 package org.root.fx.base;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -15,46 +17,105 @@ import javafx.scene.paint.Color;
  */
 public class FXEmbeddedPad {
     
-    private Region2D  graphicsPadRegion = new Region2D();
-    private Region2D  graphicsPadFrame  = new Region2D();
+    private Dimension2D  regionPad  = new Dimension2D();
+    private Dimension2D  regionAxis = new Dimension2D();
+    private Dimension2D  regionData = new Dimension2D();
+    
+    private Region2D  graphicsPadRegion  = new Region2D();
+    private Region2D  graphicsPadFrame   = new Region2D();
+    private Region2D  graphicsDataRegion = new Region2D();
+    
     private Color     graphicsPadBackground = Color.WHITE;
     
-     public FXEmbeddedPad(){
-         
-     }
+    public  List<IRegionDataPlotter>   dataPlotters = new ArrayList<>();
+    
+    public FXEmbeddedPad(){
+        
+    }
     
     public FXEmbeddedPad(double x, double y, double width, double height){
-        this.graphicsPadRegion.set(x, y, width,height);
+        //this.graphicsPadRegion.set(x, y, width,height);
+        regionPad.set(x, x + width, y, y + height);
     }
     
     public Region2D  getRegion(){ return this.graphicsPadRegion;}
     public Region2D  getFrame() { return this.graphicsPadFrame;}
     
+    public Dimension2D  getPadRegion(){ return this.regionPad;}
+    public Dimension2D  getAxisRegion(){ return this.regionAxis;}
+    public Dimension2D  getDataRegion(){ return this.regionData;}
+    
+    public void clear(){
+        this.dataPlotters.clear();
+    }
+    
+    public void addDataPlotter(IRegionDataPlotter plotter){
+        this.dataPlotters.add(plotter);
+    }
+    
     public void draw(GraphicsContext gc){
         
         updateFrame();
-        gc.clearRect( graphicsPadRegion.x(),
-                graphicsPadRegion.y(),
-                graphicsPadRegion.width(),
-                graphicsPadRegion.height());
-
+        gc.clearRect( 
+                this.regionPad.getDimension(0).getMin(),
+                this.regionPad.getDimension(1).getMin(),
+                this.regionPad.getDimension(0).getLength(),
+                this.regionPad.getDimension(1).getLength());
         gc.setFill(graphicsPadBackground);
-        gc.fillRect(graphicsPadRegion.x(),
-                graphicsPadRegion.y(),
-                graphicsPadRegion.width(),
-                graphicsPadRegion.height());
+        
+        gc.fillRect(this.regionPad.getDimension(0).getMin(),
+                this.regionPad.getDimension(1).getMin(),
+                this.regionPad.getDimension(0).getLength(),
+                this.regionPad.getDimension(1).getLength());
+                
         
         gc.setStroke(Color.BLACK);
-        gc.strokeRect(graphicsPadFrame.x(),graphicsPadFrame.y(),
-                graphicsPadFrame.width(),graphicsPadFrame.height());
+        
+        gc.strokeRect(this.regionAxis.getDimension(0).getMin(),
+                this.regionAxis.getDimension(1).getMin(),
+                this.regionAxis.getDimension(0).getLength(),
+                this.regionAxis.getDimension(1).getLength());
+                
+        
+        
+        this.updateDataRegion();
+        /*
+        gc.save();
+        gc.beginPath();        
+        gc.rect(
+                regionAxis.getDimension(0).getMin(),
+                regionAxis.getDimension(1).getMin(),
+                regionAxis.getDimension(0).getLength(),
+                regionAxis.getDimension(1).getLength()
+                );
+        gc.closePath();
+        gc.clip();
+        */
+        
+        for(IRegionDataPlotter plotter : this.dataPlotters){
+            plotter.draw(gc, regionAxis, regionData);
+        }
+        //gc.restore();    
+        
+    }
+    
+    private void updateDataRegion(){
+        if(this.dataPlotters.size()>0){
+            this.regionData.copy(this.dataPlotters.get(0).getDataRegion());
+            System.out.println("--> " + this.dataPlotters.get(0).getDataRegion());
+        }
+
+        System.out.println(this.regionData.toString());
     }
     
     public void  updateFrame(){
-        this.graphicsPadFrame.set(
-                graphicsPadRegion.x()+10,
-                graphicsPadRegion.y()+10,
-                graphicsPadRegion.width()-20,
-                graphicsPadRegion.height()-20
-                );        
+        this.regionAxis.set(
+                this.regionPad.getDimension(0).getMin()+5.0,
+                this.regionPad.getDimension(0).getMax()-5.0,
+                this.regionPad.getDimension(1).getMin()+5.0,
+                this.regionPad.getDimension(1).getMax()-5.0
+                
+        );
+
     }
 }
