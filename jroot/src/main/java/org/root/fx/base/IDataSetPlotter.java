@@ -12,5 +12,5 @@ import javafx.scene.canvas.GraphicsContext;
  * @author gavalian
  */
 public interface IDataSetPlotter {
-    void draw(GraphicsContext gc, GraphicsFrame frame, IDataSet ds);
+    void draw(GraphicsContext gc, GraphicsFrame frame, IDataSetFX ds);
 }

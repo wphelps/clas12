@@ -50,6 +50,15 @@ public final class Vector3D implements Transformable, Showable {
     public Vector3D(double x, double y, double z) {
         setXYZ(x, y, z);
     }
+     /**
+     * Constructs a new {@code Vector3D} with the given xyz[0], xyz[1], xyz[2] components
+     * @param x the xyz[0] component
+     * @param y the xyz[1] component
+     * @param z the xyz[2] component
+     */
+    public Vector3D(double[] xyz) {
+        setXYZ(xyz[0], xyz[1], xyz[2]);
+    }
     /**
      * Constructs a new {@code Vector3D} identical to the given vector.
      * @param vector the vector to copy
