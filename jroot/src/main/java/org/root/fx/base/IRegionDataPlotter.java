@@ -5,16 +5,13 @@
  */
 package org.root.fx.base;
 
+import javafx.scene.canvas.GraphicsContext;
+
 /**
  *
  * @author gavalian
  */
-public interface IDataSet {
-    
-    String  getName();
-    int     getDimension();
-    int     getDataSize();
-    double  getValue(int dim, int bin);
-    double  getError(int dim, int bin);
-    
+public interface IRegionDataPlotter {
+    void         draw(GraphicsContext gc, Dimension2D axisRegion, Dimension2D dataRegion);
+    Dimension2D  getDataRegion();
 }

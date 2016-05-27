@@ -62,6 +62,15 @@ public class Dimension1D {
         return this.dimMin+(this.dimMax-this.dimMin)*fraction;
     }
     
+    public double getLength(){
+        return Math.abs(dimMax-dimMin);
+    }
+    
+    public double convert(double x, Dimension1D dim){
+        double xf = dim.getFraction(x);
+        return this.getPoint(xf);
+    }
+    
     public double length(){
         if(isLog==false) return (dimMax-dimMin);        
         double min = dimMin;
@@ -101,6 +110,10 @@ public class Dimension1D {
         }
         return axisTicks;
     }
+    
+    public boolean  contains(double x){
+        return (x>=this.dimMin&&x<=this.dimMax);
+    }
     /**
      * Returns a "nice" number approximately equal to range Rounds
      * the number if round = true Takes the ceiling if round = false.
@@ -110,6 +123,7 @@ public class Dimension1D {
      * @return a "nice" number to be used for the data range
      */
     private double niceNum(double range, boolean round) {
+        
         double exponent; /** exponent of range */
         double fraction; /** fractional part of range */
         double niceFraction; /** nice, rounded fraction */

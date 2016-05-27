@@ -46,6 +46,10 @@ public class Region2D {
         return (x>=regionX&&x<=(regionX+regionWidth));
     }
     
+    public void copy(Region2D region){
+        this.set(region.x(), region.y(), region.width(), region.height());
+    }
+    
     public boolean containsY(double y){
         return (y>=regionY&&y<=(regionY+regionHeight));
     }
@@ -97,6 +101,9 @@ public class Region2D {
      * @return 
      */
     public double getCoordinateX(double fractionX){
+        //double min = regionX + this.regionXscaleMin*regionWidth;
+        //double max = regionX + this.regionXscaleMax*regionWidth;
+        //return regionX + fractionX*(max-min);
         return regionX + fractionX*regionWidth;
     }
     /**

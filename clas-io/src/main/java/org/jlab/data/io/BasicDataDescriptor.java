@@ -70,5 +70,9 @@ public class BasicDataDescriptor implements DataDescriptor {
     public boolean hasEntry(String entry) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
+    public boolean hasEntries(String... entries) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }

@@ -16,6 +16,7 @@
     <module>clas-physics</module>
     <module>clas-io</module>
     <module>clasrec-main</module>
+    <module>clas-detector</module>
     <module>clas-geometry</module>
 <!--    <module>clas-scigraph</module> -->
     <module>jroot</module>

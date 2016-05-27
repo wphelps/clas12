@@ -214,4 +214,10 @@ public class EvioDataDescriptor implements DataDescriptor {
     public boolean hasEntry(String entry) {
         return this.descriptorEntries.containsKey(entry);
     }
+
+    public boolean hasEntries(String... entries) {
+        for(String item : entries) 
+            if(this.hasEntry(item)==false) return false;
+        return true;
+    }
 }

@@ -5,12 +5,16 @@
  */
 package org.root.fx.base;
 
-import javafx.scene.canvas.GraphicsContext;
-
 /**
  *
  * @author gavalian
  */
-public interface IDataSetPlotter {
-    void draw(GraphicsContext gc, GraphicsFrame frame, IDataSetFX ds);
+public interface IDataSetFX {
+    
+    String  getName();
+    int     getDimension();
+    int     getDataSize();
+    double  getValue(int dim, int bin);
+    double  getError(int dim, int bin);
+    
 }

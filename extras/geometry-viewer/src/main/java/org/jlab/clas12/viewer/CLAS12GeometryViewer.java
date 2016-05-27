@@ -205,14 +205,14 @@ public class CLAS12GeometryViewer extends Application {
     }
     
     public void testDC(){
-        
+        /*
         PhongMaterial mat = new PhongMaterial();
         mat.setDiffuseColor(new Color(0.2,0.2,0.4,0.4));
         mat.setSpecularColor(new Color(0.4,0.4,0.8,0.4));
         //mat.setSpecularPower(0.5);
 
-        DCGeant4Factory  factory = new DCGeant4Factory();
-        Geant4Basic  g4v   = factory.getRegion(1);
+        //DCGeant4Factory  factory = new DCGeant4Factory();
+        //Geant4Basic  g4v   = factory.getRegion(1);
         List<MeshView>  meshes = Geant4Mesh.getMesh(g4v);
         for(MeshView mesh : meshes) mesh.setMaterial(mat);
         root.getChildren().addAll(meshes);
