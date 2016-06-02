@@ -31,9 +31,9 @@ public final class FTOFGeant4Factory {
     };
 
     public FTOFGeant4Factory() {
-    
+
     }
-    
+
     public FTOFGeant4Factory(ConstantProvider provider) {
         for (int sector = 1; sector <= 6; sector++) {
             for (int layer = 1; layer <= 3; layer++) {
@@ -41,7 +41,6 @@ public final class FTOFGeant4Factory {
                 layerVolume.setMother(motherVolume);
             }
         }
-
         properties.put("email", "carman@jlab.org, jguerra@jlab.org");
         properties.put("author", "carman, guerra");
         properties.put("date", "06/03/13");

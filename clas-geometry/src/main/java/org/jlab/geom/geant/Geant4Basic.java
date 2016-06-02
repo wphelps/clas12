@@ -39,7 +39,7 @@ public class Geant4Basic implements IGeant4Volume {
         this.volumeType = type;
         this.volumeParameters = new double[pars.length];
         this.volumeParUnits = new String[pars.length];
-        Arrays.fill(volumeParUnits, "cm");
+        Arrays.fill(volumeParUnits, defaultUnits);
         System.arraycopy(pars, 0, this.volumeParameters, 0, pars.length);
     }
 
