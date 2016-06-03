@@ -77,7 +77,7 @@ public class ColorPalette {
         
         if(mode==3){
             palette.clear();
-            palette.add(new Color(245,245,245));
+            //palette.add(new Color(245,245,245));
             for(int loop = 0; loop < red.length; loop++){
                 int pred   = (int) (255.0*red[loop]);
                 int pgreen = (int) (255.0*green[loop]);
@@ -108,9 +108,8 @@ public class ColorPalette {
         
         if(fraction>1.0) fraction = 1.0;
         if(fraction<0.0){
-            return new Color(40,40,40);
-        }
-        
+            return new Color(200,200,200);
+        }        
         
         double binC = fraction*palette.size();
         int bin = (int) binC;

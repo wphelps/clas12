@@ -24,6 +24,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import org.root.base.IDataSet;
 import org.root.histogram.H1D;
+import org.root.histogram.H2D;
 import org.root.pad.TImageCanvas;
 import org.root.ui.FitPanel;
 import org.root.ui.OptionsPanel;
@@ -361,7 +362,8 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         JFrame frame = new JFrame();
         frame.setLayout(new GridLayout(1,3));
         
-        EmbeddedCanvas canvas = new EmbeddedCanvas(500,500,4,4);
+        EmbeddedCanvas canvas = new EmbeddedCanvas(500,500,1,1);
+        
         frame.setSize(800, 600);
         canvas.setAxisFontSize(10);
         canvas.setTitleFontSize(10);
@@ -377,15 +379,22 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         
         DataFactory.createSampleH1D(h1a, 2500, 2.5);
         DataFactory.createSampleH1D(h1b, 1500, 1.5);
+        
+        H2D  h2 = new H2D("h2","",50,0.0,14.0,50,0.0,14.0);
+        
+        DataFactory.createSampleH2D(h2, 40000);
+        
         canvas.cd(0);
-        canvas.draw(h1a);
+        //canvas.setLogZ();
+        canvas.draw(h2);
+        /*canvas.draw(h1a);
         canvas.cd(1);
         canvas.draw(h1b);
         canvas.draw(h1a, "same");
         for(int loop = 2; loop < 16; loop++){
             canvas.cd(loop);
             canvas.draw(h1b,"S");
-        }
+        }*/
         //canvas.setTitleFontSize(2);
         //canvas.setAxisFontSize(12);
         frame.add(canvas);
