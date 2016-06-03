@@ -15,25 +15,25 @@ import org.jlab.geom.geant.Geant4Basic;
  *
  * @author gavalian, kenjo
  */
-public class FTOFGeant4Factory {
+public final class FTOFGeant4Factory {
 
-    private Geant4Basic motherVolume = new Geant4Basic("fc", "Box", 0);
+    private final Geant4Basic motherVolume = new Geant4Basic("fc", "Box", 0);
 
-    private HashMap<String, String> properties = new HashMap<String, String>();
+    private final HashMap<String, String> properties = new HashMap<>();
 
-    private String[] stringLayers = new String[]{
+    private final String[] stringLayers = new String[]{
         "/geometry/ftof/panel1a",
         "/geometry/ftof/panel1b",
         "/geometry/ftof/panel2"};
 
-    private String[] gemcLayerNames = new String[]{
+    private final String[] gemcLayerNames = new String[]{
         "1a", "1b", "2"
     };
 
     public FTOFGeant4Factory() {
-    
+
     }
-    
+
     public FTOFGeant4Factory(ConstantProvider provider) {
         for (int sector = 1; sector <= 6; sector++) {
             for (int layer = 1; layer <= 3; layer++) {
@@ -41,7 +41,6 @@ public class FTOFGeant4Factory {
                 layerVolume.setMother(motherVolume);
             }
         }
-
         properties.put("email", "carman@jlab.org, jguerra@jlab.org");
         properties.put("author", "carman, guerra");
         properties.put("date", "06/03/13");
@@ -111,7 +110,7 @@ public class FTOFGeant4Factory {
         String paddleLengthStr = stringLayers[layer - 1] + "/paddles/Length";
 
         //List<Geant4Basic>  mother = new ArrayList<Geant4Basic>();
-        List<Geant4Basic> paddleVolumes = new ArrayList<Geant4Basic>();
+        List<Geant4Basic> paddleVolumes = new ArrayList<>();
 
         for (int ipaddle = 0; ipaddle < numPaddles; ipaddle++) {
             double paddlelength = cp.getDouble(paddleLengthStr, ipaddle);
@@ -135,13 +134,11 @@ public class FTOFGeant4Factory {
     public String toString() {
         StringBuilder str = new StringBuilder();
 
-        for (Geant4Basic layerVolume : motherVolume.getChildren()) {
+        for(Geant4Basic layerVolume : motherVolume.getChildren()) {
             str.append(layerVolume.gemcString());
             str.append(System.getProperty("line.separator"));
-        }
 
-        for (Geant4Basic layerVolume : motherVolume.getChildren()) {
-            for (Geant4Basic paddleVolume : layerVolume.getChildren()) {
+            for(Geant4Basic paddleVolume : layerVolume.getChildren()) {
                 str.append(paddleVolume.gemcString());
                 str.append(System.getProperty("line.separator"));
             }

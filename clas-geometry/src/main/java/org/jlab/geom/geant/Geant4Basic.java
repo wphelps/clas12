@@ -31,14 +31,15 @@ public class Geant4Basic implements IGeant4Volume {
     String[] volumeParUnits = new String[]{};
     String defaultUnits = "cm";
 
-    private List<Geant4Basic> children = new ArrayList<Geant4Basic>();
+    private final List<Geant4Basic> children = new ArrayList<>();
     Geant4Basic motherVolume;
 
     public Geant4Basic(String name, String type, double... pars) {
         this.volumeName = name;
         this.volumeType = type;
         this.volumeParameters = new double[pars.length];
-        Arrays.fill(volumeParUnits, "cm");
+        this.volumeParUnits = new String[pars.length];
+        Arrays.fill(volumeParUnits, defaultUnits);
         System.arraycopy(pars, 0, this.volumeParameters, 0, pars.length);
     }
 
@@ -198,7 +199,7 @@ public class Geant4Basic implements IGeant4Volume {
     }
 
     public static void main(String[] args) {
-        List<Geant4Basic> volumes = new ArrayList<Geant4Basic>();
+        List<Geant4Basic> volumes = new ArrayList<>();
         for (int loop = 0; loop < 20; loop++) {
             Geant4Basic paddle = new Geant4Basic("paddle_" + loop, "box", 4.0, 4.0, 20 + loop * 4);
             //System.out.println("adding");
