@@ -127,8 +127,7 @@ public class DetectorParticle {
                 this.particleCrossPosition.z(),
                 this.particleCrossDirection.x(), 
                 this.particleCrossDirection.y(), 
-                this.particleCrossDirection.z(),                
-                               
+                this.particleCrossDirection.z(),                               
                 1500.0, 2);
         return path;
     }
@@ -303,7 +302,7 @@ public class DetectorParticle {
                 this.particleVertex.x(),this.particleVertex.y(),
                 this.particleVertex.z()));
         str.append("\n");
-        str.append(String.format("\t\t\t CROSS [%8.4f %8.4f %8.4f]  DIRECTION [%8.4f %8.4f %8.4f]",
+        str.append(String.format("\t\t\t CROSS [%8.4f %8.4f %8.4f]  DIRECTION [%8.4f %8.4f %8.4f]\n",
                 this.particleCrossPosition.x(),this.particleCrossPosition.y(),
                 this.particleCrossPosition.z(),this.particleCrossDirection.x(),
                 this.particleCrossDirection.y(),this.particleCrossDirection.z()));

@@ -641,7 +641,7 @@ public class EvioDataEvent implements DataEvent {
         sectionBank.setByteOrder(byteOrder);
         //doubleBank.setByteOrder(byteOrder);
         //System.err.println("------------ adding bank ");
-        System.err.println("------------ adding bank " + bank.getDescriptor().getName());
+        //System.err.println("------------ adding bank " + bank.getDescriptor().getName());
         try {
             String[] entries = bank.getDescriptor().getEntryList();
             for(String entry : entries){
@@ -689,8 +689,8 @@ public class EvioDataEvent implements DataEvent {
             
             int byteSize = baseBank.getTotalBytes();
             ByteBuffer bb = ByteBuffer.allocate(byteSize);
-            System.out.println("-------> adding bank " + bank.getDescriptor().getName()
-              + "  size = " + byteSize);
+            //System.out.println("-------> adding bank " + bank.getDescriptor().getName()
+            //  + "  size = " + byteSize);
             bb.order(byteOrder);
             baseBank.write(bb);
             bb.flip();

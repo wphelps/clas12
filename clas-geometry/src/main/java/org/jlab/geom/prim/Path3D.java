@@ -137,6 +137,18 @@ public class Path3D implements Transformable, Showable {
         return shortestLine;
     }
 
+    public Line3D distance(double x, double y, double z) {
+        Line3D shortestLine = null;
+        Point3D point = new Point3D(x,y,z);
+        for (int i = 0; i < points.size() - 1; i++) {
+            Line3D pathLine = getLine(i);
+            Line3D line = pathLine.distanceSegment(point);
+            if (shortestLine == null || line.length() < shortestLine.length()) {
+                shortestLine = line;
+            }
+        }
+        return shortestLine;
+    }
     /**
      * Constructs a new {@code Line3D} from a line contained in this path to the
      * given point such that the length of the constructed line is minimal.

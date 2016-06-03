@@ -558,4 +558,20 @@ public final class Vector3D implements Transformable, Showable {
     public String toStringBrief() {
         return this.toStringBrief(5);
     }
+    
+    public static void main(String[] args){
+        Vector3D  vec = new Vector3D(1.0,0.0,0.0);
+        Transformation3D transform = new Transformation3D();
+        
+        transform.rotateZ(Math.toRadians(25.0));
+        transform.rotateX(Math.toRadians(30.0));
+        
+        transform.show();
+        
+        transform.apply(vec);
+        
+        System.out.println(vec);
+        System.out.println(vec.mag());
+        
+    }
 }
