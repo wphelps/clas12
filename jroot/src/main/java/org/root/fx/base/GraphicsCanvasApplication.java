@@ -40,7 +40,9 @@ public class GraphicsCanvasApplication extends Application {
         
         BorderPane  root = new BorderPane();
         
-        addCanvas(root);
+        
+        BorderPane  canvasPane = new BorderPane();
+        addCanvas(canvasPane);
         
         //StackPane  root = new StackPane();
         //GridPane    grid = new GridPane();
@@ -63,13 +65,15 @@ public class GraphicsCanvasApplication extends Application {
         //emb.getPane().setPrefHeight(600);
         //emb.getPane().setPrefWidth(600);
         //root.setCenter(emb.getPane());
-        root.prefWidth(500);
-        root.prefHeight(350);
+        //root.prefWidth(500);
+        //root.prefHeight(350);
         
         Button save = new Button("Save");
         save.setOnAction(event -> saveCanvas());
         
         root.setTop(save);
+        root.setCenter(canvasPane);
+        
         Scene scene = new Scene(root, 500, 350, Color.rgb(255,255,255));
         
         //Scene scene = new Scene(canvas, 500, 350, Color.rgb(255,255,255));
@@ -80,15 +84,16 @@ public class GraphicsCanvasApplication extends Application {
     }
     
     public void addCanvas(BorderPane pane){
-        canvas = new FXEmbeddedCanvas(2,2);
+        canvas = new FXEmbeddedCanvas(1,1);
         pane.setCenter(canvas);
-        canvas.getPad(2).addDataPlotter(new DummyRegionDataPlotter(120));
-        canvas.getPad(1).addDataPlotter(new DummyRegionDataPlotter(840));
+        //canvas.getPad(2).addDataPlotter(new DummyRegionDataPlotter(120));
+        //canvas.getPad(1).addDataPlotter(new DummyRegionDataPlotter(840));
         
         H1D h1 = new H1D("h1",120,0.0,5.0);
         DataFactory.createSampleH1D(h1, 2400, 2.4);
         
-        canvas.getPad(0).addDataPlotter(new HistogramDataPlotter1D(h1,""));
+        canvas.getPad(0).addDataPlotter(new GraphErrorsDataPlotter1D(h1,""));
+        
         canvas.widthProperty().bind(pane.widthProperty());
         canvas.heightProperty().bind(pane.heightProperty());
     }
