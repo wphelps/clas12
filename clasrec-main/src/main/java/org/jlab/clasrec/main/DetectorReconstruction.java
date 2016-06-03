@@ -223,7 +223,7 @@ public abstract class DetectorReconstruction implements Engine {
     }
     
     @Override
-    public EngineData configure(EngineData js) {
+    public EngineData configure(EngineData js) {        
         this.init();
         return js;
     }

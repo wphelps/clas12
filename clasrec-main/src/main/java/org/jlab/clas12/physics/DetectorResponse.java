@@ -7,6 +7,9 @@ package org.jlab.clas12.physics;
 
 import org.jlab.clas.detector.DetectorDescriptor;
 import org.jlab.clas.physics.Vector3;
+import org.jlab.geom.prim.Line3D;
+import org.jlab.geom.prim.Path3D;
+import org.jlab.geom.prim.Point3D;
 
 /**
  *
@@ -16,6 +19,7 @@ public class DetectorResponse {
     
     private DetectorDescriptor  descriptor  = new DetectorDescriptor();
     private Vector3             hitPosition = new Vector3();
+    //private Point3D             hitPosition = new Vector3();
     private Vector3             hitPositionMatched = new Vector3();
     private Double             detectorTime = 0.0;
     private Double           detectorEnergy = 0.0;
@@ -41,6 +45,29 @@ public class DetectorResponse {
     
     public int getAssociation(){ return this.association;}
     public void setAssociation(int asc){ this.association = asc;}
+    
+    public Line3D  getDistance(DetectorParticle particle){
+        Path3D  trajectory = particle.getTrajectory();
+        return trajectory.distance(hitPosition.x(),hitPosition.y(),hitPosition.z());
+    }
+    
+    public int  getParticleMatch(DetectorEvent event){
+        
+        double  distance = 1000.0;
+        int     index    = -1;
+        
+        int nparticles = event.getParticles().size();
+        for(int p = 0; p < nparticles; p++){
+            DetectorParticle  particle = event.getParticles().get(p);
+            Line3D distanceLine = this.getDistance(particle);
+            if(distanceLine.length()<distance){
+                distance = distanceLine.length();
+                index    = p;
+            }
+        }
+        return index;
+    }
+    
     
     @Override
     public String toString(){

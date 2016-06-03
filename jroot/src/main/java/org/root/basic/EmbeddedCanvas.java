@@ -273,8 +273,10 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         int h  = this.getHeight();
         int xc = x/(w/this.canvas_COLUMNS);
         int yc = y/(h/this.canvas_ROWS);
-        int pad = yc*this.canvas_ROWS + xc;
-        System.out.println(" pad = " + pad);
+        //int pad = yc*(this.canvas_ROWS-1) + xc;
+        int pad = yc * this.canvas_COLUMNS + xc;
+        //System.out.println(" pad = " + pad + " xc = " + xc + " yc = " + yc
+        //+ " ROWS = " + this.canvas_ROWS + "  columns = " + this.canvas_COLUMNS);
         return pad;
     }
     
