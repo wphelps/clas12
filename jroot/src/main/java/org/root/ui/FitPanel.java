@@ -83,11 +83,7 @@ public class FitPanel extends JPanel {
 	
 	public FitPanel(EmbeddedCanvas canvas, int indx) {
 		this.canvas = canvas;
-		this.index = indx;
-		//Bug fix... Remove when gagik gets the pads labeled correctly
-		if(index>0){
-			index--;
-		}
+		this.index = indx;		
 		//System.out.println("Inializing Fit Panel index:["+index+"]");
 		xMin = canvas.getPad(index).getAxisX().getMin();
 		xMax = canvas.getPad(index).getAxisX().getMax();

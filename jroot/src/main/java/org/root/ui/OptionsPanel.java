@@ -51,10 +51,6 @@ public class OptionsPanel extends JPanel  {
 	public OptionsPanel(EmbeddedCanvas canvas, int indx){
 		this.canvas = canvas;
 		this.index = indx;
-		//Bug fix... Remove when gagik gets the pads labeled correctly
-		if(index>0){
-			index--;
-		}
 		//System.out.println("Inializing Options Panel index:["+index+"]");
 		xMin = canvas.getPad(index).getAxisX().getMin();
 		xMax = canvas.getPad(index).getAxisX().getMax();
