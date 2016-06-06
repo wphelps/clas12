@@ -62,10 +62,14 @@ public class ParameterPanel extends JPanel{
 					JSlider slider = (JSlider) e.getSource();
 					for(int i=0; i<parameterValueSliders.size(); i++){
 						if(slider.equals(parameterValueSliders.get(i))){
-							System.out.println("Slider #:"+i);
+							System.out.println("Slider #:"+i+" Parameter min:"+Double.parseDouble(parameterMin.get(i).getText())+ " Max:"+Double.parseDouble(parameterMax.get(i).getText())+" Parameter Value:"+fitFunction.getParameter(i));
+							
+							if(parameterFixed.get(i).isSelected()){
+								System.out.println("Nooooooooooo, I'm fixed");
+							}
 						}
 					}
-					double temp = slider.getValue() ;
+					double temp = slider.getValue();
 					System.out.println("Changing slider Value:"+temp);
 					//System.out.println("currentRangeMin:"+currentRangeMin+" xOffset:"+xOffset);
 					//fitFunction.setRange(currentRangeMin, currentRangeMax);
