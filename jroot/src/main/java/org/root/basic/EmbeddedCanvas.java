@@ -380,13 +380,17 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         DataFactory.createSampleH1D(h1a, 2500, 2.5);
         DataFactory.createSampleH1D(h1b, 1500, 1.5);
         
-        H2D  h2 = new H2D("h2","",50,0.0,14.0,50,0.0,14.0);
+        H2D  h2 = new H2D("h2","",160,0.0,14.0,160,0.0,14.0);
+        H2D  h3 = new H2D("h3","",160,0.0,14.0,160,0.0,14.0);
         
-        DataFactory.createSampleH2D(h2, 40000);
+        DataFactory.createSampleH2D(h2, 400000);
+        DataFactory.createSampleH2D(h3, 200000);
+        
+        h3.divide(h2);
         
         canvas.cd(0);
-        //canvas.setLogZ();
-        canvas.draw(h2);
+        canvas.setLogZ(true);
+        canvas.draw(h3);
         /*canvas.draw(h1a);
         canvas.cd(1);
         canvas.draw(h1b);
