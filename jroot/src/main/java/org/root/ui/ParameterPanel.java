@@ -57,13 +57,15 @@ public class ParameterPanel extends JPanel{
 				parameterMax.add(new JTextField(String.format("%4.2f", fitFunction.parameter(i).value()*10.0)));
 			}
 			parameterValueSliders.add(new JSlider());
+			parameterValueSliders.get(i).setMaximum(10000);
+			parameterValueSliders.get(i).setMinimum(0);
 			parameterValueSliders.get(i).addChangeListener(new ChangeListener() {
 				public void stateChanged(ChangeEvent e) {
 					JSlider slider = (JSlider) e.getSource();
 					for(int i=0; i<parameterValueSliders.size(); i++){
 						if(slider.equals(parameterValueSliders.get(i))){
 							System.out.println("Slider #:"+i+" Parameter min:"+Double.parseDouble(parameterMin.get(i).getText())+ " Max:"+Double.parseDouble(parameterMax.get(i).getText())+" Parameter Value:"+fitFunction.getParameter(i));
-							
+							//currentRangeMax = slider.getValue() * (xMax-xMin)/(double)(xSliderMax-xSliderMin) + xMin;
 							if(parameterFixed.get(i).isSelected()){
 								System.out.println("Nooooooooooo, I'm fixed");
 							}
