@@ -282,8 +282,9 @@ public class FitPanel extends JPanel {
 		slider.setMaximum((int) xSliderMax);
 		slider.setValue((int) xSliderMin);
 		slider.setUpperValue((int) xSliderMax);
-		currentRangeMin = slider.getValue() * (xMax-xMin)/(double)(xSliderMax-xSliderMin);
-		currentRangeMax = slider.getUpperValue() * (xMax-xMin)/(double)(xSliderMax-xSliderMin);
+
+		currentRangeMin = slider.getValue() * (xMax-xMin)/(double)(xSliderMax-xSliderMin) + xMin;
+		currentRangeMax = slider.getUpperValue() * (xMax-xMin)/(double)(xSliderMax-xSliderMin) + xMin;
 	    JLabel rangeSliderValue1 = new JLabel(""+String.format("%4.2f",currentRangeMin));
 	    JLabel rangeSliderValue2 = new JLabel(""+String.format("%4.2f",currentRangeMax));
 		fitFunction.setRange(currentRangeMin, currentRangeMax);
@@ -297,10 +298,11 @@ public class FitPanel extends JPanel {
 		slider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				RangeSlider slider = (RangeSlider) e.getSource();
-				currentRangeMin = slider.getValue() * (xMax-xMin)/(double)(xSliderMax-xSliderMin);
-				currentRangeMax = slider.getUpperValue() * (xMax-xMin)/(double)(xSliderMax-xSliderMin);
+				currentRangeMin = slider.getValue() * (xMax-xMin)/(double)(xSliderMax-xSliderMin) + xMin;
+				currentRangeMax = slider.getUpperValue() * (xMax-xMin)/(double)(xSliderMax-xSliderMin) + xMin;
 				rangeSliderValue1.setText(String.valueOf(""+String.format("%4.2f",currentRangeMin)));
 				rangeSliderValue2.setText(String.valueOf(""+String.format("%4.2f",currentRangeMax)));
+				//System.out.println("currentRangeMin:"+currentRangeMin+" xOffset:"+xOffset);
 				//fitFunction.setRange(currentRangeMin, currentRangeMax);
 			}
 		});
