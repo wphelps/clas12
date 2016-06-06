@@ -9,9 +9,12 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.root.basic.EmbeddedCanvas;
 import org.root.func.F1D;
+
 
 public class ParameterPanel extends JPanel{
 	/**
@@ -54,6 +57,20 @@ public class ParameterPanel extends JPanel{
 				parameterMax.add(new JTextField(String.format("%4.2f", fitFunction.parameter(i).value()*10.0)));
 			}
 			parameterValueSliders.add(new JSlider());
+			parameterValueSliders.get(i).addChangeListener(new ChangeListener() {
+				public void stateChanged(ChangeEvent e) {
+					JSlider slider = (JSlider) e.getSource();
+					for(int i=0; i<parameterValueSliders.size(); i++){
+						if(slider.equals(parameterValueSliders.get(i))){
+							System.out.println("Slider #:"+i);
+						}
+					}
+					double temp = slider.getValue() ;
+					System.out.println("Changing slider Value:"+temp);
+					//System.out.println("currentRangeMin:"+currentRangeMin+" xOffset:"+xOffset);
+					//fitFunction.setRange(currentRangeMin, currentRangeMax);
+				}
+			});
 			parameterName.add(new JTextField(fitFunction.parameter(i).name()));
 			
 			parameterPanels.get(i).add(parameterLimited.get(i));
