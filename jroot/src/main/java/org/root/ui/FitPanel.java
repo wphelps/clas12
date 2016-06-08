@@ -381,7 +381,7 @@ public class FitPanel extends JPanel {
 	    JLabel rangeSliderValue1 = new JLabel(""+String.format("%4.2f",currentRangeMin));
 	    JLabel rangeSliderValue2 = new JLabel(""+String.format("%4.2f",currentRangeMax));
 		fitFunction.setRange(currentRangeMin, currentRangeMax);
-
+		
 		rangeSelector.add(xLabel);
 	    rangeSelector.add(rangeSliderValue1);
 		rangeSelector.add(slider);
@@ -436,7 +436,7 @@ public class FitPanel extends JPanel {
 
 				fitFunction.setRange(currentRangeMin, currentRangeMax);
 				//histogram.fit(fitFunction,options);
-				if(predef){
+				if(predef&&!parameterPanel.modified()){
 				for(int i=0; i<fitFunction.getNParams(); i++){
 					if(i==0){
 						fitFunction.setParameter(0,getMaxYIDataSet(thisDataset,currentRangeMin, currentRangeMax));
