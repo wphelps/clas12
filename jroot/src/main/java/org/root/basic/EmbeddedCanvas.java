@@ -8,13 +8,19 @@ package org.root.basic;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
@@ -214,6 +220,7 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         this.setLogZ(true);
     }
     
+
     
     public void setLogX(boolean logFlag){
         this.canvasPads.get(this.currentPad).dataSetFrame.getAxisFrame().getAxisX().setLog(logFlag);
@@ -231,8 +238,35 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         this.repaint();
     }
     
+    private BufferedImage getScreenShot(){
+        BufferedImage bi = new BufferedImage(
+            this.getWidth(), this.getHeight(), BufferedImage.TYPE_4BYTE_ABGR_PRE);
+        this.paint(bi.getGraphics());
+        return bi;
+    }
+    
+    private BufferedImage getScreenShot(int index){
+        BufferedImage bi = new BufferedImage(
+            this.getPad(index).getWidth(), this.getPad(index).getHeight(), BufferedImage.TYPE_INT_ARGB);
+        this.getPad(index).paint(bi.getGraphics());
+        return bi;
+    }
+    
+    public void copyToClipboard(int index){
+    	/* try
+         {
+    		BufferedImage bi = getScreenShot(index);
+            //Transferable blah = new Transferable(bi);
+    		
+    		Toolkit.getDefaultToolkit().getSystemClipboard().setContents( blah, null );
+         }
+         catch ( Exception x ) {
+             x.printStackTrace();
+         }*/
+    }
+    
     public void save(String filename){
-        int w = this.getSize().width;
+        /*int w = this.getSize().width;
         int h = this.getSize().height;
         try {
             List<DataSetFrame>  pads = new ArrayList<DataSetFrame>();
@@ -246,7 +280,14 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
                             w,h,this.canvas_COLUMNS,this.canvas_ROWS,filename));
         } catch (Exception e){
             
-        }
+        }*/
+    	
+    	  File imageFile = new File(filename);
+    	    try{
+    	        imageFile.createNewFile();
+    	        ImageIO.write(getScreenShot(), "png", imageFile);
+    	    }catch(Exception ex){
+    	    }
     }
     
     private void createPopupMenu(){
@@ -439,3 +480,6 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         frame.setVisible(true);
     }
 }
+
+
+
