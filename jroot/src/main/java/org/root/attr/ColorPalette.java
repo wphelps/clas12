@@ -100,17 +100,18 @@ public class ColorPalette {
         
         if(max!=0){
             if(islog==true){
-                fraction = Math.log(value)/Math.log(max);
+                fraction = Math.log(value+1.0)/Math.log(max);
             } else {
                 fraction = value/max;
             }
         }
         
         if(fraction>1.0) fraction = 1.0;
-        if(fraction<0.0){
+        if(fraction<=0.0){
             return new Color(200,200,200);
         }        
-        
+        //System.out.println("PALETTE MAX = " + max + " LOG = " + islog + " VALUE = " + value +
+        //        "  FRACTION = " + fraction + "  NEW FRACTION = " + (value/max));
         double binC = fraction*palette.size();
         int bin = (int) binC;
         if(bin>=palette.size()) bin = palette.size()-1;

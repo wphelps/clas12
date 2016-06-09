@@ -32,7 +32,7 @@ import org.jlab.evio.clas12.EvioSource;
 public class CLASReconstruction {
     
     private RunConditions  runCondition = new RunConditions();
-    
+    private Boolean        showStackTrace = false;
     private final ArrayList<DetectorReconstruction>  detectorFactory =
             new ArrayList<DetectorReconstruction>();
     private final ArrayList<String>  detectorFactoryNames = new 
@@ -50,6 +50,10 @@ public class CLASReconstruction {
     
     public CLASReconstruction(){
         
+    }
+    
+    public void setDebug(boolean flag){
+        this.showStackTrace = flag;
     }
     
     public final void setDetectors(String detectorList){
@@ -408,6 +412,8 @@ public class CLASReconstruction {
         if(cmdParser.hasOption("-n")==true){
             nEventsToRun = cmdParser.asInteger("-n");
         }
+        
+        
         //if(args.length>2) {
         //    outputFile = args[2];
         //}
@@ -424,6 +430,13 @@ public class CLASReconstruction {
         */
         
         //clasRec.initPlugins();
+        
+        if(cmdParser.hasOption("-d")==true){
+            int debugmode = cmdParser.asInteger("-d");
+            if(debugmode>0){
+                clasRec.setDebug(true);
+            }
+        }
         
         if(cmdParser.hasOption("-l")==true){
             Integer skip = cmdParser.asInteger("-l");            
