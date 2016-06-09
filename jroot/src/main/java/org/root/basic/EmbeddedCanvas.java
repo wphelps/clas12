@@ -41,7 +41,7 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
     private  Integer                     currentPad = 0;
     private  JPopupMenu                       popup = null;
     private  int                       popupPad     = -1;
-    
+    private  IDataSet copiedDataSet;
     public EmbeddedCanvas(){
      super();
      this.setPreferredSize(new Dimension(500,500));
@@ -255,10 +255,12 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         JMenuItem itemSaveAs = new JMenuItem("Save As...");
         JMenuItem itemFitPanel = new JMenuItem("Fit Panel");
         JMenuItem itemOptions = new JMenuItem("Options");
+        JMenuItem itemOpenWindow = new JMenuItem("Open in New Window");
         itemSave.addActionListener(this);
         itemSaveAs.addActionListener(this);
         itemFitPanel.addActionListener(this);
         itemOptions.addActionListener(this);
+        itemOpenWindow.addActionListener(this);
         
         this.popup.add(itemSave);
         this.popup.add(itemSaveAs);
@@ -266,6 +268,7 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         this.popup.add(itemFitPanel);
         this.popup.add(new JSeparator());
         this.popup.add(itemOptions);
+        this.popup.add(itemOpenWindow);
         addMouseListener(new MousePopupListener());
     }
 
@@ -305,11 +308,41 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
                 }
             }
         }
+        if(e.getActionCommand().compareTo("Open in New Window")==0){
+        	this.openInNewWindow(popupPad);
+        }
         
     }
     
     
-    class MousePopupListener extends MouseAdapter {
+    private void openInNewWindow(int pad) {
+    	JFrame frame = new JFrame("Closer Look:"+this.getPad(pad).getName());
+    	EmbeddedCanvas temp = new EmbeddedCanvas(1618,1000,1,1);
+    	//OptionsPanel options = new OptionsPanel(this,pad);
+    	ArrayList<IDataSet> datasets = new ArrayList<IDataSet>();
+    	int ndataset = this.getPad(pad).getDataSetCount();
+		for(int i = 0; i < ndataset; i++){
+			IDataSet ds = this.getPad(pad).getDataSet(i);
+			String name = ds.getName();
+			datasets.add(ds);
+			if(i>0){
+				temp.draw(ds,"same");
+			}else{
+				temp.draw(ds);
+			}
+		}
+		//IDataSet currentDataset = datasets.get(0);
+    	//frame.setLayout(new BorderLayout());
+        //frame.add(options, BorderLayout.CENTER);
+        frame.add(temp);
+		frame.pack();
+        frame.setLocationRelativeTo(this);
+        frame.setVisible(true);
+	
+	}
+
+
+	class MousePopupListener extends MouseAdapter {
         public void mousePressed(MouseEvent e) {
             checkPopup(e);
         }
