@@ -36,6 +36,8 @@ import org.root.ui.FitPanel;
 import org.root.ui.OptionsPanel;
 import org.root.utils.DataFactory;
 
+import org.root.ui.TransferableImage;
+
 /**
  *
  * @author gavalian
@@ -252,7 +254,7 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         return bi;
     }
     
-    public void copyToClipboard(int index){
+    public void copyToClipboard(){
     	/* try
          {
     		BufferedImage bi = getScreenShot(index);
@@ -263,6 +265,11 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
          catch ( Exception x ) {
              x.printStackTrace();
          }*/
+        System.out.println("Copying image to clipboard");
+
+    	TransferableImage trans = new TransferableImage( getScreenShot() );
+        Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
+        c.setContents( trans, null );
     }
     
     public void save(String filename){
@@ -292,17 +299,19 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
     
     private void createPopupMenu(){
         this.popup = new JPopupMenu();
+        JMenuItem itemCopy = new JMenuItem("Copy");
         JMenuItem itemSave = new JMenuItem("Save");
         JMenuItem itemSaveAs = new JMenuItem("Save As...");
         JMenuItem itemFitPanel = new JMenuItem("Fit Panel");
         JMenuItem itemOptions = new JMenuItem("Options");
         JMenuItem itemOpenWindow = new JMenuItem("Open in New Window");
+        itemCopy.addActionListener(this);
         itemSave.addActionListener(this);
         itemSaveAs.addActionListener(this);
         itemFitPanel.addActionListener(this);
         itemOptions.addActionListener(this);
         itemOpenWindow.addActionListener(this);
-        
+        this.popup.add(itemCopy);
         this.popup.add(itemSave);
         this.popup.add(itemSaveAs);
         this.popup.add(new JSeparator());
@@ -333,6 +342,9 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         }
         if(e.getActionCommand().compareTo("Fit Panel")==0){
             this.openFitsPane(popupPad);
+        }
+        if(e.getActionCommand().compareTo("Copy")==0){
+            this.copyToClipboard();
         }
         if(e.getActionCommand().compareTo("Save As...")==0){
             final JFileChooser fc = new JFileChooser();
@@ -479,6 +491,7 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         frame.pack();
         frame.setVisible(true);
     }
+    
 }
 
 
