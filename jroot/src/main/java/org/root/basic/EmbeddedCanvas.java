@@ -265,7 +265,7 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
          catch ( Exception x ) {
              x.printStackTrace();
          }*/
-        System.out.println("Copying image to clipboard");
+        //System.out.println("Copying image to clipboard");
 
     	TransferableImage trans = new TransferableImage( getScreenShot() );
         Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -300,18 +300,21 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
     private void createPopupMenu(){
         this.popup = new JPopupMenu();
         JMenuItem itemCopy = new JMenuItem("Copy");
+        JMenuItem itemCopyPad = new JMenuItem("Copy Pad");
         JMenuItem itemSave = new JMenuItem("Save");
         JMenuItem itemSaveAs = new JMenuItem("Save As...");
         JMenuItem itemFitPanel = new JMenuItem("Fit Panel");
         JMenuItem itemOptions = new JMenuItem("Options");
         JMenuItem itemOpenWindow = new JMenuItem("Open in New Window");
         itemCopy.addActionListener(this);
+        itemCopyPad.addActionListener(this);
         itemSave.addActionListener(this);
         itemSaveAs.addActionListener(this);
         itemFitPanel.addActionListener(this);
         itemOptions.addActionListener(this);
         itemOpenWindow.addActionListener(this);
         this.popup.add(itemCopy);
+        this.popup.add(itemCopyPad);
         this.popup.add(itemSave);
         this.popup.add(itemSaveAs);
         this.popup.add(new JSeparator());
@@ -346,6 +349,9 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         if(e.getActionCommand().compareTo("Copy")==0){
             this.copyToClipboard();
         }
+        if(e.getActionCommand().compareTo("Copy Pad")==0){
+            this.copyToClipboard(popupPad);
+        }
         if(e.getActionCommand().compareTo("Save As...")==0){
             final JFileChooser fc = new JFileChooser();
 //In response to a button click:
@@ -368,7 +374,13 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
     }
     
     
-    private void openInNewWindow(int pad) {
+    private void copyToClipboard(int popupPad) {
+    	TransferableImage trans = new TransferableImage(getScreenShot(popupPad));
+        Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
+        c.setContents( trans, null );
+	}
+    
+	private void openInNewWindow(int pad) {
     	JFrame frame = new JFrame("Closer Look:"+this.getPad(pad).getName());
     	EmbeddedCanvas temp = new EmbeddedCanvas(1618,1000,1,1);
     	//OptionsPanel options = new OptionsPanel(this,pad);
