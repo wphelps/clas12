@@ -8,13 +8,19 @@ package org.root.basic;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
@@ -29,6 +35,8 @@ import org.root.pad.TImageCanvas;
 import org.root.ui.FitPanel;
 import org.root.ui.OptionsPanel;
 import org.root.utils.DataFactory;
+
+import org.root.ui.TransferableImage;
 
 /**
  *
@@ -214,6 +222,7 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         this.setLogZ(true);
     }
     
+
     
     public void setLogX(boolean logFlag){
         this.canvasPads.get(this.currentPad).dataSetFrame.getAxisFrame().getAxisX().setLog(logFlag);
@@ -231,8 +240,40 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         this.repaint();
     }
     
+    private BufferedImage getScreenShot(){
+        BufferedImage bi = new BufferedImage(
+            this.getWidth(), this.getHeight(), BufferedImage.TYPE_4BYTE_ABGR_PRE);
+        this.paint(bi.getGraphics());
+        return bi;
+    }
+    
+    private BufferedImage getScreenShot(int index){
+        BufferedImage bi = new BufferedImage(
+            this.getPad(index).getWidth(), this.getPad(index).getHeight(), BufferedImage.TYPE_INT_ARGB);
+        this.getPad(index).paint(bi.getGraphics());
+        return bi;
+    }
+    
+    public void copyToClipboard(){
+    	/* try
+         {
+    		BufferedImage bi = getScreenShot(index);
+            //Transferable blah = new Transferable(bi);
+    		
+    		Toolkit.getDefaultToolkit().getSystemClipboard().setContents( blah, null );
+         }
+         catch ( Exception x ) {
+             x.printStackTrace();
+         }*/
+        //System.out.println("Copying image to clipboard");
+
+    	TransferableImage trans = new TransferableImage( getScreenShot() );
+        Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
+        c.setContents( trans, null );
+    }
+    
     public void save(String filename){
-        int w = this.getSize().width;
+        /*int w = this.getSize().width;
         int h = this.getSize().height;
         try {
             List<DataSetFrame>  pads = new ArrayList<DataSetFrame>();
@@ -246,22 +287,34 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
                             w,h,this.canvas_COLUMNS,this.canvas_ROWS,filename));
         } catch (Exception e){
             
-        }
+        }*/
+    	
+    	  File imageFile = new File(filename);
+    	    try{
+    	        imageFile.createNewFile();
+    	        ImageIO.write(getScreenShot(), "png", imageFile);
+    	    }catch(Exception ex){
+    	    }
     }
     
     private void createPopupMenu(){
         this.popup = new JPopupMenu();
+        JMenuItem itemCopy = new JMenuItem("Copy");
+        JMenuItem itemCopyPad = new JMenuItem("Copy Pad");
         JMenuItem itemSave = new JMenuItem("Save");
         JMenuItem itemSaveAs = new JMenuItem("Save As...");
         JMenuItem itemFitPanel = new JMenuItem("Fit Panel");
         JMenuItem itemOptions = new JMenuItem("Options");
         JMenuItem itemOpenWindow = new JMenuItem("Open in New Window");
+        itemCopy.addActionListener(this);
+        itemCopyPad.addActionListener(this);
         itemSave.addActionListener(this);
         itemSaveAs.addActionListener(this);
         itemFitPanel.addActionListener(this);
         itemOptions.addActionListener(this);
         itemOpenWindow.addActionListener(this);
-        
+        this.popup.add(itemCopy);
+        this.popup.add(itemCopyPad);
         this.popup.add(itemSave);
         this.popup.add(itemSaveAs);
         this.popup.add(new JSeparator());
@@ -293,6 +346,12 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         if(e.getActionCommand().compareTo("Fit Panel")==0){
             this.openFitsPane(popupPad);
         }
+        if(e.getActionCommand().compareTo("Copy")==0){
+            this.copyToClipboard();
+        }
+        if(e.getActionCommand().compareTo("Copy Pad")==0){
+            this.copyToClipboard(popupPad);
+        }
         if(e.getActionCommand().compareTo("Save As...")==0){
             final JFileChooser fc = new JFileChooser();
 //In response to a button click:
@@ -315,7 +374,13 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
     }
     
     
-    private void openInNewWindow(int pad) {
+    private void copyToClipboard(int popupPad) {
+    	TransferableImage trans = new TransferableImage(getScreenShot(popupPad));
+        Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
+        c.setContents( trans, null );
+	}
+    
+	private void openInNewWindow(int pad) {
     	JFrame frame = new JFrame("Closer Look:"+this.getPad(pad).getName());
     	EmbeddedCanvas temp = new EmbeddedCanvas(1618,1000,1,1);
     	//OptionsPanel options = new OptionsPanel(this,pad);
@@ -438,4 +503,8 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         frame.pack();
         frame.setVisible(true);
     }
+    
 }
+
+
+
