@@ -49,14 +49,14 @@ public class ParameterPanel extends JPanel{
 		this.fitFunction = func;
 		this.canvas = canvas;
 		this.setLayout(new GridLayout(func.getNParams(),1));
-		parameterPanel = new JPanel();
-		this.add(parameterPanel);
+		//parameterPanel = new JPanel();
+		//this.add(parameterPanel);
 		initParameterPanel();
 	}
 	private void initParameterPanel(){
 		//this.remove(parameterPanel);
 		//parameterPanel = new JPanel();
-		this.removeAll();
+		//this.removeAll();
 		ArrayList<JCheckBox> parameterLimitedCheckboxes = new ArrayList<JCheckBox>();
 		if(upperLim.size()!=this.fitFunction.getNParams()){
 			upperLim.clear();
@@ -321,7 +321,13 @@ public class ParameterPanel extends JPanel{
 	}
 	public void updateNewFunction(F1D func){
 		this.fitFunction = func;
-		this.removeAll();
+		
+		//If anyone sees this: 
+		//this.removeAll() destroy's the hierarchy, so I can't pack the frame afterwards.
+		int nComponents = this.getComponentCount();
+		for(int i=nComponents-1; i>=0; i--){
+			this.remove(i);
+		}
 		parameterLimited.clear();
 		parameterFixed.clear();
 		parameterMin.clear();
