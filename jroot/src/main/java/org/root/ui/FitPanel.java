@@ -47,6 +47,7 @@ public class FitPanel extends JPanel {
 
 	EmbeddedCanvas canvas;
 	int index;
+	int selectedTab = 0;
 	JPanel fitSettings,fitSwapSettings, fitFunctionPanel, lowerWindow;
 	F1D fitFunction;
 	H1D histogram;
@@ -223,34 +224,24 @@ public class FitPanel extends JPanel {
 		fitSettings.add(fitOptions);
 		//parameterPanel = new ParameterPanel(this.canvas,this.index,this.fitFunction);
 		tabbedPane.add("Minimizer Settings", fitSettings);
-		tabbedPane.add("Parameter Settings", parameterPanel);
+		tabbedPane.add("Parameter Settings", blankPanel);
 
 		tabbedPane.setBorder(new TitledBorder("Minimizer Settings"));
-		/*tabbedPane.addChangeListener(new ChangeListener(){
+		tabbedPane.addChangeListener(new ChangeListener(){
 
 		    @Override
 		    public void stateChanged(ChangeEvent arg0) {
-		        Component mCompo=tabbedPane.getSelectedComponent();
-		        //System.out.println(tabbedPane.getSelectedComponent().equals(parameterPanel)+" is Selected");
-		        
-		        if(tabbedPane.getSelectedComponent().equals(tabbedPane.getComponentAt(0))){	
-		        	tabbedPane.remove(1);
-		        	tabbedPane.remove(0);
-		        	tabbedPane.add("Minimizer Settings",fitSettings);
-		        	tabbedPane.add("Parameter Settings",blankPanel);
-		        	tabbedPane.setSelectedComponent(fitSettings);
-		        }else{
-		        	tabbedPane.remove(1);
-		        	tabbedPane.remove(0);
-		        	tabbedPane.add("Minimizer Settings",blankPanel);
-		        	tabbedPane.add("Parameter Settings",parameterPanel);
-		        	tabbedPane.setSelectedComponent(parameterPanel);
+		        if(tabbedPane.getSelectedIndex()==0){	
+		        	tabbedPane.setComponentAt(1, blankPanel);
+		        	
 		        }
-		        
-		        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(tabbedPane.getSelectedComponent());
-				topFrame.pack();
+		        if(tabbedPane.getSelectedIndex()==1){
+		        	tabbedPane.setComponentAt(1, parameterPanel);
+		        }
+		        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(tabbedPane);
+				topFrame.pack();  
 		    }   
-		});*/
+		});
 		
 		
 		/*  @Override
