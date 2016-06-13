@@ -339,8 +339,8 @@ public class ParameterPanel extends JPanel{
 		//this.setPreferredSize(this.getPreferredSize());
 		this.revalidate();
 		this.repaint();
-		JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(this);
-		topFrame.pack();
+	//JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor();
+	//	topFrame.pack();
 	}
 	public boolean modified() {
 		return modified;
