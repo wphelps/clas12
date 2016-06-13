@@ -396,7 +396,7 @@ public class CLASReconstruction {
 
         //}
         
-        String serviceList  = "FMT:DCHB:DCTB:BST:FTCAL:FTHODO:FTMATCH:HTCC:FTOF:CTOF:ECREC:EB";
+        String serviceList  = "FMT:DCHB:DCTB:CVT:FTCAL:FTHODO:FTMATCH:HTCC:FTOFRec:CTOFRec:CTOF:ECREC:EB";
         if(cmdParser.hasOption("-s")){
            serviceList = cmdParser.asString("-s");
         }
