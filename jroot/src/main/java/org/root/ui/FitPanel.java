@@ -47,6 +47,7 @@ public class FitPanel extends JPanel {
 
 	EmbeddedCanvas canvas;
 	int index;
+	int selectedTab = 0;
 	JPanel fitSettings,fitSwapSettings, fitFunctionPanel, lowerWindow;
 	F1D fitFunction;
 	H1D histogram;
@@ -77,9 +78,9 @@ public class FitPanel extends JPanel {
 	JComboBox predefinedFunctionsSelector;
 	//Fit options
 	String options = "";
-	String predefFunctions[] = {"gaus", "gaus+p0", "gaus+p1", "gaus+p2", "gaus+p3"};
-
-
+	String predefFunctions[] = {"gaus", "gaus+p0", "gaus+p1", "gaus+p2", "gaus+p3","landau","landau+p0","landau+p1","landau+p2","landau+p3","p0","p1","p2","p3","erf","exp"};
+	String functions[];
+	ArrayList<F1D> userFunctions = new ArrayList<F1D>();
 	FitPanel() {
 		init();
 	}
@@ -98,6 +99,7 @@ public class FitPanel extends JPanel {
 			datasets.add(ds);
 		}
 		this.thisDataset = datasets.get(0);
+		userFunctions = canvas.getFunctions();
 		init();
 	}
 	
@@ -110,7 +112,8 @@ public class FitPanel extends JPanel {
 	}
 
 	void setFunction(F1D fitFunction) {
-		this.fitFunction = fitFunction;
+		//this.fitFunction = fitFunction;
+		this.userFunctions.add(fitFunction);
 	}
 
 
@@ -125,9 +128,19 @@ public class FitPanel extends JPanel {
 				thisDataset = datasets.get(dataSetBox.getSelectedIndex());
 			}
 		});
-		
+		if(userFunctions.size()==0){
+			functions = predefFunctions;
+		}else{
+			functions = new String[userFunctions.size()+predefFunctions.length];
+			for(int i=0; i< userFunctions.size();i++){
+				functions[i] = userFunctions.get(i).getName();
+			}
+			for(int i=0; i< predefFunctions.length; i++){
+				functions[i+userFunctions.size()] = predefFunctions[i];
+			}
+		}
 		// Labels from F1D class
-		predefinedFunctionsSelector = new JComboBox(predefFunctions);
+		predefinedFunctionsSelector = new JComboBox(functions);
 		predefinedFunctionsSelector.setSelectedIndex(0);
 		fitFunction.initFunction(predefFunctions[predefinedFunctionsSelector.getSelectedIndex()], currentRangeMin, currentRangeMax);
 		parameterPanel = new ParameterPanel(this.canvas,this.index,this.fitFunction);
@@ -136,7 +149,24 @@ public class FitPanel extends JPanel {
 					//System.out.println(predefinedFunctionsSelector.getSelectedIndex());
 					//fitFunction = new F1D(predefFunctions[predefinedFunctionsSelector.getSelectedIndex()],currentRangeMin,currentRangeMax);
 					//fitFunction.setFunction(predefFunctions[predefinedFunctionsSelector.getSelectedIndex()]);
-					fitFunction.initFunction(predefFunctions[predefinedFunctionsSelector.getSelectedIndex()], currentRangeMin, currentRangeMax);
+					boolean functionSetup = false;
+					for(int i=0; i<predefFunctions.length;i++){
+						if(functions[predefinedFunctionsSelector.getSelectedIndex()].equals(predefFunctions[i])){
+							fitFunction.initFunction(predefFunctions[predefinedFunctionsSelector.getSelectedIndex()], currentRangeMin, currentRangeMax);
+							functionSetup = true;
+							predef=true;
+						}
+					}
+					if(!functionSetup){
+						for(int i=0; i<userFunctions.size();i++){
+							if(functions[predefinedFunctionsSelector.getSelectedIndex()].equals(userFunctions.get(i).getName())){
+								fitFunction = userFunctions.get(i);
+								fitFunction.setRange(currentRangeMin, currentRangeMax);
+								functionSetup = true;
+								predef=false;
+							}
+						}
+					}
 					
 					//if(parameterPanelSwapped){
 				//		parameterSwapPanel.updateNewFunction(fitFunction);
@@ -172,7 +202,8 @@ public class FitPanel extends JPanel {
 					}
 					}
 					parameterPanel.updateNewFunction(fitFunction);
-
+					JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(predefinedFunctionsSelector);
+					topFrame.pack();
 				}
 		});
 		
@@ -223,34 +254,24 @@ public class FitPanel extends JPanel {
 		fitSettings.add(fitOptions);
 		//parameterPanel = new ParameterPanel(this.canvas,this.index,this.fitFunction);
 		tabbedPane.add("Minimizer Settings", fitSettings);
-		tabbedPane.add("Parameter Settings", parameterPanel);
+		tabbedPane.add("Parameter Settings", blankPanel);
 
 		tabbedPane.setBorder(new TitledBorder("Minimizer Settings"));
-		/*tabbedPane.addChangeListener(new ChangeListener(){
+		tabbedPane.addChangeListener(new ChangeListener(){
 
 		    @Override
 		    public void stateChanged(ChangeEvent arg0) {
-		        Component mCompo=tabbedPane.getSelectedComponent();
-		        //System.out.println(tabbedPane.getSelectedComponent().equals(parameterPanel)+" is Selected");
-		        
-		        if(tabbedPane.getSelectedComponent().equals(tabbedPane.getComponentAt(0))){	
-		        	tabbedPane.remove(1);
-		        	tabbedPane.remove(0);
-		        	tabbedPane.add("Minimizer Settings",fitSettings);
-		        	tabbedPane.add("Parameter Settings",blankPanel);
-		        	tabbedPane.setSelectedComponent(fitSettings);
-		        }else{
-		        	tabbedPane.remove(1);
-		        	tabbedPane.remove(0);
-		        	tabbedPane.add("Minimizer Settings",blankPanel);
-		        	tabbedPane.add("Parameter Settings",parameterPanel);
-		        	tabbedPane.setSelectedComponent(parameterPanel);
+		        if(tabbedPane.getSelectedIndex()==0){	
+		        	tabbedPane.setComponentAt(1, blankPanel);
+		        	
 		        }
-		        
-		        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(tabbedPane.getSelectedComponent());
-				topFrame.pack();
+		        if(tabbedPane.getSelectedIndex()==1){
+		        	tabbedPane.setComponentAt(1, parameterPanel);
+		        }
+		        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(tabbedPane);
+				topFrame.pack();  
 		    }   
-		});*/
+		});
 		
 		
 		/*  @Override
@@ -454,7 +475,8 @@ public class FitPanel extends JPanel {
 					}
 					System.out.println("Paramter "+i+" ="+fitFunction.getParameter(i));
 
-				}}
+				}
+				}
 				fitter.fit(thisDataset, fitFunction,options);
 				//fitFunction.show(); // print on the screen fit results
 				fitFunction.setLineColor(2);
@@ -462,6 +484,19 @@ public class FitPanel extends JPanel {
 				fitFunction.setLineStyle(1);
 				canvas.cd(index);                                
 				canvas.draw(fitFunction,"same"+drawOption);
+				
+				/*
+				ArrayList<IDataSet> nonDuplicateDataset = new ArrayList<IDataSet>();
+				ArrayList<IDataSet> datasets1 = new ArrayList<IDataSet>();
+				for(int i=0; i<canvas.getPad(index).getDataSetCount(); i++){
+					datasets1.add(canvas.getPad(index).getDataSet(i));
+					if(!nonDuplicateDataset.contains(datasets1.get(i))){
+						nonDuplicateDataset.add(datasets1.get(i));
+					}
+				}
+				canvas.getPad(index).
+				
+				*/
 				parameterPanel.updateNewFunction(fitFunction);
 			}
 		});

@@ -166,6 +166,10 @@ public class GraphicsAxisFrame {
         this.frameTitle.setText(title);
     }
     
+    public String getTitle(){
+        return this.frameTitle.getTextString();
+    }
+    
     public void setTitleFontName(String font){
         this.frameTitltFontName = font;
         this.frameTitle.setFont(font);

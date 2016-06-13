@@ -35,6 +35,7 @@ public class OptionsPanel extends JPanel  {
 	JPanel axisOptions = new JPanel();
 	ArrayList<JPanel> dataSetPanels = new ArrayList<JPanel>();
 	ArrayList<String> dataSetNames = new ArrayList<String>();
+	ArrayList<IDataSet> datasets = new ArrayList<IDataSet>();
 	JCheckBox[] applyToAllCheckBoxes;
 	double xMin, xMax, yMin, yMax;
 	int ySliderMin = 0;
@@ -61,6 +62,7 @@ public class OptionsPanel extends JPanel  {
 		int ndataset = canvas.getPad(index).getDataSetCount();
 		for(int i = 0; i < ndataset; i++){
 			IDataSet ds = canvas.getPad(index).getDataSet(i);
+			datasets.add(canvas.getPad(index).getDataSet(i));
 			String name = ds.getName();
 			dataSetPanels.add(new JPanel());
 			dataSetNames.add(name);
@@ -166,9 +168,9 @@ public class OptionsPanel extends JPanel  {
 		JLabel yAxisTitleLabel = new JLabel("Y Axis Title:");
 		JLabel titleLabel = new JLabel("Title:");
 
-		JTextField xAxisTextField 	= new JTextField("");
-		JTextField yAxisTextField 	= new JTextField("");
-		JTextField titleTextField 	= new JTextField("");
+		JTextField xAxisTextField 	= new JTextField(canvas.getPad(index).getAxisX().getTitleString());
+		JTextField yAxisTextField 	= new JTextField(canvas.getPad(index).getAxisY().getTitleString());
+		JTextField titleTextField 	= new JTextField(canvas.getPad(index).getAxisFrame().getTitle());
 		/*xAxisTextField.addKeyListener(new KeyListener(){
 			 public void keyTyped(KeyEvent e) {
 				 canvas.getPad(index).getAxisX().setTitle(xAxisTextField.getText());
@@ -199,7 +201,7 @@ public class OptionsPanel extends JPanel  {
 		
 		JPanel gridPanel = new JPanel(new GridLayout(1,2));
 		JCheckBox xGridBox = new JCheckBox("Grid X");
-		xGridBox.setSelected(true);
+		xGridBox.setSelected(canvas.getPad(index).getAxisFrame().getGridX());
 		xGridBox.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				canvas.getPad(index).getAxisFrame().setGridX(xGridBox.isSelected());
@@ -207,7 +209,7 @@ public class OptionsPanel extends JPanel  {
 			}
 		});
 		JCheckBox yGridBox = new JCheckBox("Grid Y");
-		yGridBox.setSelected(true);
+		yGridBox.setSelected(canvas.getPad(index).getAxisFrame().getGridY());
 		yGridBox.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				canvas.getPad(index).getAxisFrame().setGridY(yGridBox.isSelected());
@@ -383,31 +385,162 @@ public class OptionsPanel extends JPanel  {
 	}
 	
 	private void initDatasetOptions(){
+		ArrayList<JComboBox> lineWidthBoxes = new ArrayList<JComboBox>();
+		ArrayList<JComboBox> fillColorBoxes = new ArrayList<JComboBox>();
+		ArrayList<JComboBox> fillAlphaBoxes = new ArrayList<JComboBox>();
+		ArrayList<JComboBox> lineColorBoxes = new ArrayList<JComboBox>();
+		ArrayList<JComboBox> lineAlphaBoxes = new ArrayList<JComboBox>();
+		ArrayList<JComboBox> lineStyleBoxes = new ArrayList<JComboBox>();
+
 		for(int i=0; i<dataSetPanels.size();i++){
-			dataSetPanels.get(i).setLayout(new GridLayout(3,1));
+			dataSetPanels.get(i).setLayout(new GridLayout(6,1));
 			dataSetPanels.get(i).setBorder(new TitledBorder("Data Options"));
 			String[] lineThickness = {"1","2","3","4","5","6","7","8","9"};
 			int[] lineThicknessInts = {1,2,3,4,5,6,7,8,9};
 			String[] lineStyle = {"1","2","3","4","5"};
 			int[] lineStyleInts = {1,2,3,4,5};
-			String[] fillColor = {"34","35","36","37","38"};
-			String[] fontSize = {"12","14","16","18"};
+			String[] fillColor = {"0","1","2","3","4","5","6","7","8","9"};
+			int[] fillColorInts = {0,1,2,3,4,5,6,7,8,9};
+			String[] fillTransparency = {"0%","20%","40%","60%","80%"};
+			int[] fillAlphaInts = {0,2,3,4,5};
 
-			
-			JComboBox lineWidthBox = new JComboBox(lineThickness);
-			JComboBox fillColorBox = new JComboBox(fillColor);
-			JComboBox lineStyleBox = new JComboBox(lineStyle);
-			
+
+			datasets.get(i).getAttributes().getAsInt("line-style");
+			int currntLineColorCombined = datasets.get(i).getAttributes().getAsInt("line-color");
+			int currentLineColor = currntLineColorCombined - (currntLineColorCombined/10)*10;
+			int currentLineAlpha = currntLineColorCombined/10;
+			int currentFillColorCombined = datasets.get(i).getAttributes().getAsInt("fill-color");
+			int currentFillColor = currentFillColorCombined - (currentFillColorCombined/10)*10;
+			int currentFillAlpha = currentFillColorCombined/10;
+
+			lineWidthBoxes.add(new JComboBox(lineThickness));
+			lineWidthBoxes.get(i).setSelectedIndex(returnIndex(lineThicknessInts,datasets.get(i).getAttributes().getAsInt("line-width")));
+			lineWidthBoxes.get(i).addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e){
+					for(int j=0; j<lineWidthBoxes.size(); j++){
+						if(lineWidthBoxes.get(j).equals(e.getSource())){
+							//System.out.println("Dataset:"+j+"/"+datasets.size()+" line-width:"+lineThicknessInts[lineWidthBoxes.get(j).getSelectedIndex()]+" index:"+lineWidthBoxes.get(j).getSelectedIndex());
+							datasets.get(j).getAttributes().getProperties().put("line-width", lineThickness[lineWidthBoxes.get(j).getSelectedIndex()]);
+							canvas.getPad(index).getPad().clear();
+							for(int k=0; k<datasets.size(); k++){
+								canvas.getPad(index).getPad().add(datasets.get(k),"same");
+							}
+							//canvas.update();
+						}
+					}
+					canvas.update();
+				}
+			});
+			fillColorBoxes.add(new JComboBox(fillColor));
+			fillColorBoxes.get(i).setSelectedIndex(returnIndex(fillColorInts,currentFillColor));
+			fillColorBoxes.get(i).addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e){
+					for(int j=0; j<fillColorBoxes.size(); j++){
+						if(fillColorBoxes.get(j).equals(e.getSource())){
+							//System.out.println("Dataset:"+j+"/"+datasets.size()+" fill-color:"+(fillAlphaInts[fillAlphaBoxes.get(j).getSelectedIndex()]*10+fillColorInts[fillColorBoxes.get(j).getSelectedIndex()])+" alpha:"+fillAlphaInts[fillAlphaBoxes.get(j).getSelectedIndex()]*10);
+							datasets.get(j).getAttributes().getProperties().put("fill-color", ""+(fillAlphaInts[fillAlphaBoxes.get(j).getSelectedIndex()]*10+fillColorInts[fillColorBoxes.get(j).getSelectedIndex()]));
+							canvas.getPad(index).getPad().clear();
+							for(int k=0; k<datasets.size(); k++){
+								canvas.getPad(index).getPad().add(datasets.get(k),"same");
+							}
+							//canvas.update();
+						}
+					}
+					canvas.update();
+				}
+			});
+			fillAlphaBoxes.add(new JComboBox(fillTransparency));
+			fillAlphaBoxes.get(i).setSelectedIndex(returnIndex(fillAlphaInts,currentFillAlpha));
+			fillAlphaBoxes.get(i).addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e){
+					for(int j=0; j<fillAlphaBoxes.size(); j++){
+						if(fillAlphaBoxes.get(j).equals(e.getSource())){
+							System.out.println("Dataset:"+j+"/"+datasets.size()+" fill-color:"+(fillAlphaInts[fillAlphaBoxes.get(j).getSelectedIndex()]*10+fillColorInts[fillColorBoxes.get(j).getSelectedIndex()])+" alpha:"+fillAlphaInts[fillAlphaBoxes.get(j).getSelectedIndex()]*10);
+							datasets.get(j).getAttributes().getProperties().put("fill-color", ""+(fillAlphaInts[fillAlphaBoxes.get(j).getSelectedIndex()]*10+fillColorInts[fillColorBoxes.get(j).getSelectedIndex()]));
+							canvas.getPad(index).getPad().clear();
+							for(int k=0; k<datasets.size(); k++){
+								canvas.getPad(index).getPad().add(datasets.get(k),"same");
+							}
+							//canvas.update();
+						}
+					}
+					canvas.update();
+				}
+			});
+			lineColorBoxes.add(new JComboBox(fillColor));
+			lineColorBoxes.get(i).setSelectedIndex(returnIndex(fillColorInts,currentLineColor));
+			lineColorBoxes.get(i).addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e){
+					for(int j=0; j<lineColorBoxes.size(); j++){
+						if(lineColorBoxes.get(j).equals(e.getSource())){
+							//System.out.println("Dataset:"+j+"/"+datasets.size()+" fill-color:"+(fillAlphaInts[fillAlphaBoxes.get(j).getSelectedIndex()]*10+fillColorInts[fillColorBoxes.get(j).getSelectedIndex()])+" alpha:"+fillAlphaInts[fillAlphaBoxes.get(j).getSelectedIndex()]*10);
+							datasets.get(j).getAttributes().getProperties().put("line-color", ""+(fillAlphaInts[lineAlphaBoxes.get(j).getSelectedIndex()]*10+fillColorInts[lineColorBoxes.get(j).getSelectedIndex()]));
+							canvas.getPad(index).getPad().clear();
+							for(int k=0; k<datasets.size(); k++){
+								canvas.getPad(index).getPad().add(datasets.get(k),"same");
+							}
+							//canvas.update();
+						}
+					}
+					canvas.update();
+				}
+			});
+			lineAlphaBoxes.add(new JComboBox(fillTransparency));
+			lineAlphaBoxes.get(i).setSelectedIndex(returnIndex(fillAlphaInts,currentLineAlpha));
+			lineAlphaBoxes.get(i).addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e){
+					for(int j=0; j<lineAlphaBoxes.size(); j++){
+						if(lineAlphaBoxes.get(j).equals(e.getSource())){
+							//System.out.println("Dataset:"+j+"/"+datasets.size()+" fill-color:"+(fillAlphaInts[fillAlphaBoxes.get(j).getSelectedIndex()]*10+fillColorInts[fillColorBoxes.get(j).getSelectedIndex()])+" alpha:"+fillAlphaInts[fillAlphaBoxes.get(j).getSelectedIndex()]*10);
+							datasets.get(j).getAttributes().getProperties().put("line-color", ""+(fillAlphaInts[lineAlphaBoxes.get(j).getSelectedIndex()]*10+fillColorInts[lineColorBoxes.get(j).getSelectedIndex()]));
+							canvas.getPad(index).getPad().clear();
+							for(int k=0; k<datasets.size(); k++){
+								canvas.getPad(index).getPad().add(datasets.get(k),"same");
+							}
+							//canvas.update();
+						}
+					}
+					canvas.update();
+				}
+			});
+			lineStyleBoxes.add(new JComboBox(lineStyle));
+			lineStyleBoxes.get(i).setSelectedIndex(returnIndex(lineStyleInts,datasets.get(i).getAttributes().getAsInt("line-style")));
+			lineStyleBoxes.get(i).addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e){
+					for(int j=0; j<lineStyleBoxes.size(); j++){
+						if(lineStyleBoxes.get(j).equals(e.getSource())){
+							//System.out.println("Dataset:"+j+"/"+datasets.size()+" line-width:"+lineStyle[lineStyleBoxes.get(j).getSelectedIndex()]+" index:"+lineStyleBoxes.get(j).getSelectedIndex());
+							datasets.get(j).getAttributes().getProperties().put("line-style", lineStyle[lineStyleBoxes.get(j).getSelectedIndex()]);
+							canvas.getPad(index).getPad().clear();
+							for(int k=0; k<datasets.size(); k++){
+								canvas.getPad(index).getPad().add(datasets.get(k),"same");
+							}
+							//canvas.update();
+						}
+					}
+					canvas.update();
+				}
+			});
+
 			JLabel lineWidthLabel = new JLabel("Line Width:");
+			JLabel  lineColorLabel = new JLabel("Line Color:");
+			JLabel  lineAlphaLabel = new JLabel("Line Alpha:");
 			JLabel  fillColorLabel = new JLabel("Fill Color:");
+			JLabel  fillAlphaLabel = new JLabel("Fill Alpha:");
 			JLabel lineStyleLabel =  new JLabel("Line Style:");
 			
 			dataSetPanels.get(i).add(lineWidthLabel);
-			dataSetPanels.get(i).add(lineWidthBox);
-			dataSetPanels.get(i).add(fillColorLabel);
-			dataSetPanels.get(i).add(fillColorBox);
+			dataSetPanels.get(i).add(lineWidthBoxes.get(i));
 			dataSetPanels.get(i).add(lineStyleLabel);
-			dataSetPanels.get(i).add(lineStyleBox);
+			dataSetPanels.get(i).add(lineStyleBoxes.get(i));
+			dataSetPanels.get(i).add(lineColorLabel);
+			dataSetPanels.get(i).add(lineColorBoxes.get(i));
+			dataSetPanels.get(i).add(lineAlphaLabel);
+			dataSetPanels.get(i).add(lineAlphaBoxes.get(i));
+			dataSetPanels.get(i).add(fillColorLabel);
+			dataSetPanels.get(i).add(fillColorBoxes.get(i));
+			dataSetPanels.get(i).add(fillAlphaLabel);
+			dataSetPanels.get(i).add(fillAlphaBoxes.get(i));
 		}
 		
 	}

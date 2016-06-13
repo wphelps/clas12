@@ -151,6 +151,11 @@ public class GraphicsAxis {
         return this.axisTitle.toString();
     }
     
+    public String getTitleString(){
+        return this.axisTitle.getTextString();
+    }
+    
+    
     public void setTitle(String title){
         this.axisTitle.setText(title);
     }

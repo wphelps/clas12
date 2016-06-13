@@ -29,6 +29,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import org.root.base.IDataSet;
+import org.root.func.F1D;
 import org.root.histogram.H1D;
 import org.root.histogram.H2D;
 import org.root.pad.TImageCanvas;
@@ -43,13 +44,14 @@ import org.root.ui.TransferableImage;
  * @author gavalian
  */
 public class EmbeddedCanvas extends JPanel implements ActionListener {
-     public   ArrayList<EmbeddedPad>  canvasPads = new  ArrayList<EmbeddedPad>();
+    public   ArrayList<EmbeddedPad>  canvasPads = new  ArrayList<EmbeddedPad>();
     private  int                     canvas_COLUMNS = 1;
     private  int                     canvas_ROWS    = 1;
     private  Integer                     currentPad = 0;
     private  JPopupMenu                       popup = null;
     private  int                       popupPad     = -1;
-    private  IDataSet copiedDataSet;
+    private   ArrayList<F1D>  registeredUserFunctions = new  ArrayList<F1D>();
+
     public EmbeddedCanvas(){
      super();
      this.setPreferredSize(new Dimension(500,500));
@@ -80,6 +82,17 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         this.divide(rows,cols);
         this.createPopupMenu();
     }
+    
+    
+    public void registerFunction(F1D func){
+    	this.registeredUserFunctions.add(func);
+    }
+    
+    public ArrayList<F1D> getFunctions(){
+    	return this.registeredUserFunctions;
+    }
+    
+    
     /**
      * Change active pad on the canvas
      * @param pad 
@@ -236,6 +249,21 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         this.canvasPads.get(this.currentPad).dataSetFrame.getAxisFrame().getAxisZ().setLog(logFlag);
     }
     
+    
+    
+    public boolean getLogX(){
+       return this.canvasPads.get(this.currentPad).dataSetFrame.getAxisFrame().getAxisX().isLog();
+    }
+    
+    public boolean getLogY(){
+        return this.canvasPads.get(this.currentPad).dataSetFrame.getAxisFrame().getAxisY().isLog();
+    }
+    
+    public boolean getLogZ(){
+        return this.canvasPads.get(this.currentPad).dataSetFrame.getAxisFrame().getAxisZ().isLog();
+    }
+    
+    
     public void update(){
         this.repaint();
     }
@@ -381,11 +409,36 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
 	}
     
 	private void openInNewWindow(int pad) {
-    	JFrame frame = new JFrame("Closer Look:"+this.getPad(pad).getName());
-    	EmbeddedCanvas temp = new EmbeddedCanvas(1618,1000,1,1);
-    	//OptionsPanel options = new OptionsPanel(this,pad);
+    	JFrame frame = new JFrame();
+    	Dimension d = this.getPad(pad).getSize();
+    	Dimension d2 =  new Dimension();
+    	d2.setSize(d.getWidth()*1.5,d.getHeight()*1.5); 
+    	EmbeddedCanvas temp = new EmbeddedCanvas((int)d2.getWidth(),(int)d2.getHeight(),1,1);
     	ArrayList<IDataSet> datasets = new ArrayList<IDataSet>();
     	int ndataset = this.getPad(pad).getDataSetCount();
+    	double xMax = this.getPad(pad).getAxisX().getMax();
+    	double yMax = this.getPad(pad).getAxisY().getMax();
+      	double xMin = this.getPad(pad).getAxisX().getMin();
+    	double yMin = this.getPad(pad).getAxisY().getMin();
+   
+    	String xLabel = this.getPad(pad).getAxisX().getTitleString();
+    	int xLabelFontSize = this.getPad(pad).getAxisX().getAxisTitleFontSize();
+    	String xAxisFont = this.getPad(pad).getAxisX().getAxisFontName();
+    	int xAxisFontSize = this.getPad(pad).getAxisX().getAxisFontSize();
+
+    	String yLabel = this.getPad(pad).getAxisY().getTitleString();
+    	int yLabelFontSize = this.getPad(pad).getAxisY().getAxisTitleFontSize();
+    	String yAxisFont = this.getPad(pad).getAxisY().getAxisFontName();
+    	int yAxisFontSize = this.getPad(pad).getAxisY().getAxisFontSize();
+
+    	
+    	int titleFontSize = this.getPad(pad).getAxisFrame().getTitleFontSize();
+    	String titleFont = this.getPad(pad).getAxisFrame().getTitleFontName();
+    	String title = this.getPad(pad).getAxisFrame().getTitle();
+    	boolean gridx = this.getPad(pad).getAxisFrame().getGridX();
+    	boolean gridy = this.getPad(pad).getAxisFrame().getGridY();
+
+
 		for(int i = 0; i < ndataset; i++){
 			IDataSet ds = this.getPad(pad).getDataSet(i);
 			String name = ds.getName();
@@ -396,9 +449,27 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
 				temp.draw(ds);
 			}
 		}
-		//IDataSet currentDataset = datasets.get(0);
-    	//frame.setLayout(new BorderLayout());
-        //frame.add(options, BorderLayout.CENTER);
+		
+		temp.getPad(0).setAxisRange("X",xMin,xMax);
+
+		temp.getPad(0).getAxisX().setAxisFontName(xAxisFont);
+		temp.getPad(0).getAxisX().setAxisFontSize(xAxisFontSize);
+		temp.getPad(0).getAxisX().setTitleFontSize(xLabelFontSize);
+		temp.getPad(0).getAxisX().setTitle(xLabel);
+
+		temp.getPad(0).setAxisRange("Y",yMin,yMax);
+		temp.getPad(0).getAxisY().setAxisFontName(yAxisFont);
+		temp.getPad(0).getAxisY().setAxisFontSize(yAxisFontSize);
+		temp.getPad(0).getAxisY().setTitleFontSize(yLabelFontSize);
+		temp.getPad(0).getAxisY().setTitle(yLabel);
+		
+		temp.getPad(0).getAxisFrame().setTitle(title);
+		temp.getPad(0).getAxisFrame().setTitleFontName(titleFont);
+		temp.getPad(0).getAxisFrame().setTitleFontSize(titleFontSize);
+
+		temp.getPad(0).getAxisFrame().setGridX(gridx);
+		temp.getPad(0).getAxisFrame().setGridY(gridy);
+
         frame.add(temp);
 		frame.pack();
         frame.setLocationRelativeTo(this);
@@ -485,7 +556,6 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         DataFactory.createSampleH2D(h3, 200000);
         
         h3.divide(h2);
-        
         canvas.cd(0);
         canvas.setLogZ(true);
         canvas.draw(h3);
