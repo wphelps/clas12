@@ -32,6 +32,7 @@ public class DetectorResponse {
     
     public void   setTime(double time){ this.detectorTime = time;}
     public void   setPosition(double x, double y, double z){this.hitPosition.setXYZ(x, y, z);}
+    public void   setMatchPosition(double x, double y, double z){this.hitPositionMatched.setXYZ(x, y, z);}
     public void   setPath(double path){ this.particlePath = path;}
     public void   setEnergy(double energy) { this.detectorEnergy = energy; }
     
@@ -78,12 +79,15 @@ public class DetectorResponse {
                 this.descriptor.getLayer(),
                 this.descriptor.getComponent()
                 ));
+        str.append(String.format(" PINDX [%3d] ", 
+                this.getAssociation()
+                ));
         str.append(String.format(" T/P/E %8.4f %8.4f %8.4f", this.detectorTime,
                 this.particlePath,
                 this.detectorEnergy));
-        str.append(String.format(" POS [ %8.4f %8.4f %8.4f ]", 
+        str.append(String.format(" POS [ %9.3f %9.3f %9.3f ]", 
                 this.hitPosition.x(),this.hitPosition.y(),this.hitPosition.z()));
-        str.append(String.format(" ACCURACY [ %8.4f %8.4f %8.4f ] ",
+        str.append(String.format(" ACCURACY [ %9.3f %9.3f %9.3f ] ",
                 this.hitPosition.x()-this.hitPositionMatched.x(),
                 this.hitPosition.y()-this.hitPositionMatched.y(),
                 this.hitPosition.z()-this.hitPositionMatched.z()

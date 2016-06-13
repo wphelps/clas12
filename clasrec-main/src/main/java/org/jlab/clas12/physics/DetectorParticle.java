@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 import org.jlab.clas.detector.DetectorType;
+import org.jlab.clas.physics.Particle;
+import org.jlab.clas.physics.PhysicsEvent;
 import org.jlab.clas.physics.Vector3;
 import org.jlab.geom.prim.Line3D;
 import org.jlab.geom.prim.Path3D;
@@ -35,6 +37,9 @@ public class DetectorParticle {
     private TreeMap<DetectorType,Vector3>  projectedHit = 
             new  TreeMap<DetectorType,Vector3>();
     
+    
+    
+    
     public DetectorParticle(){
         
     }
@@ -49,7 +54,24 @@ public class DetectorParticle {
         }
     }
     
+    public Particle getPhysicsParticle(int pid){
+        Particle  particle = new Particle(pid,
+                this.vector().x(),this.vector().y(),this.vector().z(),
+                this.vertex().x(),this.vertex().y(),this.vertex().z()
+        );
+        return particle;
+    }
+    
+    public double compare(Vector3 vec){
+        return this.vector().compare(vec);
+    }
+    
+    public double compare(double x, double y, double z){
+        return this.vector().compare(new Vector3(x,y,z));
+    }
+    
     public void addResponse(DetectorResponse res){
+        /*
         double distance = Math.sqrt(
                 (this.particleCrossPosition.x()-res.getPosition().x())*
                         (this.particleCrossPosition.x()-res.getPosition().x())
@@ -78,6 +100,7 @@ public class DetectorParticle {
                 );
         
         res.setPath(distance+this.particlePath);
+        this.responseStore.add(res);*/
         this.responseStore.add(res);
     }
     
@@ -99,6 +122,15 @@ public class DetectorParticle {
         if(hits>1) System.out.println("[Warning] Too many hits for detector type = " + type);
         return true;
     }
+    public boolean hasHit(DetectorType type, int layer){
+        int hits = 0;
+        for( DetectorResponse res : this.responseStore){
+            if(res.getDescriptor().getType()==type&&res.getDescriptor().getLayer()==layer) hits++;
+        }
+        if(hits==0) return false;
+        if(hits>1) System.out.println("[Warning] Too many hits for detector type = " + type);
+        return true;
+    }
     
     public List<DetectorResponse>  getDetectorResponses(){
         return this.responseStore;
@@ -107,6 +139,13 @@ public class DetectorParticle {
     public DetectorResponse getHit(DetectorType type){
         for(DetectorResponse res : this.responseStore){
             if(res.getDescriptor().getType()==type) return res;
+        }
+        return null;
+    }
+    
+    public DetectorResponse getHit(DetectorType type, int layer){
+        for(DetectorResponse res : this.responseStore){
+            if(res.getDescriptor().getType()==type&&res.getDescriptor().getLayer()==layer) return res;
         }
         return null;
     }
@@ -169,9 +208,17 @@ public class DetectorParticle {
     }
     
     public double getEnergy(DetectorType type){
+        double energy = 0.0;
+        for(DetectorResponse r : this.responseStore){
+            if(r.getDescriptor().getType()==type){
+                energy += r.getEnergy();
+            }
+        }
+        /*
         DetectorResponse response = this.getHit(type);
         if(response==null) return -1.0;
-        return response.getEnergy();
+        return response.getEnergy();*/
+        return energy;
     }
     
     public double getBeta(DetectorType type){
