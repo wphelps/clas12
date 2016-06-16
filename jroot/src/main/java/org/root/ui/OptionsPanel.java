@@ -3,6 +3,8 @@ package org.root.ui;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.util.List;
 import java.awt.event.ActionEvent;
@@ -14,10 +16,12 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -36,6 +40,7 @@ public class OptionsPanel extends JPanel  {
 	ArrayList<JPanel> dataSetPanels = new ArrayList<JPanel>();
 	ArrayList<String> dataSetNames = new ArrayList<String>();
 	ArrayList<IDataSet> datasets = new ArrayList<IDataSet>();
+	JPanel blankPanel = new JPanel();
 	JCheckBox[] applyToAllCheckBoxes;
 	double xMin, xMax, yMin, yMax;
 	int ySliderMin = 0;
@@ -88,6 +93,21 @@ public class OptionsPanel extends JPanel  {
 		for(int i=0; i<dataSetPanels.size(); i++){
 			tabbedPane.add(dataSetNames.get(i),dataSetPanels.get(i));
 		}
+		tabbedPane.addChangeListener(new ChangeListener(){
+
+		    @Override
+		    public void stateChanged(ChangeEvent arg0) {
+		        if(tabbedPane.getSelectedIndex()==0){	
+		        	tabbedPane.setComponentAt(0, axisOptions);
+		        	
+		        }
+		        if(tabbedPane.getSelectedIndex()!=0){
+		        	tabbedPane.setComponentAt(0, blankPanel);
+		        }
+		        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(tabbedPane);
+				topFrame.pack();  
+		    }   
+		});
 		this.add(tabbedPane);
 	}
 	private int returnIndex(int[] array, int number){
@@ -101,7 +121,9 @@ public class OptionsPanel extends JPanel  {
 	
 	private void initAxisOptions(){
 		axisOptions.setLayout(new BorderLayout());
-		JPanel optionsPanel = new JPanel(new GridLayout(9,1));
+		JPanel optionsPanel = new JPanel(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.HORIZONTAL;
 		optionsPanel.setBorder(new TitledBorder("Options"));
 		String[] lineThickness 	= {"1","2","3","4","5","6","7","8"};
 		String[] fillColor 		= {"34","35","36","37","38"};
@@ -120,6 +142,8 @@ public class OptionsPanel extends JPanel  {
 		axisTitleFontSizeBox.setSelectedIndex(returnIndex(fontSizeInts,axisTitleFontSize));
 		JComboBox titleFontSizeBox 	= new JComboBox(fontSize);
 		titleFontSizeBox.setSelectedIndex(returnIndex(fontSizeInts,canvas.getPad(index).getAxisFrame().getTitleFontSize()));
+		JComboBox statBoxFontSizeBox 	= new JComboBox(fontSize);
+		statBoxFontSizeBox.setSelectedIndex(returnIndex(fontSizeInts,canvas.getPad(index).getPad().getStatBoxFontSize()));
 
 		fontsBox.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
@@ -128,6 +152,7 @@ public class OptionsPanel extends JPanel  {
 				canvas.getPad(index).getAxisX().setTitleFontName(systemFonts.get(fontsBox.getSelectedIndex()));
 				canvas.getPad(index).getAxisY().setTitleFontName(systemFonts.get(fontsBox.getSelectedIndex()));
 				canvas.getPad(index).getAxisFrame().setTitleFontName(systemFonts.get(fontsBox.getSelectedIndex()));
+				canvas.getPad(index).getPad().setStatBoxFontName(systemFonts.get(fontsBox.getSelectedIndex()));
 				canvas.update();
 			}
 		});
@@ -155,18 +180,26 @@ public class OptionsPanel extends JPanel  {
 				canvas.update();
 			}
 		});
+		
+		statBoxFontSizeBox.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				canvas.getPad(index).getPad().setStatBoxFontSize(fontSizeInts[statBoxFontSizeBox.getSelectedIndex()]);
+				canvas.update();
+			}
+		});
 		//JComboBox fillColorBox = new JComboBox(fillColor);
 		
 		//JLabel lineWidthLabel = new JLabel("Line Width");
-		JLabel fontLabel 	= new JLabel("Font:");
-		JLabel axisFontSizeLabel 	= new JLabel("Axis Label Font Size:");
+		JLabel fontLabel 	            = new JLabel("Font:");
+		JLabel axisFontSizeLabel     	= new JLabel("Axis Label Font Size:");
 		JLabel axisTitleFontSizeLabel 	= new JLabel("Axis Title Font Size:");
-		JLabel titleFontSizeLabel 	= new JLabel("Title Font Size:");
+		JLabel titleFontSizeLabel 	    = new JLabel("Title Font Size:");
+		JLabel statBoxFontSizeLabel 	= new JLabel("Stat Box Font Size:");
 
 		
 		JLabel xAxisTitleLabel = new JLabel("X Axis Title:");
 		JLabel yAxisTitleLabel = new JLabel("Y Axis Title:");
-		JLabel titleLabel = new JLabel("Title:");
+		JLabel titleLabel      = new JLabel("Title:");
 
 		JTextField xAxisTextField 	= new JTextField(canvas.getPad(index).getAxisX().getTitleString());
 		JTextField yAxisTextField 	= new JTextField(canvas.getPad(index).getAxisY().getTitleString());
@@ -220,6 +253,42 @@ public class OptionsPanel extends JPanel  {
 		gridPanel.add(xGridBox);
 		gridPanel.add(yGridBox);
 	
+		
+		
+		/*
+		JPanel logPanel = new JPanel(new GridLayout(1,3));
+		JCheckBox xLogBox = new JCheckBox("Log X");
+		xLogBox.setSelected(canvas.getPad(index).getLogX());
+		xLogBox.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				canvas.getPad(index).setLogX(xLogBox.isSelected());
+				canvas.update();
+			}
+		});
+		JCheckBox yLogBox = new JCheckBox("Log Y");
+		yLogBox.setSelected(canvas.getPad(index).getLogY());
+		yLogBox.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				canvas.getPad(index).setLogY(yLogBox.isSelected());
+				canvas.update();
+			}
+		});
+		
+		JCheckBox zLogBox = new JCheckBox("Log Z");
+		zLogBox.setSelected(canvas.getPad(index).getLogZ());
+		zLogBox.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				canvas.getPad(index).setLogZ(xLogBox.isSelected());
+				canvas.update();
+			}
+		});
+		
+		logPanel.add(xLogBox);
+		logPanel.add(yLogBox);
+		logPanel.add(zLogBox);
+
+		*/
+		
 		JPanel applyToAllPanel = new JPanel(new BorderLayout());
 		String[] applyToAllOptions = {"Font","Title Font Size","Axis Title Font Size","Axis Label Font Size","Title","X Axis Title","Y Axis Title","Grid X","Grid Y","Range X","Range Y"};
 		boolean[] applyToAllDefaults = {true,true,true,true,false,false,false,true,true,false,false};
@@ -241,6 +310,8 @@ public class OptionsPanel extends JPanel  {
 						canvas.getPad(i).getAxisX().setTitleFontName(systemFonts.get(fontsBox.getSelectedIndex()));
 						canvas.getPad(i).getAxisY().setTitleFontName(systemFonts.get(fontsBox.getSelectedIndex()));
 						canvas.getPad(i).getAxisFrame().setTitleFontName(systemFonts.get(fontsBox.getSelectedIndex()));
+						canvas.getPad(i).getPad().setStatBoxFontName(systemFonts.get(fontsBox.getSelectedIndex()));
+
 					} 
 					if(applyToAllCheckBoxes[1].isSelected()){
 						canvas.getPad(i).getAxisFrame().setTitleFontSize(fontSizeInts[titleFontSizeBox.getSelectedIndex()]);
@@ -284,6 +355,39 @@ public class OptionsPanel extends JPanel  {
 		applyToAllPanel.add(applyToAllComboCheckBox,BorderLayout.WEST);
 		applyToAllPanel.add(applyToAllButton,BorderLayout.EAST);
 		
+		int yGrid = 0;
+		c.gridy = yGrid++;
+		optionsPanel.add(fontLabel,c);
+		optionsPanel.add(fontsBox,c);
+		c.gridy = yGrid++;
+		optionsPanel.add(titleFontSizeLabel,c);
+		optionsPanel.add(titleFontSizeBox,c);
+		c.gridy = yGrid++;
+		optionsPanel.add(axisTitleFontSizeLabel,c);
+		optionsPanel.add(axisTitleFontSizeBox,c);
+		c.gridy = yGrid++;	
+		optionsPanel.add(axisFontSizeLabel,c);
+		optionsPanel.add(axisFontSizeBox,c);
+		c.gridy = yGrid++;
+		optionsPanel.add(statBoxFontSizeLabel,c);
+		optionsPanel.add(statBoxFontSizeBox,c);
+		c.gridy = yGrid++;
+		optionsPanel.add(titleLabel,c);
+		optionsPanel.add(titleTextField,c);
+		c.gridy = yGrid++;
+		optionsPanel.add(titleLabel,c);
+		optionsPanel.add(titleTextField,c);
+		c.gridy = yGrid++;
+		optionsPanel.add(xAxisTitleLabel,c);
+		optionsPanel.add(xAxisTextField,c);
+		c.gridy = yGrid++;
+		optionsPanel.add(yAxisTitleLabel,c);
+		optionsPanel.add(yAxisTextField,c);
+		c.gridy = yGrid++;
+		optionsPanel.add(xGridBox,c);
+		optionsPanel.add(yGridBox,c);
+		
+		/*
 		JPanel fontsPanel = new JPanel(new BorderLayout());
 		fontsPanel.add(fontLabel,BorderLayout.WEST);
 		fontsPanel.add(fontsBox,BorderLayout.EAST);
@@ -300,6 +404,10 @@ public class OptionsPanel extends JPanel  {
 		axisLabelPanel.add(axisFontSizeLabel,BorderLayout.WEST);
 		axisLabelPanel.add(axisFontSizeBox,BorderLayout.EAST);
 		optionsPanel.add(axisLabelPanel);
+		JPanel statTitleSizePanel = new JPanel(new BorderLayout());
+		statTitleSizePanel.add(statBoxFontSizeLabel,BorderLayout.WEST);
+		statTitleSizePanel.add(statBoxFontSizeBox,BorderLayout.EAST);
+		optionsPanel.add(statTitleSizePanel);
 		JPanel titleTextFieldPanel = new JPanel(new GridLayout(1,2));
 		titleTextFieldPanel.add(titleLabel);
 		titleTextFieldPanel.add(titleTextField);
@@ -314,7 +422,9 @@ public class OptionsPanel extends JPanel  {
 		optionsPanel.add(yAxisTextFieldPanel);
 
 		optionsPanel.add(gridPanel,BorderLayout.EAST);
+		//optionsPanel.add(logPanel,BorderLayout.EAST);
 		optionsPanel.add(applyToAllPanel,BorderLayout.EAST);
+		*/
 
 		//optionsPanel.add(fillColorLabel);
 		//optionsPanel.add(fillColorBox);
@@ -391,9 +501,11 @@ public class OptionsPanel extends JPanel  {
 		ArrayList<JComboBox> lineColorBoxes = new ArrayList<JComboBox>();
 		ArrayList<JComboBox> lineAlphaBoxes = new ArrayList<JComboBox>();
 		ArrayList<JComboBox> lineStyleBoxes = new ArrayList<JComboBox>();
-
+		ArrayList<JButton>   removeButtons = new ArrayList<JButton>();
 		for(int i=0; i<dataSetPanels.size();i++){
-			dataSetPanels.get(i).setLayout(new GridLayout(6,1));
+			dataSetPanels.get(i).setLayout(new GridBagLayout());
+			GridBagConstraints c = new GridBagConstraints();
+	        c.fill = GridBagConstraints.HORIZONTAL;
 			dataSetPanels.get(i).setBorder(new TitledBorder("Data Options"));
 			String[] lineThickness = {"1","2","3","4","5","6","7","8","9"};
 			int[] lineThicknessInts = {1,2,3,4,5,6,7,8,9};
@@ -521,6 +633,22 @@ public class OptionsPanel extends JPanel  {
 					canvas.update();
 				}
 			});
+			removeButtons.add(new JButton("Remove Dataset"));
+			removeButtons.get(i).addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e){
+					for(int j=0; j<removeButtons.size(); j++){
+						if(removeButtons.get(j).equals(e.getSource())){
+							canvas.getPad(index).getPad().remove(datasets.get(j));
+							int tabSelectionIndex = tabbedPane.getSelectedIndex();
+							tabbedPane.setSelectedIndex(tabSelectionIndex-1);
+							tabbedPane.remove(tabSelectionIndex);
+							tabbedPane.repaint();
+							dataSetPanels.remove(j);
+						}
+					}
+					canvas.update();
+				}
+			});
 
 			JLabel lineWidthLabel = new JLabel("Line Width:");
 			JLabel  lineColorLabel = new JLabel("Line Color:");
@@ -528,19 +656,27 @@ public class OptionsPanel extends JPanel  {
 			JLabel  fillColorLabel = new JLabel("Fill Color:");
 			JLabel  fillAlphaLabel = new JLabel("Fill Alpha:");
 			JLabel lineStyleLabel =  new JLabel("Line Style:");
-			
-			dataSetPanels.get(i).add(lineWidthLabel);
-			dataSetPanels.get(i).add(lineWidthBoxes.get(i));
-			dataSetPanels.get(i).add(lineStyleLabel);
-			dataSetPanels.get(i).add(lineStyleBoxes.get(i));
-			dataSetPanels.get(i).add(lineColorLabel);
-			dataSetPanels.get(i).add(lineColorBoxes.get(i));
-			dataSetPanels.get(i).add(lineAlphaLabel);
-			dataSetPanels.get(i).add(lineAlphaBoxes.get(i));
-			dataSetPanels.get(i).add(fillColorLabel);
-			dataSetPanels.get(i).add(fillColorBoxes.get(i));
-			dataSetPanels.get(i).add(fillAlphaLabel);
-			dataSetPanels.get(i).add(fillAlphaBoxes.get(i));
+			int line = 0;
+			c.gridy = line++; 
+			dataSetPanels.get(i).add(lineWidthLabel,c);
+			dataSetPanels.get(i).add(lineWidthBoxes.get(i),c);
+			c.gridy = line++; 
+			dataSetPanels.get(i).add(lineStyleLabel,c);
+			dataSetPanels.get(i).add(lineStyleBoxes.get(i),c);
+			c.gridy = line++; 
+			dataSetPanels.get(i).add(lineColorLabel,c);
+			dataSetPanels.get(i).add(lineColorBoxes.get(i),c);
+			c.gridy = line++; 
+			dataSetPanels.get(i).add(lineAlphaLabel,c);
+			dataSetPanels.get(i).add(lineAlphaBoxes.get(i),c);
+			c.gridy = line++; 
+			dataSetPanels.get(i).add(fillColorLabel,c);
+			dataSetPanels.get(i).add(fillColorBoxes.get(i),c);
+			c.gridy = line++; 
+			dataSetPanels.get(i).add(fillAlphaLabel,c);
+			dataSetPanels.get(i).add(fillAlphaBoxes.get(i),c);
+			c.gridy = line++; 
+			dataSetPanels.get(i).add(removeButtons.get(i),c);
 		}
 		
 	}

@@ -68,6 +68,40 @@ public class EmbeddedPad extends JPanel {
         return this.dataSetFrame;
     }
     
+    
+    public void setLogX(boolean logFlag){
+        this.dataSetFrame.getAxisFrame().getAxisX().setLog(logFlag);
+    }
+    
+    public void setLogY(boolean logFlag){
+    	this.dataSetFrame.getAxisFrame().getAxisY().setLog(logFlag);
+    }
+    
+    public void setLogZ(boolean logFlag){
+    	this.dataSetFrame.getAxisFrame().getAxisZ().setLog(logFlag);
+    }
+    
+    
+    
+    public boolean getLogX(){
+       return this.dataSetFrame.getAxisFrame().getAxisX().isLog();
+    }
+    
+    public boolean getLogY(){
+        return this.dataSetFrame.getAxisFrame().getAxisY().isLog();
+    }
+    
+    public boolean getLogZ(){
+        return this.dataSetFrame.getAxisFrame().getAxisZ().isLog();
+    }
+    
+    
+    
+    
+    
+    
+    
+    
     public void draw(IDataSet ds, String options){
         this.dataSetFrame.add(ds, options);
         this.repaint();
@@ -87,9 +121,9 @@ public class EmbeddedPad extends JPanel {
         this.dataSetFrame.getAxisFrame().getAxisY().setTitleSize(size);
     }
     
-    public void setLogZ(boolean flag){
+   /* public void setLogZ(boolean flag){
         this.dataSetFrame.getAxisFrame().getAxisZ().setLog(flag);
-    }
+    }*/
     
     public void setTitleSize(int size){
         this.dataSetFrame.getAxisFrame().setTitleFontSize(size);

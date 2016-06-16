@@ -28,6 +28,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
+
+import org.root.base.DataSetCollection;
 import org.root.base.IDataSet;
 import org.root.func.F1D;
 import org.root.histogram.H1D;
@@ -439,16 +441,19 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
     	boolean gridy = this.getPad(pad).getAxisFrame().getGridY();
 
 
-		for(int i = 0; i < ndataset; i++){
-			IDataSet ds = this.getPad(pad).getDataSet(i);
+		//for(int i = 0; i < ndataset; i++){
+			
+			DataSetCollection collection = this.getPad(pad).dataSetFrame.getCollection();
+			/*IDataSet ds = this.getPad(pad).getDataSet(i);
 			String name = ds.getName();
 			datasets.add(ds);
 			if(i>0){
 				temp.draw(ds,"same");
 			}else{
 				temp.draw(ds);
-			}
-		}
+			}*/
+			temp.getPad().dataSetFrame.setCollection(collection);
+		//}
 		
 		temp.getPad(0).setAxisRange("X",xMin,xMax);
 
