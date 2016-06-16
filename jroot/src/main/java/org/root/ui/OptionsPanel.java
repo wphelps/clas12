@@ -290,8 +290,8 @@ public class OptionsPanel extends JPanel  {
 		*/
 		
 		JPanel applyToAllPanel = new JPanel(new BorderLayout());
-		String[] applyToAllOptions = {"Font","Title Font Size","Axis Title Font Size","Axis Label Font Size","Title","X Axis Title","Y Axis Title","Grid X","Grid Y","Range X","Range Y"};
-		boolean[] applyToAllDefaults = {true,true,true,true,false,false,false,true,true,false,false};
+		String[] applyToAllOptions = {"Font","Title Font Size","Axis Title Font Size","Axis Label Font Size","Stat Box Font Size","Title","X Axis Title","Y Axis Title","Grid X","Grid Y","Range X","Range Y"};
+		boolean[] applyToAllDefaults = {true,true,true,true,true,false,false,false,true,true,false,false};
 		applyToAllCheckBoxes = new JCheckBox[applyToAllOptions.length];
 		for(int i=0; i<applyToAllOptions.length; i++){
 			applyToAllCheckBoxes[i] = new JCheckBox(applyToAllOptions[i]);
@@ -325,26 +325,29 @@ public class OptionsPanel extends JPanel  {
 						canvas.getPad(i).getAxisY().setTitleFontSize(fontSizeInts[axisTitleFontSizeBox.getSelectedIndex()]);
 					}
 					if(applyToAllCheckBoxes[4].isSelected()){
-						canvas.getPad(i).getAxisFrame().setTitle(titleTextField.getText());
+						canvas.getPad(i).getPad().setStatBoxFontSize(fontSizeInts[statBoxFontSizeBox.getSelectedIndex()]);
 					}
 					if(applyToAllCheckBoxes[5].isSelected()){
+						canvas.getPad(i).getAxisFrame().setTitle(titleTextField.getText());
+					}
+					if(applyToAllCheckBoxes[6].isSelected()){
 						canvas.getPad(i).getAxisX().setTitle(xAxisTextField.getText());
 
 					}
-					if(applyToAllCheckBoxes[6].isSelected()){
+					if(applyToAllCheckBoxes[7].isSelected()){
 						canvas.getPad(i).getAxisY().setTitle(yAxisTextField.getText());
 					}
-					if(applyToAllCheckBoxes[7].isSelected()){
+					if(applyToAllCheckBoxes[8].isSelected()){
 						canvas.getPad(i).getAxisFrame().setGridX(xGridBox.isSelected());
 
 					}
-					if(applyToAllCheckBoxes[8].isSelected()){
+					if(applyToAllCheckBoxes[9].isSelected()){
 						canvas.getPad(i).getAxisFrame().setGridY(yGridBox.isSelected());
 					}
-					if(applyToAllCheckBoxes[9].isSelected()){
+					if(applyToAllCheckBoxes[10].isSelected()){
 						canvas.getPad(i).setAxisRange("X",xSlider.getValue() * (xMax-xMin)/(double)(xSliderMax-xSliderMin) +xMin, xSlider.getUpperValue()* (xMax-xMin)/(double)(xSliderMax-xSliderMin)+xMin);
 					}
-					if(applyToAllCheckBoxes[10].isSelected()){
+					if(applyToAllCheckBoxes[11].isSelected()){
 						canvas.getPad(i).setAxisRange("Y",ySlider.getValue() * (yMax-yMin)/(double)(ySliderMax-ySliderMin) +yMin, ySlider.getUpperValue()* (yMax-yMin)/(double)(ySliderMax-ySliderMin)+yMin);
 					}
 				}
@@ -386,7 +389,9 @@ public class OptionsPanel extends JPanel  {
 		c.gridy = yGrid++;
 		optionsPanel.add(xGridBox,c);
 		optionsPanel.add(yGridBox,c);
-		
+		c.gridy = yGrid++;
+		optionsPanel.add(applyToAllComboCheckBox,c);
+		optionsPanel.add(applyToAllButton,c);
 		/*
 		JPanel fontsPanel = new JPanel(new BorderLayout());
 		fontsPanel.add(fontLabel,BorderLayout.WEST);
