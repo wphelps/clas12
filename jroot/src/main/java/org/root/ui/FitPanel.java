@@ -11,6 +11,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Enumeration;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -487,6 +488,14 @@ public class FitPanel extends JPanel {
 				fitFunction.setLineStyle(1);
 				canvas.cd(index);                                
 				canvas.draw(fitFunction,"same"+drawOption);
+				/*
+				for(int i=0; i<canvas.getPad(index).getDataSetCount(); i++){
+					System.out.println("Dataset#:"+i);
+					Enumeration<?> blah = canvas.getPad(index).getDataSet(i).getAttributes().getProperties().propertyNames();
+					while(blah.hasMoreElements()){
+						System.out.println(blah.nextElement());
+					}
+				}*/
 				
 				/*
 				ArrayList<IDataSet> nonDuplicateDataset = new ArrayList<IDataSet>();

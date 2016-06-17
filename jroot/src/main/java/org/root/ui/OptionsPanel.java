@@ -30,6 +30,8 @@ import org.root.attr.TStyle;
 import org.root.base.IDataSet;
 import org.root.basic.EmbeddedCanvas;
 import org.root.basic.EmbeddedPad;
+import org.root.func.Function1D;
+import org.root.histogram.H1D;
 
 public class OptionsPanel extends JPanel  {
 	/**
@@ -507,6 +509,8 @@ public class OptionsPanel extends JPanel  {
 		ArrayList<JComboBox> lineAlphaBoxes = new ArrayList<JComboBox>();
 		ArrayList<JComboBox> lineStyleBoxes = new ArrayList<JComboBox>();
 		ArrayList<JButton>   removeButtons = new ArrayList<JButton>();
+		ArrayList<JCheckBox>     showStats = new ArrayList<JCheckBox>();
+
 		for(int i=0; i<dataSetPanels.size();i++){
 			dataSetPanels.get(i).setLayout(new GridBagLayout());
 			GridBagConstraints c = new GridBagConstraints();
@@ -537,12 +541,13 @@ public class OptionsPanel extends JPanel  {
 					for(int j=0; j<lineWidthBoxes.size(); j++){
 						if(lineWidthBoxes.get(j).equals(e.getSource())){
 							//System.out.println("Dataset:"+j+"/"+datasets.size()+" line-width:"+lineThicknessInts[lineWidthBoxes.get(j).getSelectedIndex()]+" index:"+lineWidthBoxes.get(j).getSelectedIndex());
-							datasets.get(j).getAttributes().getProperties().put("line-width", lineThickness[lineWidthBoxes.get(j).getSelectedIndex()]);
+							/*datasets.get(j).getAttributes().getProperties().put("line-width", lineThickness[lineWidthBoxes.get(j).getSelectedIndex()]);
 							canvas.getPad(index).getPad().clear();
 							for(int k=0; k<datasets.size(); k++){
 								canvas.getPad(index).getPad().add(datasets.get(k),"same");
-							}
+							}*/
 							//canvas.update();
+							canvas.getPad(index).getPad().getCollection().getDataSet(j).getAttributes().getProperties().put("line-width", lineThickness[lineWidthBoxes.get(j).getSelectedIndex()]);
 						}
 					}
 					canvas.update();
@@ -555,11 +560,14 @@ public class OptionsPanel extends JPanel  {
 					for(int j=0; j<fillColorBoxes.size(); j++){
 						if(fillColorBoxes.get(j).equals(e.getSource())){
 							//System.out.println("Dataset:"+j+"/"+datasets.size()+" fill-color:"+(fillAlphaInts[fillAlphaBoxes.get(j).getSelectedIndex()]*10+fillColorInts[fillColorBoxes.get(j).getSelectedIndex()])+" alpha:"+fillAlphaInts[fillAlphaBoxes.get(j).getSelectedIndex()]*10);
-							datasets.get(j).getAttributes().getProperties().put("fill-color", ""+(fillAlphaInts[fillAlphaBoxes.get(j).getSelectedIndex()]*10+fillColorInts[fillColorBoxes.get(j).getSelectedIndex()]));
+							/*
+							 * datasets.get(j).getAttributes().getProperties().put("fill-color", ""+(fillAlphaInts[fillAlphaBoxes.get(j).getSelectedIndex()]*10+fillColorInts[fillColorBoxes.get(j).getSelectedIndex()]));
 							canvas.getPad(index).getPad().clear();
 							for(int k=0; k<datasets.size(); k++){
 								canvas.getPad(index).getPad().add(datasets.get(k),"same");
 							}
+							*/
+							canvas.getPad(index).getPad().getCollection().getDataSet(j).getAttributes().getProperties().put("fill-color", ""+(fillAlphaInts[fillAlphaBoxes.get(j).getSelectedIndex()]*10+fillColorInts[fillColorBoxes.get(j).getSelectedIndex()]));
 							//canvas.update();
 						}
 					}
@@ -572,12 +580,14 @@ public class OptionsPanel extends JPanel  {
 				public void actionPerformed(ActionEvent e){
 					for(int j=0; j<fillAlphaBoxes.size(); j++){
 						if(fillAlphaBoxes.get(j).equals(e.getSource())){
+							/*
 							System.out.println("Dataset:"+j+"/"+datasets.size()+" fill-color:"+(fillAlphaInts[fillAlphaBoxes.get(j).getSelectedIndex()]*10+fillColorInts[fillColorBoxes.get(j).getSelectedIndex()])+" alpha:"+fillAlphaInts[fillAlphaBoxes.get(j).getSelectedIndex()]*10);
 							datasets.get(j).getAttributes().getProperties().put("fill-color", ""+(fillAlphaInts[fillAlphaBoxes.get(j).getSelectedIndex()]*10+fillColorInts[fillColorBoxes.get(j).getSelectedIndex()]));
 							canvas.getPad(index).getPad().clear();
 							for(int k=0; k<datasets.size(); k++){
 								canvas.getPad(index).getPad().add(datasets.get(k),"same");
-							}
+							}*/
+							canvas.getPad(index).getPad().getCollection().getDataSet(j).getAttributes().getProperties().put("fill-color", ""+(fillAlphaInts[fillAlphaBoxes.get(j).getSelectedIndex()]*10+fillColorInts[fillColorBoxes.get(j).getSelectedIndex()]));
 							//canvas.update();
 						}
 					}
@@ -591,11 +601,12 @@ public class OptionsPanel extends JPanel  {
 					for(int j=0; j<lineColorBoxes.size(); j++){
 						if(lineColorBoxes.get(j).equals(e.getSource())){
 							//System.out.println("Dataset:"+j+"/"+datasets.size()+" fill-color:"+(fillAlphaInts[fillAlphaBoxes.get(j).getSelectedIndex()]*10+fillColorInts[fillColorBoxes.get(j).getSelectedIndex()])+" alpha:"+fillAlphaInts[fillAlphaBoxes.get(j).getSelectedIndex()]*10);
-							datasets.get(j).getAttributes().getProperties().put("line-color", ""+(fillAlphaInts[lineAlphaBoxes.get(j).getSelectedIndex()]*10+fillColorInts[lineColorBoxes.get(j).getSelectedIndex()]));
+							/*datasets.get(j).getAttributes().getProperties().put("line-color", ""+(fillAlphaInts[lineAlphaBoxes.get(j).getSelectedIndex()]*10+fillColorInts[lineColorBoxes.get(j).getSelectedIndex()]));
 							canvas.getPad(index).getPad().clear();
 							for(int k=0; k<datasets.size(); k++){
 								canvas.getPad(index).getPad().add(datasets.get(k),"same");
-							}
+							}*/
+							canvas.getPad(index).getPad().getCollection().getDataSet(j).getAttributes().getProperties().put("line-color", ""+(fillAlphaInts[lineAlphaBoxes.get(j).getSelectedIndex()]*10+fillColorInts[lineColorBoxes.get(j).getSelectedIndex()]));
 							//canvas.update();
 						}
 					}
@@ -609,11 +620,13 @@ public class OptionsPanel extends JPanel  {
 					for(int j=0; j<lineAlphaBoxes.size(); j++){
 						if(lineAlphaBoxes.get(j).equals(e.getSource())){
 							//System.out.println("Dataset:"+j+"/"+datasets.size()+" fill-color:"+(fillAlphaInts[fillAlphaBoxes.get(j).getSelectedIndex()]*10+fillColorInts[fillColorBoxes.get(j).getSelectedIndex()])+" alpha:"+fillAlphaInts[fillAlphaBoxes.get(j).getSelectedIndex()]*10);
+							/*
 							datasets.get(j).getAttributes().getProperties().put("line-color", ""+(fillAlphaInts[lineAlphaBoxes.get(j).getSelectedIndex()]*10+fillColorInts[lineColorBoxes.get(j).getSelectedIndex()]));
 							canvas.getPad(index).getPad().clear();
 							for(int k=0; k<datasets.size(); k++){
 								canvas.getPad(index).getPad().add(datasets.get(k),"same");
-							}
+							}*/
+							canvas.getPad(index).getPad().getCollection().getDataSet(j).getAttributes().getProperties().put("line-color", ""+(fillAlphaInts[lineAlphaBoxes.get(j).getSelectedIndex()]*10+fillColorInts[lineColorBoxes.get(j).getSelectedIndex()]));
 							//canvas.update();
 						}
 					}
@@ -626,12 +639,13 @@ public class OptionsPanel extends JPanel  {
 				public void actionPerformed(ActionEvent e){
 					for(int j=0; j<lineStyleBoxes.size(); j++){
 						if(lineStyleBoxes.get(j).equals(e.getSource())){
-							//System.out.println("Dataset:"+j+"/"+datasets.size()+" line-width:"+lineStyle[lineStyleBoxes.get(j).getSelectedIndex()]+" index:"+lineStyleBoxes.get(j).getSelectedIndex());
-							datasets.get(j).getAttributes().getProperties().put("line-style", lineStyle[lineStyleBoxes.get(j).getSelectedIndex()]);
-							canvas.getPad(index).getPad().clear();
-							for(int k=0; k<datasets.size(); k++){
-								canvas.getPad(index).getPad().add(datasets.get(k),"same");
-							}
+							//System.out.println("BLAH Dataset:"+j+"/"+datasets.size()+" line-width:"+lineStyle[lineStyleBoxes.get(j).getSelectedIndex()]+" index:"+lineStyleBoxes.get(j).getSelectedIndex());
+							//datasets.get(j).getAttributes().getProperties().put("line-style", lineStyle[lineStyleBoxes.get(j).getSelectedIndex()]);
+							//canvas.getPad(index).getPad().clear();
+							canvas.getPad(index).getPad().getCollection().getDataSet(j).getAttributes().getProperties().put("line-style", lineStyle[lineStyleBoxes.get(j).getSelectedIndex()]);
+							//for(int k=0; k<datasets.size(); k++){
+						//		canvas.getPad(index).getPad().add(datasets.get(k),"same");
+							//}
 							//canvas.update();
 						}
 					}
@@ -654,32 +668,69 @@ public class OptionsPanel extends JPanel  {
 					canvas.update();
 				}
 			});
+			
+			showStats.add(new JCheckBox());
+			showStats.get(i).setSelected(canvas.getPad(index).getPad().getCollection().getDataSetOption(i).contains("S"));
+			showStats.get(i).addActionListener(new ActionListener(){
+				public void actionPerformed(ActionEvent e){
+					for(int j=0; j<showStats.size(); j++){
+						if(showStats.get(j).equals(e.getSource())){
+							String drawOptions = canvas.getPad(index).getPad().getCollection().getDataSetOption(j);
+							if(showStats.get(j).isSelected()){
+								canvas.getPad(index).getPad().getCollection().setDataSetOption(j, drawOptions+"S");
+							}else{
+								canvas.getPad(index).getPad().getCollection().setDataSetOption(j, drawOptions.replace("S", ""));
 
+							}
+						}
+					}
+					canvas.update();
+				}
+			});
 			JLabel lineWidthLabel = new JLabel("Line Width:");
 			JLabel  lineColorLabel = new JLabel("Line Color:");
 			JLabel  lineAlphaLabel = new JLabel("Line Alpha:");
 			JLabel  fillColorLabel = new JLabel("Fill Color:");
 			JLabel  fillAlphaLabel = new JLabel("Fill Alpha:");
 			JLabel lineStyleLabel =  new JLabel("Line Style:");
+			
+			boolean[] showOptions = {true,true,true,true};
+			if(datasets.get(i) instanceof Function1D){
+				showOptions[3] = false;
+			}
+			if(datasets.get(i) instanceof H1D){
+				showOptions[1] = false;
+			}
 			int line = 0;
+			if(showOptions[0]){
+				c.gridy = line++; 
+				dataSetPanels.get(i).add(lineWidthLabel,c);
+				dataSetPanels.get(i).add(lineWidthBoxes.get(i),c);
+			}
+			if(showOptions[1]){
+				c.gridy = line++; 
+				dataSetPanels.get(i).add(lineStyleLabel,c);
+				dataSetPanels.get(i).add(lineStyleBoxes.get(i),c);
+			}
+			if(showOptions[2]){
+				c.gridy = line++; 
+				dataSetPanels.get(i).add(lineColorLabel,c);
+				dataSetPanels.get(i).add(lineColorBoxes.get(i),c);
+				c.gridy = line++; 
+				dataSetPanels.get(i).add(lineAlphaLabel,c);
+				dataSetPanels.get(i).add(lineAlphaBoxes.get(i),c);
+			}
+			if(showOptions[3]){
+				c.gridy = line++; 
+				dataSetPanels.get(i).add(fillColorLabel,c);
+				dataSetPanels.get(i).add(fillColorBoxes.get(i),c);
+				c.gridy = line++; 
+				dataSetPanels.get(i).add(fillAlphaLabel,c);
+				dataSetPanels.get(i).add(fillAlphaBoxes.get(i),c);
+			}
 			c.gridy = line++; 
-			dataSetPanels.get(i).add(lineWidthLabel,c);
-			dataSetPanels.get(i).add(lineWidthBoxes.get(i),c);
-			c.gridy = line++; 
-			dataSetPanels.get(i).add(lineStyleLabel,c);
-			dataSetPanels.get(i).add(lineStyleBoxes.get(i),c);
-			c.gridy = line++; 
-			dataSetPanels.get(i).add(lineColorLabel,c);
-			dataSetPanels.get(i).add(lineColorBoxes.get(i),c);
-			c.gridy = line++; 
-			dataSetPanels.get(i).add(lineAlphaLabel,c);
-			dataSetPanels.get(i).add(lineAlphaBoxes.get(i),c);
-			c.gridy = line++; 
-			dataSetPanels.get(i).add(fillColorLabel,c);
-			dataSetPanels.get(i).add(fillColorBoxes.get(i),c);
-			c.gridy = line++; 
-			dataSetPanels.get(i).add(fillAlphaLabel,c);
-			dataSetPanels.get(i).add(fillAlphaBoxes.get(i),c);
+			dataSetPanels.get(i).add(new JLabel("Show Stats:"),c);
+			dataSetPanels.get(i).add(showStats.get(i),c);
 			c.gridy = line++; 
 			dataSetPanels.get(i).add(removeButtons.get(i),c);
 		}
