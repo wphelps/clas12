@@ -438,7 +438,9 @@ public class OptionsPanel extends JPanel  {
 
 		axisOptions.add(optionsPanel, BorderLayout.PAGE_START);
 
-		JPanel rangePanel = new JPanel(new GridLayout(2,1));
+		JPanel rangePanel = new JPanel(new GridBagLayout());
+		GridBagConstraints rangeConstraints = new GridBagConstraints();
+		rangeConstraints.fill = GridBagConstraints.HORIZONTAL;
 		JPanel xRangePanel =new JPanel(new FlowLayout());
 		JPanel yRangePanel =new JPanel(new FlowLayout());
 
@@ -453,17 +455,17 @@ public class OptionsPanel extends JPanel  {
 		xSlider.setMaximum(xSliderMax);
 		xSlider.setValue(xSliderMin);
 		xSlider.setUpperValue(xSliderMax);
-		
-		xRangePanel.add(xAxisLabel);
-		xRangePanel.add(xrangeSliderValue1);
-		xRangePanel.add(xSlider);
-		xRangePanel.add(xrangeSliderValue2);
+		rangeConstraints.gridy=0;
+		rangePanel.add(xAxisLabel,rangeConstraints);
+		rangePanel.add(xrangeSliderValue1,rangeConstraints);
+		rangePanel.add(xSlider,rangeConstraints);
+		rangePanel.add(xrangeSliderValue2,rangeConstraints);
 		
 		xSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				RangeSlider slider = (RangeSlider) e.getSource();
-				xrangeSliderValue1.setText(String.valueOf(""+String.format("%4.2f",slider.getValue() * (xMax-xMin)/(double)(xSliderMax-xSliderMin))));
-				xrangeSliderValue2.setText(String.valueOf(""+String.format("%4.2f",slider.getUpperValue() *(xMax-xMin)/(double)(xSliderMax-xSliderMin))));
+				xrangeSliderValue1.setText(String.valueOf(""+String.format("%4.2f",slider.getValue() * (xMax-xMin)/(double)(xSliderMax-xSliderMin)+xMin)));
+				xrangeSliderValue2.setText(String.valueOf(""+String.format("%4.2f",slider.getUpperValue() *(xMax-xMin)/(double)(xSliderMax-xSliderMin)+xMin)));
 				canvas.getPad(index).setAxisRange("X",slider.getValue() * (xMax-xMin)/(double)(xSliderMax-xSliderMin)+xMin , slider.getUpperValue()* (xMax-xMin)/(double)(xSliderMax-xSliderMin)+xMin);
 				//canvas.repaint();
 				canvas.update();
@@ -479,25 +481,25 @@ public class OptionsPanel extends JPanel  {
 		ySlider.setMaximum(ySliderMax);
 		ySlider.setValue(ySliderMin);
 		ySlider.setUpperValue(ySliderMax);
-		
-		yRangePanel.add(yAxisLabel);
-		yRangePanel.add(yrangeSliderValue1);
-		yRangePanel.add(ySlider);
-		yRangePanel.add(yrangeSliderValue2);
+		rangeConstraints.gridy=1;
+		rangePanel.add(yAxisLabel,rangeConstraints);
+		rangePanel.add(yrangeSliderValue1,rangeConstraints);
+		rangePanel.add(ySlider,rangeConstraints);
+		rangePanel.add(yrangeSliderValue2,rangeConstraints);
 		
 		ySlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				RangeSlider slider = (RangeSlider) e.getSource();
-				yrangeSliderValue1.setText(String.valueOf(""+String.format("%4.2f",slider.getValue() * (yMax-yMin)/(double)(ySliderMax-ySliderMin))));
-				yrangeSliderValue2.setText(String.valueOf(""+String.format("%4.2f",slider.getUpperValue() *(yMax-yMin)/(double)(ySliderMax-ySliderMin))));
+				yrangeSliderValue1.setText(String.valueOf(""+String.format("%4.2f",slider.getValue() * (yMax-yMin)/(double)(ySliderMax-ySliderMin)+yMin)));
+				yrangeSliderValue2.setText(String.valueOf(""+String.format("%4.2f",slider.getUpperValue() *(yMax-yMin)/(double)(ySliderMax-ySliderMin)+yMin)));
 				canvas.getPad(index).setAxisRange("Y",slider.getValue() * (yMax-yMin)/(double)(ySliderMax-ySliderMin)+yMin , slider.getUpperValue()* (yMax-yMin)/(double)(ySliderMax-ySliderMin)+yMin);
 				//canvas.repaint();
 				canvas.update();
 			}
 		});
 		
-		rangePanel.add(xRangePanel);
-		rangePanel.add(yRangePanel);
+		//rangePanel.add(xRangePanel);
+		//rangePanel.add(yRangePanel);
 		axisOptions.add(rangePanel, BorderLayout.PAGE_END);
 	}
 	
