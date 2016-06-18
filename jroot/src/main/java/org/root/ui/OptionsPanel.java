@@ -1,6 +1,7 @@
 package org.root.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -9,6 +10,8 @@ import java.awt.GridLayout;
 import java.util.List;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
@@ -39,6 +42,7 @@ public class OptionsPanel extends JPanel  {
 	 */
 	private static final long serialVersionUID = 1L;
 	JPanel axisOptions = new JPanel();
+	JPanel frameOptions = new JPanel();
 	ArrayList<JPanel> dataSetPanels = new ArrayList<JPanel>();
 	ArrayList<String> dataSetNames = new ArrayList<String>();
 	ArrayList<IDataSet> datasets = new ArrayList<IDataSet>();
@@ -87,6 +91,99 @@ public class OptionsPanel extends JPanel  {
 		initDatasetOptions();
 		initAxisOptions();
 		initTabbedPanes();
+		initFrameOptions();
+	}
+
+	private void initFrameOptions() {
+		frameOptions.setBorder(new TitledBorder("Frame Options"));
+		frameOptions.setLayout(new GridBagLayout());
+		GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.HORIZONTAL;
+      
+        JTextField xPixels = new JTextField();
+        JTextField yPixels = new JTextField();
+        JTextField ratio = new JTextField();
+        JCheckBox lockRatio = new JCheckBox("Lock Ratio");
+        double width = canvas.getSize().getWidth();
+        double height = canvas.getSize().getHeight();
+        xPixels.setText(String.format("%d",(int) width));
+        yPixels.setText(String.format("%d",(int) height));
+        ratio.setText(String.format("%.02f",width/height));
+        c.gridy = 0;
+        frameOptions.add(new JLabel("Width:"), c);
+        frameOptions.add(xPixels, c);        
+        frameOptions.add(new JLabel("Height:"), c);
+        frameOptions.add(yPixels, c);
+        xPixels.addActionListener(new ActionListener(){
+        	public void actionPerformed(ActionEvent e){
+        		canvas.setPreferredSize(new Dimension(Integer.parseInt(xPixels.getText()),Integer.parseInt(yPixels.getText())));
+        		canvas.setSize(Integer.parseInt(xPixels.getText()),Integer.parseInt(yPixels.getText()));
+        		  double width = canvas.getSize().getWidth();
+        	        double height = canvas.getSize().getHeight();
+        	        xPixels.setText(String.format("%d",(int)width));
+        	        yPixels.setText(String.format("%d",(int)height));
+        	        ratio.setText(String.format("%.02f",width/height));
+        	        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(canvas);
+        	        topFrame.pack(); 
+        	        canvas.update();
+        	}
+        });
+        
+        yPixels.addActionListener(new ActionListener(){
+        	public void actionPerformed(ActionEvent e){
+        		canvas.setPreferredSize(new Dimension(Integer.parseInt(xPixels.getText()),Integer.parseInt(yPixels.getText())));
+        		canvas.setSize(Integer.parseInt(xPixels.getText()),Integer.parseInt(yPixels.getText()));
+        		  double width = canvas.getSize().getWidth();
+        	        double height = canvas.getSize().getHeight();
+        	        xPixels.setText(String.format("%d",(int)width));
+        	        yPixels.setText(String.format("%d",(int)height));
+        	        ratio.setText(String.format("%.02f",width/height));
+        	        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(canvas);
+        	        topFrame.pack();  
+        	        canvas.update();
+        	}
+        });
+        c.gridy = 2;
+        frameOptions.add(new JLabel("Aspect Ratio:"), c);
+        frameOptions.add(ratio, c);
+        frameOptions.add(lockRatio, c);
+        canvas.addComponentListener(new ComponentListener(){
+			@Override
+			public void componentResized(ComponentEvent e){
+        		  	double width = canvas.getSize().getWidth();
+        	        double height = canvas.getSize().getHeight();
+        	        xPixels.setText(String.format("%d",(int)width));
+        	        yPixels.setText(String.format("%d",(int)height));
+        	        ratio.setText(String.format("%.02f",width/height));
+        	       // canvas.setPreferredSize(new Dimension(Integer.parseInt(xPixels.getText()),Integer.parseInt(yPixels.getText())));
+            		//canvas.setSize(Integer.parseInt(xPixels.getText()),Integer.parseInt(yPixels.getText()));
+        	        //JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(canvas);
+        	        //topFrame.pack(); 
+        	        canvas.update();
+        	    
+        	}
+
+			@Override
+			public void componentMoved(ComponentEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void componentShown(ComponentEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void componentHidden(ComponentEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+        });
+        
+        axisOptions.add(frameOptions,BorderLayout.CENTER);
 	}
 
 	private void initTabbedPanes() {
@@ -106,8 +203,8 @@ public class OptionsPanel extends JPanel  {
 		        if(tabbedPane.getSelectedIndex()!=0){
 		        	tabbedPane.setComponentAt(0, blankPanel);
 		        }
-		        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(tabbedPane);
-				topFrame.pack();  
+			        JFrame topFrame = (JFrame) SwingUtilities.getWindowAncestor(tabbedPane);
+					topFrame.pack();  
 		    }   
 		});
 		this.add(tabbedPane);
@@ -456,9 +553,12 @@ public class OptionsPanel extends JPanel  {
 		xSlider.setValue(xSliderMin);
 		xSlider.setUpperValue(xSliderMax);
 		rangeConstraints.gridy=0;
+		//rangeConstraints.weightx = 0.5;
 		rangePanel.add(xAxisLabel,rangeConstraints);
 		rangePanel.add(xrangeSliderValue1,rangeConstraints);
+		//rangeConstraints.weightx = 0.0;
 		rangePanel.add(xSlider,rangeConstraints);
+		//rangeConstraints.weightx = 0.5;
 		rangePanel.add(xrangeSliderValue2,rangeConstraints);
 		
 		xSlider.addChangeListener(new ChangeListener() {
@@ -482,8 +582,10 @@ public class OptionsPanel extends JPanel  {
 		ySlider.setValue(ySliderMin);
 		ySlider.setUpperValue(ySliderMax);
 		rangeConstraints.gridy=1;
+		//rangeConstraints.weightx = 0.5;
 		rangePanel.add(yAxisLabel,rangeConstraints);
 		rangePanel.add(yrangeSliderValue1,rangeConstraints);
+		//rangeConstraints.weightx = 0.0;
 		rangePanel.add(ySlider,rangeConstraints);
 		rangePanel.add(yrangeSliderValue2,rangeConstraints);
 		
