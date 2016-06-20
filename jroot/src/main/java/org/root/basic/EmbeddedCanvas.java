@@ -6,10 +6,13 @@
 package org.root.basic;
 
 import java.awt.BorderLayout;
+import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,10 +20,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
@@ -28,6 +36,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
+import javax.swing.border.Border;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import org.root.base.DataSetCollection;
 import org.root.base.IDataSet;
 import org.root.func.F1D;
 import org.root.histogram.H1D;
@@ -49,9 +62,9 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
     private  int                     canvas_ROWS    = 1;
     private  Integer                     currentPad = 0;
     private  JPopupMenu                       popup = null;
-    private  int                       popupPad     = -1;
-    private   ArrayList<F1D>  registeredUserFunctions = new  ArrayList<F1D>();
-
+    private  int                           popupPad = -1;
+    private  ArrayList<F1D> registeredUserFunctions = new  ArrayList<F1D>();
+    private  ArrayList<Integer>        selectedPads = new ArrayList<Integer>();
     public EmbeddedCanvas(){
      super();
      this.setPreferredSize(new Dimension(500,500));
@@ -204,6 +217,12 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         return this.canvasPads.get(index);
     }
     
+    public void selectPad(int index){
+    	selectedPads.add(index);
+    	((JPanel)this.getPad(index).getComponent(0)).setBorder(BorderFactory.createLineBorder(Color.red));
+    	System.out.println("Panel selected:"+index + " Component Count"+this.getPad(index).getComponentCount());
+    }
+    
     public void setDivisionsX(int div){
         //this.getPad().setDivisionsX(div);
     }
@@ -283,22 +302,48 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
     }
     
     public void copyToClipboard(){
-    	/* try
-         {
-    		BufferedImage bi = getScreenShot(index);
-            //Transferable blah = new Transferable(bi);
-    		
-    		Toolkit.getDefaultToolkit().getSystemClipboard().setContents( blah, null );
-         }
-         catch ( Exception x ) {
-             x.printStackTrace();
-         }*/
-        //System.out.println("Copying image to clipboard");
-
     	TransferableImage trans = new TransferableImage( getScreenShot() );
         Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
         c.setContents( trans, null );
     }
+    
+    
+    private void copyToClipboard(int popupPad) {
+    	TransferableImage trans = new TransferableImage(getScreenShot(popupPad));
+    	trans.setDataSetCollection(this.getPad(popupPad).getPad().getCollection());
+        Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
+        c.setContents(trans, null );
+    }
+    
+    public void paste(int popup){
+        DataFlavor dmselFlavor = new DataFlavor(DataSetCollection.class, "DataSetCollection");
+
+    	Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        Transferable clipboardContent = clipboard.getContents(null);
+
+        DataFlavor[] flavors = clipboardContent.getTransferDataFlavors();
+        System.out.println("flavors.length = " + flavors.length);
+        for (int i = 0; i < flavors.length; i++){
+        	if(flavors[i].equals(dmselFlavor)){
+        		System.out.println("We have a match!");
+        		try{
+        		DataSetCollection collection = (DataSetCollection) clipboardContent.getTransferData(dmselFlavor);
+        		for(int j=0; j<collection.getCount(); j++){
+        			String options = collection.getDataSetOption(j);
+        			if(!options.contains("same")){
+        				options = "same"+options;
+        			}
+        			this.getPad(popup).getPad().add(collection.getDataSet(j),options);
+        		}
+        		this.update();
+        		}catch(Exception e){
+        			e.printStackTrace();
+        		}
+        	}
+           System.out.println("flavor[" + i + "] = " + flavors[i]);
+        }
+    }
+    
     
     public void save(String filename){
         /*int w = this.getSize().width;
@@ -329,6 +374,7 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         this.popup = new JPopupMenu();
         JMenuItem itemCopy = new JMenuItem("Copy");
         JMenuItem itemCopyPad = new JMenuItem("Copy Pad");
+        JMenuItem itemPaste = new JMenuItem("Paste Pad");
         JMenuItem itemSave = new JMenuItem("Save");
         JMenuItem itemSaveAs = new JMenuItem("Save As...");
         JMenuItem itemFitPanel = new JMenuItem("Fit Panel");
@@ -341,8 +387,10 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         itemFitPanel.addActionListener(this);
         itemOptions.addActionListener(this);
         itemOpenWindow.addActionListener(this);
+        itemPaste.addActionListener(this);
         this.popup.add(itemCopy);
         this.popup.add(itemCopyPad);
+        this.popup.add(itemPaste);
         this.popup.add(itemSave);
         this.popup.add(itemSaveAs);
         this.popup.add(new JSeparator());
@@ -369,20 +417,38 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         System.out.println("action performed " + e.getActionCommand());
         if(e.getActionCommand().compareTo("Options")==0){
-            this.openOptionsPane(popupPad);
+            this.openOptionsPanel(popupPad);
         }
         if(e.getActionCommand().compareTo("Fit Panel")==0){
-            this.openFitsPane(popupPad);
+            this.openFitPanel(popupPad);
         }
         if(e.getActionCommand().compareTo("Copy")==0){
             this.copyToClipboard();
         }
+        if(e.getActionCommand().compareTo("Paste Pad")==0){
+            this.paste(popupPad);
+        }
         if(e.getActionCommand().compareTo("Copy Pad")==0){
             this.copyToClipboard(popupPad);
         }
+        if(e.getActionCommand().compareTo("Save")==0){
+        	File desktop = new File(System.getProperty("user.home"), "Desktop");
+        	DateFormat df = new SimpleDateFormat("MM-dd-yyyy_hh.mm.ss_aa");
+        	String data = df.format(new Date());
+        	this.save(desktop.getAbsolutePath() +File.separator+"Plot_"+data+".png");
+        	System.out.println("Saved File:"+desktop.getAbsolutePath() +File.separator+"Plot_"+data+".png");
+        }
         if(e.getActionCommand().compareTo("Save As...")==0){
-            final JFileChooser fc = new JFileChooser();
-//In response to a button click:
+            final JFileChooser fc = new JFileChooser("Save As...");
+        	File desktop = new File(System.getProperty("user.home"), "Desktop");
+        	DateFormat df = new SimpleDateFormat("MM-dd-yyyy_hh.mm.ss_aa");
+        	String data = df.format(new Date());
+        	this.save(desktop.getAbsolutePath() +File.separator+"Plot_"+data+".png");
+            fc.setSelectedFile(new File(desktop.getAbsolutePath() +File.separator+"Plot_"+data+".png"));
+            FileFilter filter = new FileNameExtensionFilter("PNG File","png");
+            fc.addChoosableFileFilter(filter);
+            fc.setFileFilter(filter);
+            //In response to a button click:
             int returnVal = fc.showSaveDialog(this);
             
             if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -400,13 +466,6 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         }
         
     }
-    
-    
-    private void copyToClipboard(int popupPad) {
-    	TransferableImage trans = new TransferableImage(getScreenShot(popupPad));
-        Clipboard c = Toolkit.getDefaultToolkit().getSystemClipboard();
-        c.setContents( trans, null );
-	}
     
 	private void openInNewWindow(int pad) {
     	JFrame frame = new JFrame();
@@ -439,16 +498,19 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
     	boolean gridy = this.getPad(pad).getAxisFrame().getGridY();
 
 
-		for(int i = 0; i < ndataset; i++){
-			IDataSet ds = this.getPad(pad).getDataSet(i);
+		//for(int i = 0; i < ndataset; i++){
+			
+			DataSetCollection collection = this.getPad(pad).dataSetFrame.getCollection();
+			/*IDataSet ds = this.getPad(pad).getDataSet(i);
 			String name = ds.getName();
 			datasets.add(ds);
 			if(i>0){
 				temp.draw(ds,"same");
 			}else{
 				temp.draw(ds);
-			}
-		}
+			}*/
+			temp.getPad().dataSetFrame.setCollection(collection);
+		//}
 		
 		temp.getPad(0).setAxisRange("X",xMin,xMax);
 
@@ -485,7 +547,11 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
 
         public void mouseClicked(MouseEvent e) {
             checkPopup(e);
+            if(e.getClickCount()==2){
+            	openInNewWindow(getPadNumberByXY(e.getX(),e.getY()));
+            }
         }
+        
 
         public void mouseReleased(MouseEvent e) {
             checkPopup(e);
@@ -502,7 +568,7 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
     }
 
     
-    public void openOptionsPane(int pad){
+    public void openOptionsPanel(int pad){
         //System.out.println(" Openning option panbe for pad = " + pad);
         //System.out.println(" Dataset count = " + this.getPad(pad).getDataSetCount());
         JFrame frame = new JFrame("Options");
@@ -514,7 +580,7 @@ public class EmbeddedCanvas extends JPanel implements ActionListener {
         frame.setVisible(true);
     }
     
-    public void openFitsPane(int pad){
+    public void openFitPanel(int pad){
         //System.out.println(" Openning option panbe for pad = " + pad);
         //System.out.println(" Dataset count = " + this.getPad(pad).getDataSetCount());
         JFrame frame = new JFrame("Fit Panel");

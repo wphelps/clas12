@@ -6,6 +6,7 @@
 package org.root.basic;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -26,7 +27,7 @@ import org.root.utils.DataFactory;
 public class EmbeddedPad extends JPanel {
     
     DataSetFrame  dataSetFrame = new DataSetFrame();
-    
+    Color bgColor = Color.white;
     public EmbeddedPad(){
         super();
         this.setPreferredSize(new Dimension(500,500));
@@ -56,8 +57,10 @@ public class EmbeddedPad extends JPanel {
                 RenderingHints.VALUE_ANTIALIAS_ON);
         int w = this.getSize().width;
         int h = this.getSize().height;
+        g2d.setBackground(bgColor);
         this.dataSetFrame.drawOnCanvas(g2d, 0,0, w, h);
     }
+    
     
     public void draw(IDataSet ds){
         this.dataSetFrame.add(ds);
@@ -67,6 +70,47 @@ public class EmbeddedPad extends JPanel {
     public DataSetFrame  getPad(){
         return this.dataSetFrame;
     }
+    
+    public void setBackgroundColor(Color color){
+    	this.bgColor = color;
+    }
+    
+    public Color getBackgroundColor(){
+    	return this.bgColor;
+    }
+    
+    public void setLogX(boolean logFlag){
+        this.dataSetFrame.getAxisFrame().getAxisX().setLog(logFlag);
+    }
+    
+    public void setLogY(boolean logFlag){
+    	this.dataSetFrame.getAxisFrame().getAxisY().setLog(logFlag);
+    }
+    
+    public void setLogZ(boolean logFlag){
+    	this.dataSetFrame.getAxisFrame().getAxisZ().setLog(logFlag);
+    }
+    
+    
+    
+    public boolean getLogX(){
+       return this.dataSetFrame.getAxisFrame().getAxisX().isLog();
+    }
+    
+    public boolean getLogY(){
+        return this.dataSetFrame.getAxisFrame().getAxisY().isLog();
+    }
+    
+    public boolean getLogZ(){
+        return this.dataSetFrame.getAxisFrame().getAxisZ().isLog();
+    }
+    
+    
+    
+    
+    
+    
+    
     
     public void draw(IDataSet ds, String options){
         this.dataSetFrame.add(ds, options);
@@ -87,9 +131,9 @@ public class EmbeddedPad extends JPanel {
         this.dataSetFrame.getAxisFrame().getAxisY().setTitleSize(size);
     }
     
-    public void setLogZ(boolean flag){
+   /* public void setLogZ(boolean flag){
         this.dataSetFrame.getAxisFrame().getAxisZ().setLog(flag);
-    }
+    }*/
     
     public void setTitleSize(int size){
         this.dataSetFrame.getAxisFrame().setTitleFontSize(size);

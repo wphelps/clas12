@@ -26,7 +26,7 @@ public class F1D extends Function1D implements EvioWritableTree,IDataSet {
     private String  functionString = "";
     private String functionName = "f1";
     private Integer functionDrawResolution = 200;
-    private Attributes attr = new Attributes();
+    //private Attributes attr = new Attributes();
     
     public F1D(String function){
         super();
@@ -302,9 +302,10 @@ public class F1D extends Function1D implements EvioWritableTree,IDataSet {
         return 0.0;
     }
 
+    /*
     public Attributes getAttributes() {
         return this.attr;
-    }
+    }*/
 
     public Double getData(int x, int y) {
         return 0.0;

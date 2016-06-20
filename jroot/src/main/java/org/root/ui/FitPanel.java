@@ -11,6 +11,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Enumeration;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -50,6 +51,7 @@ public class FitPanel extends JPanel {
 	int selectedTab = 0;
 	JPanel fitSettings,fitSwapSettings, fitFunctionPanel, lowerWindow;
 	F1D fitFunction;
+	ArrayList<F1D> fitAllFitFunctions = new ArrayList<F1D>();
 	H1D histogram;
 	IDataSet thisDataset;
 	ArrayList<IDataSet> datasets = new ArrayList<IDataSet>();
@@ -64,7 +66,7 @@ public class FitPanel extends JPanel {
 	ParameterPanel parameterSwapPanel;
     JPanel blankPanel = new JPanel();
     boolean predef = true;
-    boolean hasDrawnStats = false;
+   // boolean hasDrawnStats = false;
 
 	//Actual low and high of the x axis
 
@@ -444,9 +446,11 @@ public class FitPanel extends JPanel {
 				String drawOption = "";
 				//System.out.println("******************BLAH "+optionCheckBoxes.size());
 				for(int i=0; i<optionCheckBoxes.size(); i++){
-					if(optionCheckBoxes.get(0).isSelected()&&hasDrawnStats==false){
+					if(optionCheckBoxes.get(0).isSelected()){
+						//if(optionCheckBoxes.get(0).isSelected()&&hasDrawnStats==false){
+
 						drawOption = "S";
-						hasDrawnStats = true;
+						//hasDrawnStats = true;
 					//	System.out.println("Draw stats!");
 					}
 					if(optionCheckBoxes.get(1).isSelected()){
@@ -484,6 +488,14 @@ public class FitPanel extends JPanel {
 				fitFunction.setLineStyle(1);
 				canvas.cd(index);                                
 				canvas.draw(fitFunction,"same"+drawOption);
+				/*
+				for(int i=0; i<canvas.getPad(index).getDataSetCount(); i++){
+					System.out.println("Dataset#:"+i);
+					Enumeration<?> blah = canvas.getPad(index).getDataSet(i).getAttributes().getProperties().propertyNames();
+					while(blah.hasMoreElements()){
+						System.out.println(blah.nextElement());
+					}
+				}*/
 				
 				/*
 				ArrayList<IDataSet> nonDuplicateDataset = new ArrayList<IDataSet>();
@@ -525,9 +537,10 @@ public class FitPanel extends JPanel {
 				String drawOption = "";
 				//System.out.println("******************BLAH "+optionCheckBoxes.size());
 				for(int i=0; i<optionCheckBoxes.size(); i++){
-					if(optionCheckBoxes.get(0).isSelected()&&hasDrawnStats==false){
+					//if(optionCheckBoxes.get(0).isSelected()&&hasDrawnStats==false){
+					if(optionCheckBoxes.get(0).isSelected()){
 						drawOption = "S";
-						hasDrawnStats = true;
+						//hasDrawnStats = true;
 					//	System.out.println("Draw stats!");
 					}
 					if(optionCheckBoxes.get(1).isSelected()){
@@ -538,11 +551,14 @@ public class FitPanel extends JPanel {
 				}
 				//System.out.println("******************BLAH2");
 				//System.out.println("Fit Options:["+options+"]");
-				ArrayList<F1D> functions = new ArrayList<F1D>();
 				for(int padCounter=0; padCounter<canvasPads.size();padCounter++){
 					double min  = canvas.getPad(padCounter).getAxisX().getMin();
 					double max = canvas.getPad(padCounter).getAxisX().getMax();
-					functions.add(new F1D(predefFunctions[predefinedFunctionsSelector.getSelectedIndex()], min, max));
+					if(fitAllFitFunctions.size()!=canvasPads.size()){
+						fitAllFitFunctions.add(new F1D(predefFunctions[predefinedFunctionsSelector.getSelectedIndex()], min, max));
+					}else{
+						fitAllFitFunctions.get(padCounter).initFunction(predefFunctions[predefinedFunctionsSelector.getSelectedIndex()], min, max);
+					}
 					ArrayList<IDataSet> tempDataset = new ArrayList<IDataSet>();
 					int ndataset = canvas.getPad(padCounter).getDataSetCount();
 					for(int i = 0; i < ndataset; i++){
@@ -552,32 +568,32 @@ public class FitPanel extends JPanel {
 						tempDataset.add(ds);
 					}
 					IDataSet currentDataset = tempDataset.get(0);
-					functions.get(padCounter).setRange(min, max);
+					fitAllFitFunctions.get(padCounter).setRange(min, max);
 				
 				//histogram.fit(fitFunction,options);
 				if(predef){
-				for(int i=0; i<functions.get(padCounter).getNParams(); i++){
+				for(int i=0; i<fitAllFitFunctions.get(padCounter).getNParams(); i++){
 					if(i==0){
-						functions.get(padCounter).setParameter(0,getMaxYIDataSet(currentDataset,min, max));
+						fitAllFitFunctions.get(padCounter).setParameter(0,getMaxYIDataSet(currentDataset,min, max));
 					}else if(i==1){
-						functions.get(padCounter).setParameter(1,getMeanIDataSet(currentDataset,min, max));
+						fitAllFitFunctions.get(padCounter).setParameter(1,getMeanIDataSet(currentDataset,min, max));
 					}else if(i==2){
-						functions.get(padCounter).setParameter(2,getRMSIDataSet(currentDataset,min, max));
+						fitAllFitFunctions.get(padCounter).setParameter(2,getRMSIDataSet(currentDataset,min, max));
 					}else if(i==3){
-						functions.get(padCounter).setParameter(3,getAverageHeightIDataSet(currentDataset,min, max));
+						fitAllFitFunctions.get(padCounter).setParameter(3,getAverageHeightIDataSet(currentDataset,min, max));
 					}else if(i>3){
-						functions.get(padCounter).setParameter(i, 1.0);
+						fitAllFitFunctions.get(padCounter).setParameter(i, 1.0);
 					}
 					//System.out.println("Paramter "+i+" ="+fitFunction.getParameter(i));
 
 				}}
-				fitter.fit(currentDataset, functions.get(padCounter),options);
+				fitter.fit(currentDataset, fitAllFitFunctions.get(padCounter),options);
 				//fitFunction.show(); // print on the screen fit results
-				functions.get(padCounter).setLineColor(2);
-				functions.get(padCounter).setLineWidth(5);
-				functions.get(padCounter).setLineStyle(1);
+				fitAllFitFunctions.get(padCounter).setLineColor(2);
+				fitAllFitFunctions.get(padCounter).setLineWidth(5);
+				fitAllFitFunctions.get(padCounter).setLineStyle(1);
 				canvas.cd(padCounter);                                
-				canvas.draw(functions.get(padCounter),"same"+drawOption);
+				canvas.draw(fitAllFitFunctions.get(padCounter),"same"+drawOption);
 				//parameterPanel.updateNewFunction(fitFunction);
 				}
 			}
