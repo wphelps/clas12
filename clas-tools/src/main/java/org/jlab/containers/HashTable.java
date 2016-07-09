@@ -359,7 +359,7 @@ public class HashTable extends DefaultTableModel {
     
     public static void main(String[] args){
         HashTable  table = new HashTable(3,"a","b","c","d");
-        table.readFile("/Users/gavalian/Work/Software/Release-8.0/COATJAVA/coatjava/EC.table");
+        table.readFile("/Users/gavalian/Work/Software/Release-8.0/COATJAVA/coatjava/etc/bankdefs/translation/EC.table");
         /*
         table.addRowAsDouble(new String[]{"21","7","1","0.5","0.1","0.6"});
         table.addRowAsDouble(new String[]{"22","8","2","0.6","0.2","0.7"});

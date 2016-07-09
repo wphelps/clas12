@@ -178,7 +178,7 @@ public class CLAS12FastMC {
                 
         Path3D  path = this.particleSwimmer.particlePath(part);
         Boolean centralStatus = this.isDetectedInCentral(path);
-        if(centralStatus==true) return true;  
+        //if(centralStatus==true) return true;  
         
         List<DetectorHit>  dcHits = this.getDetectorHits("DC", path);
         if(dcHits==null) return false;
